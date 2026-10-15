@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NeuroMap — Cognitive Brain Test</title>
+<meta name="description" content="Open-source cognitive test: 8 scientific tasks, adaptive difficulty, age norms and a living 3D brain map. Runs entirely in your browser. 10 languages.">
+<meta name="theme-color" content="#04050b">
+<meta property="og:title" content="NeuroMap — map your mind in 15 minutes">
+<meta property="og:description" content="8 tasks built on classic cognitive science. Adaptive. Age-normed. Private. Beautiful.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04050b;--panel:rgba(13,16,34,.66);--panel2:rgba(255,255,255,.035);
+  --line:rgba(150,175,255,.13);--line2:rgba(150,175,255,.26);
+  --text:#e9edff;--mute:#8790b5;--soft:#b9c1e2;
+  --c1:#5ef2ff;--c2:#9b6bff;--c3:#ff5fd2;--ok:#3ddc97;--bad:#ff5470;--warn:#ffc65c;
+  --font:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans','Noto Sans SC','Noto Sans JP','Noto Sans Devanagari','Noto Sans Arabic',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --spring:cubic-bezier(.3,1.5,.5,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{color-scheme:dark}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(1100px 700px at 78% -12%,rgba(124,77,255,.28),transparent 60%),radial-gradient(900px 620px at -6% 108%,rgba(0,190,220,.18),transparent 55%)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:30;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;transition:opacity 1s}
+body.testing #bg{opacity:.14}
+#glowc{position:fixed;left:0;top:0;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(110,140,255,.11),transparent 62%);will-change:transform}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit}
+.mono{font-family:var(--mono)}
+svg{direction:ltr}
+
+/* ---------- top bar ---------- */
+header.top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px clamp(14px,3vw,28px);background:linear-gradient(#04050bdd,#04050b00)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.01em;text-decoration:none}
+.logo svg{width:30px;height:30px;filter:drop-shadow(0 0 10px rgba(94,242,255,.45))}
+.tools{display:flex;gap:8px;align-items:center}
+.chip{height:38px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid var(--line);font-size:14px;color:var(--text);text-decoration:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:.2s}
+.chip:hover{border-color:var(--line2);background:rgba(255,255,255,.08)}
+.chip svg{width:17px;height:17px}
+.chip.sq{width:38px;padding:0;justify-content:center}
+.gh svg{color:#ffd23f}
+select.chip{appearance:none;-webkit-appearance:none;padding-inline-end:30px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238790b5' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+[dir=rtl] select.chip{background-position:left 11px center}
+select.chip:disabled{opacity:.35;cursor:not-allowed}
+select option{background:#0c0f20;color:#fff}
+@media(max-width:520px){.gh span{display:none}.gh{width:38px;padding:0;justify-content:center}.logo span{display:none}}
+#prog{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:19;display:flex;gap:6px;opacity:0;transition:opacity .4s;pointer-events:none}
+#prog.on{opacity:1}
+#prog i{width:clamp(18px,4vw,30px);height:4px;border-radius:4px;background:rgba(255,255,255,.1);transition:.5s}
+#prog i.pc{background:var(--c1);box-shadow:0 0 12px var(--c1)}
+
+/* ---------- layout ---------- */
+main{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 16px 48px}
+.screen{width:100%;max-width:1100px;animation:in .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(16px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:28px;backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);box-shadow:0 30px 80px -30px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.05)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:52px;padding:0 26px;border-radius:16px;font-weight:600;font-size:16px;transition:transform .25s var(--spring),box-shadow .2s,background .2s,border-color .2s;position:relative;overflow:hidden;white-space:nowrap}
+.btn svg{width:18px;height:18px}
+.btn.primary{background:linear-gradient(120deg,var(--c1),var(--c2) 55%,var(--c3),var(--c1));background-size:300% 100%;color:#060714;box-shadow:0 12px 40px -12px rgba(94,242,255,.75);animation:shift 8s linear infinite}
+.btn.primary:hover{box-shadow:0 18px 50px -12px rgba(155,107,255,.85)}
+.btn.primary::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);transform:translateX(-100%);animation:shine 3.6s ease-in-out infinite}
+.btn:active{transform:scale(.95)!important}
+@keyframes shine{55%,100%{transform:translateX(100%)}}
+@keyframes shift{to{background-position:300% 0}}
+.btn.ghost{background:rgba(255,255,255,.045);border:1px solid var(--line);color:var(--text)}
+.btn.ghost:hover{border-color:var(--line2);background:rgba(255,255,255,.09)}
+.btn.big{height:64px;padding:0 38px;font-size:18px;border-radius:18px}
+.kbd{font-family:var(--mono);font-size:11px;padding:2px 6px;border-radius:6px;background:rgba(0,0,0,.2)}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:1.08fr .92fr;gap:10px 30px;align-items:center}
+.hero-txt{display:flex;flex-direction:column;align-items:flex-start;text-align:start}
+.badge{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:12.5px;color:var(--soft);letter-spacing:.02em}
+.pulse{flex:none;width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(61,220,151,.6)}70%,100%{box-shadow:0 0 0 10px rgba(61,220,151,0)}}
+.title{font-size:clamp(60px,8.6vw,126px);line-height:.92;font-weight:700;letter-spacing:-.055em;margin:24px 0 18px;background:linear-gradient(180deg,#fff 30%,#a5afdb);-webkit-background-clip:text;background-clip:text;color:transparent}
+.title span{background:linear-gradient(100deg,var(--c1),var(--c2),var(--c3),var(--c1));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shift 8s linear infinite}
+.tag{max-width:540px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:var(--soft)}
+.cta{margin:30px 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.last{font-size:13px;color:var(--mute)}
+.last button{color:var(--c1);text-decoration:underline;text-underline-offset:3px}
+.brainwrap{position:relative;width:100%;max-width:540px;aspect-ratio:1;justify-self:center}
+.brainwrap::before{content:"";position:absolute;inset:16%;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.32),rgba(0,200,255,.06) 55%,transparent 72%);filter:blur(14px);pointer-events:none}
+.brainwrap canvas{position:relative;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+.brainwrap canvas:active{cursor:grabbing}
+.hint{position:absolute;bottom:3%;left:0;right:0;text-align:center;font-size:11px;color:var(--mute);pointer-events:none;letter-spacing:.02em}
+.cards{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;margin-top:10px}
+.card{--mx:50%;--my:50%;display:flex;align-items:center;gap:12px;text-align:start;padding:14px 16px;border-radius:18px;background:radial-gradient(260px circle at var(--mx) var(--my),color-mix(in srgb,var(--dc) 16%,transparent),transparent 60%),var(--panel2);border:1px solid var(--line);animation:in .7s both;animation-delay:var(--d);transition:border-color .3s,transform .5s var(--spring);cursor:default}
+.card:hover{border-color:color-mix(in srgb,var(--dc) 55%,transparent)}
+.card b{display:block;font-size:15px;font-weight:600}
+.card span{display:block;font-size:11px;color:var(--mute);margin-top:3px}
+.cico{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--dc,var(--c1));background:linear-gradient(135deg,color-mix(in srgb,var(--dc,#5ef2ff) 18%,transparent),rgba(155,107,255,.1));border:1px solid var(--line)}
+.ico{width:22px;height:22px}
+.fine{grid-column:1/-1;margin-top:26px;font-size:12.5px;line-height:1.75;color:var(--mute);text-align:center}
+@media(max-width:860px){.hero{grid-template-columns:1fr}.brainwrap{order:-1;max-width:330px;margin:-24px 0 -8px}.hero .hint{display:none}.hero-txt{align-items:center;text-align:center}.cta{justify-content:center}.cards{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- task intro / done / age ---------- */
+.ti,.done{max-width:660px;margin:0 auto;padding:46px clamp(22px,5vw,50px);text-align:center;display:flex;flex-direction:column;align-items:center}
+.orb{position:relative;width:100px;height:100px;border-radius:50%;display:grid;place-items:center;color:var(--dc,var(--c1));margin-bottom:22px}
+.orb::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--dc,var(--c1)),var(--c2),var(--c3),var(--dc,var(--c1)));animation:spin 4s linear infinite;-webkit-mask:radial-gradient(circle,transparent 63%,#000 64%);mask:radial-gradient(circle,transparent 63%,#000 64%)}
+.orb::after{content:"";position:absolute;inset:12px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--dc,#5ef2ff) 25%,transparent),transparent 70%)}
+.orb .ico{width:40px;height:40px;position:relative;z-index:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.ti h2,.done h2{font-size:clamp(30px,5vw,46px);letter-spacing:-.03em;margin:10px 0 14px;line-height:1.1}
+.lead{color:var(--soft);line-height:1.7;font-size:16.5px;margin-bottom:30px;max-width:520px}
+.check{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(61,220,151,.25),transparent 70%);border:1px solid rgba(61,220,151,.5);color:var(--ok);margin-bottom:16px;animation:pop .5s var(--spring);box-shadow:0 0 50px -10px var(--ok)}
+.check svg{width:36px;height:36px}
+.check path{stroke-dasharray:30;stroke-dashoffset:30;animation:dash .5s .15s forwards}
+.raw{font-size:15px;color:var(--c1);margin:-2px 0 28px;padding:8px 14px;border-radius:12px;background:rgba(94,242,255,.07);border:1px solid rgba(94,242,255,.22)}
+.ages{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:460px}
+.ages .opt{height:62px;font-size:18px;font-weight:600;font-family:var(--mono)}
+.privacy{margin-top:16px;font-size:12px;color:var(--mute)}
+
+/* ---------- stage ---------- */
+.stage{max-width:880px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px}
+.hud{width:100%;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mute);gap:12px;min-height:26px}
+.hud b{color:var(--text)}
+.tbar{width:100%;height:4px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden}
+.tbar i{display:block;height:100%;background:linear-gradient(90deg,var(--c1),var(--c2));transform-origin:left;animation:drain linear forwards}
+.tbar.off{visibility:hidden}
+[dir=rtl] .tbar i{transform-origin:right}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.q{font-size:clamp(18px,2.6vw,22px);font-weight:600;text-align:center}
+.lvl{letter-spacing:1px;color:var(--c1);font-size:11px}
+.lvl i{color:rgba(255,255,255,.12);font-style:normal}
+.pbadge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:rgba(255,198,92,.1);border:1px solid rgba(255,198,92,.45);color:var(--warn);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:var(--mono)}
+.fb{min-height:24px;font-size:15px;text-align:center;color:var(--soft);max-width:560px;line-height:1.5}
+.fb.good{color:var(--ok)}.fb.bad{color:#ff8da0}
+.combo{font-family:var(--mono);font-weight:700;color:var(--c1);transition:transform .3s var(--spring),text-shadow .3s;display:inline-block}
+.combo.hot{color:#fff;text-shadow:0 0 14px var(--c1),0 0 30px var(--c2);transform:scale(1.2)}
+
+.opts{display:grid;gap:10px}
+.opt{position:relative;border-radius:16px;background:var(--panel);border:1px solid var(--line);transition:transform .3s var(--spring),border-color .2s,box-shadow .2s,background .2s;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.opt:hover{border-color:rgba(94,242,255,.55);transform:translateY(-3px);box-shadow:0 12px 30px -12px rgba(94,242,255,.5)}
+.opt:active{transform:scale(.94);transition-duration:.08s}
+.opt em{position:absolute;top:6px;inset-inline-start:8px;font-style:normal;font-family:var(--mono);font-size:10px;color:var(--mute)}
+.opt.right{border-color:var(--ok);background:rgba(61,220,151,.13);box-shadow:0 0 34px -8px var(--ok)}
+.opt.wrong{border-color:var(--bad);background:rgba(255,84,112,.13);animation:shake .35s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@keyframes pop{from{transform:scale(.7);opacity:.3}}
+@keyframes dash{to{stroke-dashoffset:0}}
+
+/* reaction */
+.rt{position:relative;overflow:hidden;width:100%;height:min(54vh,400px);border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;border:1px solid var(--line);background:var(--panel);transition:background .08s}
+.rt.wait{background:radial-gradient(circle,rgba(255,84,112,.24),rgba(40,8,20,.85));border-color:rgba(255,84,112,.45)}
+.rt.go{background:radial-gradient(circle,#43ffad,#0fae6a);border-color:#43ffad;box-shadow:0 0 140px -10px #3ddc97;color:#032015}
+.rt.early{background:rgba(255,198,92,.15);border-color:rgba(255,198,92,.5)}
+.rt.res .rt-big{background:linear-gradient(120deg,#fff,var(--c1));-webkit-background-clip:text;background-clip:text;color:transparent;animation:pop .4s var(--spring)}
+.rt-big{position:relative;font-size:clamp(34px,7vw,66px);font-weight:700;letter-spacing:-.03em;text-align:center;padding:0 16px}
+.rt-sub{position:relative;font-size:14px;color:var(--mute)}
+.shock{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;border:3px solid rgba(255,255,255,.9);pointer-events:none;animation:shock .7s cubic-bezier(.1,.6,.3,1) forwards}
+@keyframes shock{to{transform:scale(30);opacity:0;border-width:.5px}}
+.pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pills span{min-width:66px;height:30px;padding:0 10px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--mute);transition:.3s var(--spring)}
+.pills span.on{color:var(--text);border-color:rgba(94,242,255,.5);background:rgba(94,242,255,.08)}
+
+/* corsi */
+.corsi{position:relative;width:min(92vw,480px);aspect-ratio:1;border-radius:28px;background:radial-gradient(circle at 50% 40%,rgba(155,107,255,.08),transparent 70%),var(--panel);border:1px solid var(--line);transition:box-shadow .3s,border-color .3s}
+.corsi.good{border-color:var(--ok);box-shadow:0 0 60px -10px var(--ok)}
+.corsi.bad{border-color:var(--bad);box-shadow:0 0 60px -10px var(--bad);animation:shake .35s}
+.corsi.lock .blk{cursor:default}
+.blk{position:absolute;width:16%;aspect-ratio:1;border-radius:24%;background:linear-gradient(160deg,#2c3163,#141833);border:1px solid rgba(155,107,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 7px 0 #090b1b,0 12px 26px -6px rgba(0,0,0,.75);transition:background .15s,box-shadow .15s,transform .25s var(--spring);touch-action:manipulation}
+.blk.show{background:radial-gradient(circle at 38% 32%,#f2feff,var(--c1) 45%,#119bb8);box-shadow:0 0 54px var(--c1),0 0 0 6px rgba(94,242,255,.18),0 2px 0 #090b1b;transform:translateY(5px) scale(1.06)}
+.blk.tap{background:radial-gradient(circle at 38% 32%,#f5edff,var(--c2) 50%,#5530c4);box-shadow:0 0 38px var(--c2),0 2px 0 #090b1b;transform:translateY(5px) scale(.95)}
+.cring{position:absolute;width:16%;aspect-ratio:1;border-radius:24%;border:2px solid var(--c1);pointer-events:none;animation:ring .65s ease-out forwards}
+@keyframes ring{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(2)}}
+.dots{display:flex;gap:8px;justify-content:center;min-height:12px}
+.dots i{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.1);transition:.3s var(--spring)}
+.dots i.on{background:var(--c2);box-shadow:0 0 12px var(--c2);transform:scale(1.25)}
+
+/* matrices */
+.mxw{display:flex;gap:clamp(16px,4vw,44px);align-items:center;justify-content:center;flex-wrap:wrap;width:100%}
+.mx{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(88vw,350px);padding:12px;border-radius:24px;background:var(--panel);border:1px solid var(--line)}
+.cell{aspect-ratio:1;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(150,175,255,.09);display:grid;place-items:center;position:relative}
+.cell svg{width:88%;height:88%}
+.qc{border:1.5px dashed rgba(94,242,255,.6);animation:qpulse 1.8s ease-in-out infinite}
+.qc span{font-size:34px;font-weight:700;color:var(--c1)}
+.qc.filled{animation:pop .35s var(--spring);border-style:solid;border-color:var(--ok);box-shadow:0 0 30px -6px var(--ok)}
+@keyframes qpulse{50%{box-shadow:0 0 30px -4px rgba(94,242,255,.6)}}
+.opts.six{grid-template-columns:repeat(3,1fr);width:min(88vw,340px)}
+.opts.six .opt{aspect-ratio:1;display:grid;place-items:center}
+.opts.six .opt svg{width:86%;height:86%}
+.fly{position:fixed;z-index:40;border-radius:14px;display:grid;place-items:center;background:rgba(61,220,151,.16);border:1px solid var(--ok);transform-origin:0 0;transition:transform .45s cubic-bezier(.3,1.35,.5,1);pointer-events:none;box-shadow:0 20px 50px -10px rgba(61,220,151,.6)}
+.fly svg{width:86%;height:86%}
+
+/* series */
+.seq{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:12px 0 8px}
+.num{min-width:66px;height:66px;padding:0 14px;border-radius:16px;display:grid;place-items:center;font-family:var(--mono);font-size:clamp(20px,3.4vw,28px);font-weight:600;background:var(--panel);border:1px solid var(--line);animation:in .5s both}
+.seq>i{color:var(--mute);font-style:normal;font-size:20px}
+.num.qn{color:var(--c1);border:1.5px dashed rgba(94,242,255,.6);animation:in .5s both,qpulse 1.8s .5s infinite}
+.num.qn.filled{border-style:solid;border-color:var(--ok);color:var(--ok);animation:pop .35s var(--spring)}
+.opts.five{grid-template-columns:repeat(5,1fr);width:min(92vw,640px)}
+.nb{height:66px;font-family:var(--mono);font-size:20px;font-weight:600}
+@media(max-width:560px){.opts.five{grid-template-columns:repeat(3,1fr)}}
+
+/* stroop */
+.stroop{width:100%;height:min(40vh,300px);display:grid;place-items:center;border-radius:28px;background:var(--panel);border:1px solid var(--line)}
+.sw{font-size:clamp(46px,10vw,100px);font-weight:700;letter-spacing:.02em;user-select:none;animation:pop .18s ease-out}
+.sw.fix{color:var(--mute);font-weight:300;animation:none}
+.sw.msg{font-size:clamp(20px,3vw,30px);font-weight:600;color:var(--c1);text-align:center;padding:0 20px}
+.opts.four{grid-template-columns:repeat(4,1fr);width:100%}
+.sb{height:66px;font-weight:700;font-size:16px;letter-spacing:.04em}
+@media(max-width:560px){.opts.four{grid-template-columns:repeat(2,1fr)}}
+
+/* rotation */
+.rot{display:flex;gap:16px;width:100%;justify-content:center}
+.rbox{position:relative;flex:1;max-width:400px;aspect-ratio:1;border-radius:26px;background:radial-gradient(ellipse 70% 40% at 50% 88%,rgba(94,242,255,.08),transparent 70%),radial-gradient(circle at 50% 35%,rgba(155,107,255,.12),transparent 70%),var(--panel);border:1px solid var(--line);overflow:hidden}
+.rbox canvas{width:100%;height:100%;display:block}
+.rbox .rl{position:absolute;top:12px;left:16px;font-family:var(--mono);font-size:12px;color:var(--mute);font-weight:400}
+.opts.two{grid-template-columns:1fr 1fr;width:min(92vw,640px)}
+.opts.two .opt{height:62px;font-weight:600;font-size:17px}
+@media(max-width:560px){.rot{gap:8px}.rbox{border-radius:18px}}
+
+/* coding */
+.keyrow{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;width:100%;padding:10px;border-radius:20px;background:var(--panel);border:1px solid var(--line)}
+.keyrow div{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;border-radius:10px;background:rgba(255,255,255,.03)}
+.keyrow svg{width:clamp(18px,4.4vw,28px);height:clamp(18px,4.4vw,28px);color:var(--c1)}
+.keyrow b{font-family:var(--mono);font-size:13px;color:var(--soft)}
+.target{width:150px;height:150px;border-radius:32px;display:grid;place-items:center;background:radial-gradient(circle,rgba(155,107,255,.28),transparent 70%),var(--panel);border:1px solid rgba(155,107,255,.45);color:#fff;box-shadow:0 0 70px -20px var(--c2)}
+.target svg{width:80px;height:80px}
+.target.pop{animation:pop .25s var(--spring)}
+.target.shake{animation:shake .3s;border-color:var(--bad)}
+.pad9{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;width:100%}
+.pad9 .opt{height:58px;font-family:var(--mono);font-size:20px;font-weight:600}
+.big-t{font-size:22px;color:var(--text)}
+
+/* trails */
+.trail{width:100%;border-radius:24px;background:var(--panel);border:1px solid var(--line);padding:8px;touch-action:manipulation}
+.trail svg{width:100%;display:block;user-select:none}
+.tn{cursor:pointer}
+.tn circle{fill:rgba(255,255,255,.045);stroke:rgba(150,175,255,.5);stroke-width:.35;transition:fill .2s,stroke .2s}
+.tn text{fill:var(--text);text-anchor:middle;font-family:var(--mono);font-weight:600;pointer-events:none}
+.tn:hover circle{stroke:var(--c1)}
+.tn.first circle{stroke:var(--c1);stroke-width:.7}
+.tn.ok circle{fill:rgba(94,242,255,.25);stroke:var(--c1)}
+.tn.err circle{fill:rgba(255,84,112,.35);stroke:var(--bad)}
+.tl{stroke:var(--c1);stroke-width:.6;stroke-linecap:round;stroke-dasharray:200;stroke-dashoffset:200;animation:dash .5s forwards;filter:drop-shadow(0 0 1px var(--c1))}
+
+/* ---------- results ---------- */
+.res{display:flex;flex-direction:column;gap:18px}
+.shared-b{align-self:center;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:18px 26px;text-align:center}
+.vs span{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.vs b{font-size:44px;font-weight:700;letter-spacing:-.03em}
+.vs .me b{color:var(--c1)}.vs .fr b{color:var(--c3)}
+.vsmid{font-size:clamp(16px,2.4vw,22px);font-weight:700;padding:10px 18px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.res-hero{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bpanel{position:relative;display:flex;flex-direction:column;align-items:center;padding:6px 10px 0;overflow:hidden}
+.bpanel .brainwrap{max-width:430px}
+.arch{position:relative;text-align:center;margin-top:-40px;padding:0 22px 26px}
+.arch h3{font-size:clamp(30px,4vw,42px);letter-spacing:-.025em;margin:6px 0 6px;line-height:1.1;background:linear-gradient(100deg,var(--ac),#fff 80%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.arch p{color:var(--soft);font-size:15px;line-height:1.5}
+.spanel{padding:26px 28px;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.scoreline{display:flex;align-items:center;gap:22px}
+.gw{position:relative;flex:none;width:176px;height:176px}
+.gw svg{width:100%;height:100%;transform:rotate(-90deg)}
+.garc{animation:garc 2s .2s cubic-bezier(.2,.8,.2,1) forwards;filter:drop-shadow(0 0 6px rgba(94,242,255,.6))}
+@keyframes garc{to{stroke-dashoffset:var(--o)}}
+.gnum{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gnum b{font-size:58px;font-weight:700;letter-spacing:-.05em;line-height:1;background:linear-gradient(120deg,#fff,var(--c1));-webkit-background-clip:text;background-clip:text;color:transparent}
+.gnum span{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-top:6px;max-width:120px;text-align:center}
+.band{font-size:clamp(28px,3.6vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin:4px 0}
+.pct{color:var(--soft);font-size:16px}
+.rare{margin-top:6px;font-size:14px;font-family:var(--mono);color:var(--c3)}
+.rng{font-size:12.5px;color:var(--mute);margin-top:6px}
+.bell{width:100%}
+.bell .tk{fill:var(--mute);font-size:11px;font-family:var(--mono);text-anchor:middle}
+.hl{display:flex;gap:10px;flex-wrap:wrap}
+.hl div{padding:8px 12px;border-radius:12px;border:1px solid var(--line);font-size:13px;color:var(--soft);background:rgba(255,255,255,.03)}
+.hl b{color:var(--text)}
+.res-mid{display:grid;grid-template-columns:1.05fr 1fr;gap:18px}
+.radarp{padding:14px;display:grid;place-items:center}
+.radar{width:100%;max-width:560px}
+.radar .ring{fill:none;stroke:rgba(150,175,255,.12);stroke-width:1}
+.radar .ring.avg{stroke:rgba(255,255,255,.38);stroke-dasharray:4 4}
+.radar .axis{stroke:rgba(150,175,255,.1)}
+.radar .rl{fill:var(--text);font-size:14px;font-weight:600;font-family:var(--font)}
+.radar .rv{font-size:13px;font-family:var(--mono)}
+.rpoly{transform-origin:210px 210px;animation:grow 1.4s cubic-bezier(.2,.9,.25,1.15) .35s both}
+@keyframes grow{from{transform:scale(0);opacity:0}}
+.bars{padding:20px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.bar{display:flex;gap:12px;align-items:center;padding:6px 8px;border-radius:14px;transition:background .2s}
+.bar:hover{background:rgba(255,255,255,.05)}
+.bar .cico{width:38px;height:38px}
+.bm{flex:1;min-width:0}
+.bt{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;margin-bottom:6px;gap:8px}
+.bt b{font-family:var(--mono)}
+.bt small{font-family:var(--mono);font-size:11px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{position:relative;height:8px;border-radius:8px;background:rgba(255,255,255,.06);overflow:hidden}
+.track i{position:absolute;top:0;bottom:0;inset-inline-start:0;width:0;border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--dc) 35%,#6a4dff),var(--dc));box-shadow:0 0 12px color-mix(in srgb,var(--dc) 60%,transparent);animation:fill 1.5s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:var(--dl)}
+@keyframes fill{to{width:var(--w)}}
+.track .mid{position:absolute;top:0;bottom:0;left:50%;width:1.5px;background:rgba(255,255,255,.5)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chips span{padding:7px 12px;border-radius:12px;border:1px solid var(--line);font-size:12.5px;color:var(--soft);background:rgba(255,255,255,.03)}
+.chips span.warn{color:var(--warn);border-color:rgba(255,198,92,.4);background:rgba(255,198,92,.06)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:4px}
+.meta-l{text-align:center;font-size:12px;color:var(--mute);line-height:1.7;max-width:760px;margin:0 auto}
+@media(max-width:900px){.res-hero,.res-mid{grid-template-columns:1fr}}
+@media(max-width:520px){.scoreline{flex-direction:column;text-align:center}.spanel{align-items:center;text-align:center}.hl{justify-content:center}.vs{padding:14px}.vs b{font-size:34px}}
+
+.tilt{transition:transform .6s var(--spring)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;padding:12px 18px;border-radius:14px;background:#11152b;border:1px solid var(--line2);z-index:60;transition:.3s;pointer-events:none;font-size:14px}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.spark{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:50;animation:spark .7s ease-out forwards;box-shadow:0 0 10px currentColor}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="glowc" aria-hidden="true"></div>
+<header class="top">
+  <a class="logo" href="#" id="home" aria-label="NeuroMap">
+    <svg viewBox="0 0 32 32"><defs><linearGradient id="lgo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ef2ff"/><stop offset="1" stop-color="#b06bff"/></linearGradient></defs><g fill="none" stroke="url(#lgo)" stroke-width="2" stroke-linecap="round"><path d="M16 16L6 7M16 16l11-6M16 16l-9 10M16 16l9 9M16 16V3"/></g><g fill="url(#lgo)"><circle cx="16" cy="16" r="4.4"/><circle cx="6" cy="7" r="2.3"/><circle cx="27" cy="10" r="2.3"/><circle cx="7" cy="26" r="2.3"/><circle cx="25" cy="25" r="2.3"/><circle cx="16" cy="3" r="2"/></g></svg>
+    <span>NeuroMap</span>
+  </a>
+  <div class="tools">
+    <a class="chip gh" id="gh" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z"/></svg><span>Star</span></a>
+    <button class="chip sq" id="snd" aria-label="Sound"></button>
+    <select class="chip" id="lang" aria-label="Language"></select>
+  </div>
+</header>
+<div id="prog"></div>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="h0" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.9" height="5" fill="#5ef2ff"/></pattern>
+  <pattern id="h1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.9" height="5" fill="#b38bff"/></pattern>
+  <pattern id="h2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.9" height="5" fill="#ffc65c"/></pattern>
+</defs></svg>
+
+<script>
+'use strict';
+/* =====================================================================
+   NeuroMap — open-source cognitive brain test. MIT License.
+   Change REPO to your GitHub repository URL.
+   ===================================================================== */
+const REPO = 'https://github.com/maxmila0219-alt/neuromap';
+
+/* ---------------------------- i18n ---------------------------- */
+const LANGS={en:'English',ru:'Русский',es:'Español',pt:'Português',fr:'Français',de:'Deutsch',zh:'中文',ja:'日本語',hi:'हिन्दी',ar:'العربية'};
+const I18N={
+en:{tagline:'Map your mind in 15 minutes. Eight tasks built on classic cognitive science, adaptive difficulty and one beautiful brain profile.',start:'Start the test',meta:'8 tasks · ~15 min · adaptive · no sign-up',privacy:'Runs 100% in your browser. Nothing is uploaded.',disclaimer:'Not a clinical IQ test. Scores are estimates based on approximate population norms — have fun and stay curious.',begin:'Begin',task:'Task {n} of {t}',done:'Task complete',next:'Next',
+d_logic:'Logic',d_numbers:'Numbers',d_memory:'Memory',d_spatial:'Spatial',d_speed:'Speed',d_attention:'Attention',d_control:'Self-control',d_reflex:'Reflexes',
+i_reflex:'Wait for the field to turn green, then click or press Space as fast as you can. 5 rounds. Don’t jump the gun.',
+i_memory:'Blocks light up one by one. Repeat the sequence by tapping them in the same order. It gets longer every round.',
+i_logic:'Each grid follows hidden rules across its rows. Find the piece that completes the pattern. 10 puzzles adapt to your level.',
+i_control:'A color word appears in colored ink. Choose the INK color, not the word. Be fast and accurate. Keys 1–4 work too.',
+i_spatial:'Are the two 3D shapes the same object rotated, or mirror images? Keys: ← same, → mirrored.',
+i_speed:'Each symbol has a number in the key. Enter the number for the symbol shown. 60 seconds — as many as you can.',
+i_attention:'Connect the circles alternating numbers and letters: 1 → A → 2 → B → 3 … as fast as you can.',
+i_numbers:'Find the rule behind each number sequence and pick the next number. 8 puzzles adapt to your level.',
+wait:'Wait for green…',click:'CLICK!',early:'Too early! Tap to retry',watch:'Watch…',repeat:'Your turn',same:'Same',mirror:'Mirrored',q_matrix:'Which piece completes the pattern?',q_series:'What comes next?',q_stroop:'Pick the INK color',
+results:'Your brain map',index:'Cognitive index',better:'Higher than {p}% of people',range:'95% range',strong:'Strongest',grow:'Room to grow',download:'Download card',share:'Share result',challenge:'Challenge a friend',retake:'Retake',copied:'Link copied!',shared:'Shared result',tryIt:'Take the test yourself',last:'Your last result',
+b1:'Exceptional',b2:'Very high',b3:'High average',b4:'Average',b5:'Low average',b6:'Below average',red:'RED',blue:'BLUE',green:'GREEN',yellow:'YELLOW',span:'span',testId:'Test ID',avg:'Average = 100',quit:'Quit the test? Progress will be lost.'},
+ru:{tagline:'Карта твоего мозга за 15 минут. Восемь заданий на основе классической когнитивной науки, адаптивная сложность и красивый профиль мозга.',start:'Начать тест',meta:'8 заданий · ~15 мин · адаптивно · без регистрации',privacy:'Работает полностью в браузере. Ничего не отправляется.',disclaimer:'Это не клинический IQ-тест. Баллы — оценка по приблизительным популяционным нормам. Развлекайся и оставайся любопытным.',begin:'Начать',task:'Задание {n} из {t}',done:'Задание выполнено',next:'Далее',
+d_logic:'Логика',d_numbers:'Числа',d_memory:'Память',d_spatial:'Пространство',d_speed:'Скорость',d_attention:'Внимание',d_control:'Самоконтроль',d_reflex:'Реакция',
+i_reflex:'Дождись, пока поле станет зелёным, и сразу кликни или нажми Пробел. 5 попыток. Не жми раньше времени.',
+i_memory:'Блоки загораются по очереди. Повтори последовательность в том же порядке. С каждым раундом она длиннее.',
+i_logic:'В каждой сетке строки подчиняются скрытым правилам. Найди фрагмент, который завершает узор. 10 задач подстраиваются под твой уровень.',
+i_control:'Появится название цвета, написанное цветными чернилами. Выбери цвет ЧЕРНИЛ, а не слово. Быстро и точно. Можно клавишами 1–4.',
+i_spatial:'Две 3D-фигуры — это один объект, повёрнутый иначе, или зеркальные отражения? Клавиши: ← одинаковые, → зеркальные.',
+i_speed:'У каждого символа есть номер в ключе. Вводи номер показанного символа. 60 секунд — сколько успеешь.',
+i_attention:'Соединяй кружки, чередуя цифры и буквы: 1 → A → 2 → B → 3 … как можно быстрее.',
+i_numbers:'Найди правило каждой числовой последовательности и выбери следующее число. 8 задач подстраиваются под тебя.',
+wait:'Жди зелёного…',click:'ЖМИ!',early:'Рано! Нажми, чтобы повторить',watch:'Смотри…',repeat:'Твоя очередь',same:'Одинаковые',mirror:'Зеркальные',q_matrix:'Какой фрагмент завершает узор?',q_series:'Какое число следующее?',q_stroop:'Выбери цвет ЧЕРНИЛ',
+results:'Карта твоего мозга',index:'Когнитивный индекс',better:'Выше, чем у {p}% людей',range:'95% диапазон',strong:'Сильнее всего',grow:'Есть куда расти',download:'Скачать карточку',share:'Поделиться',challenge:'Вызов другу',retake:'Пройти снова',copied:'Ссылка скопирована!',shared:'Чужой результат',tryIt:'Пройти тест самому',last:'Твой прошлый результат',
+b1:'Исключительный',b2:'Очень высокий',b3:'Выше среднего',b4:'Средний',b5:'Ниже среднего',b6:'Низкий',red:'КРАСНЫЙ',blue:'СИНИЙ',green:'ЗЕЛЁНЫЙ',yellow:'ЖЁЛТЫЙ',span:'объём',testId:'ID теста',avg:'Среднее = 100',quit:'Выйти из теста? Прогресс будет потерян.'},
+es:{tagline:'Mapea tu mente en 15 minutos. Ocho pruebas basadas en la ciencia cognitiva clásica, dificultad adaptativa y un perfil cerebral precioso.',start:'Comenzar el test',meta:'8 pruebas · ~15 min · adaptativo · sin registro',privacy:'Funciona 100% en tu navegador. No se sube nada.',disclaimer:'No es un test de CI clínico. Las puntuaciones son estimaciones basadas en normas aproximadas.',begin:'Empezar',task:'Prueba {n} de {t}',done:'Prueba completada',next:'Siguiente',
+d_logic:'Lógica',d_numbers:'Números',d_memory:'Memoria',d_spatial:'Espacial',d_speed:'Velocidad',d_attention:'Atención',d_control:'Autocontrol',d_reflex:'Reflejos',
+i_reflex:'Espera a que el campo se ponga verde y haz clic o pulsa Espacio lo más rápido posible. 5 rondas. No te adelantes.',
+i_memory:'Los bloques se iluminan uno a uno. Repite la secuencia tocándolos en el mismo orden. Cada ronda es más larga.',
+i_logic:'Cada cuadrícula sigue reglas ocultas en sus filas. Encuentra la pieza que completa el patrón. 10 problemas que se adaptan a tu nivel.',
+i_control:'Aparece el nombre de un color escrito en tinta de color. Elige el color de la TINTA, no la palabra. Teclas 1–4.',
+i_spatial:'¿Las dos figuras 3D son el mismo objeto girado o imágenes especulares? Teclas: ← igual, → espejo.',
+i_speed:'Cada símbolo tiene un número en la clave. Introduce el número del símbolo mostrado. 60 segundos: tantos como puedas.',
+i_attention:'Une los círculos alternando números y letras: 1 → A → 2 → B → 3 … lo más rápido posible.',
+i_numbers:'Descubre la regla de cada secuencia y elige el siguiente número. 8 problemas que se adaptan a tu nivel.',
+wait:'Espera al verde…',click:'¡CLIC!',early:'¡Demasiado pronto! Toca para repetir',watch:'Observa…',repeat:'Tu turno',same:'Igual',mirror:'Espejo',q_matrix:'¿Qué pieza completa el patrón?',q_series:'¿Qué número sigue?',q_stroop:'Elige el color de la TINTA',
+results:'Tu mapa cerebral',index:'Índice cognitivo',better:'Superior al {p}% de las personas',range:'Rango 95%',strong:'Punto fuerte',grow:'Margen de mejora',download:'Descargar tarjeta',share:'Compartir',challenge:'Reta a un amigo',retake:'Repetir',copied:'¡Enlace copiado!',shared:'Resultado compartido',tryIt:'Haz el test',last:'Tu último resultado',
+b1:'Excepcional',b2:'Muy alto',b3:'Medio-alto',b4:'Medio',b5:'Medio-bajo',b6:'Bajo',red:'ROJO',blue:'AZUL',green:'VERDE',yellow:'AMARILLO',span:'amplitud',testId:'ID del test',avg:'Media = 100',quit:'¿Salir del test? Se perderá el progreso.'},
+pt:{tagline:'Mapeie sua mente em 15 minutos. Oito tarefas baseadas na ciência cognitiva clássica, dificuldade adaptativa e um belo perfil cerebral.',start:'Começar o teste',meta:'8 tarefas · ~15 min · adaptativo · sem cadastro',privacy:'Roda 100% no seu navegador. Nada é enviado.',disclaimer:'Não é um teste de QI clínico. As pontuações são estimativas baseadas em normas aproximadas.',begin:'Começar',task:'Tarefa {n} de {t}',done:'Tarefa concluída',next:'Próxima',
+d_logic:'Lógica',d_numbers:'Números',d_memory:'Memória',d_spatial:'Espacial',d_speed:'Velocidade',d_attention:'Atenção',d_control:'Autocontrole',d_reflex:'Reflexos',
+i_reflex:'Espere o campo ficar verde e clique ou aperte Espaço o mais rápido possível. 5 rodadas. Não se antecipe.',
+i_memory:'Os blocos acendem um a um. Repita a sequência tocando-os na mesma ordem. Ela cresce a cada rodada.',
+i_logic:'Cada grade segue regras ocultas nas linhas. Encontre a peça que completa o padrão. 10 desafios que se adaptam ao seu nível.',
+i_control:'Aparece o nome de uma cor escrito em tinta colorida. Escolha a cor da TINTA, não a palavra. Teclas 1–4.',
+i_spatial:'As duas figuras 3D são o mesmo objeto girado ou imagens espelhadas? Teclas: ← igual, → espelhado.',
+i_speed:'Cada símbolo tem um número na chave. Digite o número do símbolo mostrado. 60 segundos — o máximo que puder.',
+i_attention:'Ligue os círculos alternando números e letras: 1 → A → 2 → B → 3 … o mais rápido possível.',
+i_numbers:'Descubra a regra de cada sequência e escolha o próximo número. 8 desafios que se adaptam ao seu nível.',
+wait:'Espere o verde…',click:'CLIQUE!',early:'Cedo demais! Toque para repetir',watch:'Observe…',repeat:'Sua vez',same:'Igual',mirror:'Espelhado',q_matrix:'Qual peça completa o padrão?',q_series:'Qual é o próximo?',q_stroop:'Escolha a cor da TINTA',
+results:'Seu mapa cerebral',index:'Índice cognitivo',better:'Acima de {p}% das pessoas',range:'Faixa de 95%',strong:'Ponto forte',grow:'Espaço para crescer',download:'Baixar cartão',share:'Compartilhar',challenge:'Desafiar um amigo',retake:'Refazer',copied:'Link copiado!',shared:'Resultado compartilhado',tryIt:'Faça o teste',last:'Seu último resultado',
+b1:'Excepcional',b2:'Muito alto',b3:'Médio-alto',b4:'Médio',b5:'Médio-baixo',b6:'Baixo',red:'VERMELHO',blue:'AZUL',green:'VERDE',yellow:'AMARELO',span:'amplitude',testId:'ID do teste',avg:'Média = 100',quit:'Sair do teste? O progresso será perdido.'},
+fr:{tagline:'Cartographiez votre esprit en 15 minutes. Huit épreuves issues des sciences cognitives classiques, une difficulté adaptative et un magnifique profil cérébral.',start:'Commencer le test',meta:'8 épreuves · ~15 min · adaptatif · sans inscription',privacy:'Fonctionne à 100 % dans votre navigateur. Rien n’est envoyé.',disclaimer:'Ce n’est pas un test de QI clinique. Les scores sont des estimations basées sur des normes approximatives.',begin:'C’est parti',task:'Épreuve {n} sur {t}',done:'Épreuve terminée',next:'Suivant',
+d_logic:'Logique',d_numbers:'Nombres',d_memory:'Mémoire',d_spatial:'Espace',d_speed:'Vitesse',d_attention:'Attention',d_control:'Contrôle de soi',d_reflex:'Réflexes',
+i_reflex:'Attendez que la zone devienne verte, puis cliquez ou appuyez sur Espace le plus vite possible. 5 essais. Pas d’anticipation.',
+i_memory:'Les blocs s’allument un par un. Reproduisez la séquence dans le même ordre. Elle s’allonge à chaque tour.',
+i_logic:'Chaque grille suit des règles cachées sur ses lignes. Trouvez la pièce qui complète le motif. 10 énigmes adaptées à votre niveau.',
+i_control:'Un nom de couleur s’affiche dans une encre colorée. Choisissez la couleur de l’ENCRE, pas le mot. Touches 1–4.',
+i_spatial:'Les deux formes 3D sont-elles le même objet tourné, ou des images miroir ? Touches : ← identique, → miroir.',
+i_speed:'Chaque symbole a un numéro dans la clé. Saisissez le numéro du symbole affiché. 60 secondes — un maximum !',
+i_attention:'Reliez les cercles en alternant chiffres et lettres : 1 → A → 2 → B → 3 … le plus vite possible.',
+i_numbers:'Trouvez la règle de chaque suite et choisissez le nombre suivant. 8 énigmes adaptées à votre niveau.',
+wait:'Attendez le vert…',click:'CLIQUEZ !',early:'Trop tôt ! Touchez pour réessayer',watch:'Observez…',repeat:'À vous',same:'Identique',mirror:'Miroir',q_matrix:'Quelle pièce complète le motif ?',q_series:'Quel nombre vient ensuite ?',q_stroop:'Choisissez la couleur de l’ENCRE',
+results:'Votre carte cérébrale',index:'Indice cognitif',better:'Supérieur à {p} % des gens',range:'Intervalle à 95 %',strong:'Point fort',grow:'Marge de progrès',download:'Télécharger la carte',share:'Partager',challenge:'Défier un ami',retake:'Recommencer',copied:'Lien copié !',shared:'Résultat partagé',tryIt:'Faire le test',last:'Votre dernier résultat',
+b1:'Exceptionnel',b2:'Très élevé',b3:'Moyen supérieur',b4:'Moyen',b5:'Moyen inférieur',b6:'Faible',red:'ROUGE',blue:'BLEU',green:'VERT',yellow:'JAUNE',span:'empan',testId:'ID du test',avg:'Moyenne = 100',quit:'Quitter le test ? La progression sera perdue.'},
+de:{tagline:'Kartiere deinen Geist in 15 Minuten. Acht Aufgaben aus der klassischen Kognitionswissenschaft, adaptive Schwierigkeit und ein wunderschönes Gehirnprofil.',start:'Test starten',meta:'8 Aufgaben · ~15 Min · adaptiv · ohne Anmeldung',privacy:'Läuft zu 100 % im Browser. Nichts wird hochgeladen.',disclaimer:'Kein klinischer IQ-Test. Die Werte sind Schätzungen auf Basis ungefährer Normen.',begin:'Los geht’s',task:'Aufgabe {n} von {t}',done:'Aufgabe geschafft',next:'Weiter',
+d_logic:'Logik',d_numbers:'Zahlen',d_memory:'Gedächtnis',d_spatial:'Räumlich',d_speed:'Tempo',d_attention:'Aufmerksamkeit',d_control:'Selbstkontrolle',d_reflex:'Reflexe',
+i_reflex:'Warte, bis das Feld grün wird, dann klicke oder drücke die Leertaste so schnell wie möglich. 5 Runden. Nicht zu früh!',
+i_memory:'Blöcke leuchten nacheinander auf. Tippe sie in derselben Reihenfolge an. Jede Runde wird die Folge länger.',
+i_logic:'Jedes Raster folgt verborgenen Regeln in den Zeilen. Finde das Teil, das das Muster vervollständigt. 10 Rätsel passen sich deinem Niveau an.',
+i_control:'Ein Farbwort erscheint in farbiger Schrift. Wähle die SCHRIFTFARBE, nicht das Wort. Tasten 1–4.',
+i_spatial:'Sind die beiden 3D-Formen dasselbe gedrehte Objekt oder Spiegelbilder? Tasten: ← gleich, → gespiegelt.',
+i_speed:'Jedes Symbol hat im Schlüssel eine Zahl. Gib die Zahl des angezeigten Symbols ein. 60 Sekunden — so viele wie möglich.',
+i_attention:'Verbinde die Kreise abwechselnd mit Zahlen und Buchstaben: 1 → A → 2 → B → 3 … so schnell wie möglich.',
+i_numbers:'Finde die Regel jeder Zahlenfolge und wähle die nächste Zahl. 8 Rätsel passen sich deinem Niveau an.',
+wait:'Warte auf Grün…',click:'KLICK!',early:'Zu früh! Tippen zum Wiederholen',watch:'Aufpassen…',repeat:'Du bist dran',same:'Gleich',mirror:'Gespiegelt',q_matrix:'Welches Teil vervollständigt das Muster?',q_series:'Welche Zahl kommt als Nächstes?',q_stroop:'Wähle die SCHRIFTFARBE',
+results:'Deine Gehirnkarte',index:'Kognitiver Index',better:'Besser als {p} % der Menschen',range:'95-%-Bereich',strong:'Stärke',grow:'Luft nach oben',download:'Karte herunterladen',share:'Teilen',challenge:'Freund herausfordern',retake:'Nochmal',copied:'Link kopiert!',shared:'Geteiltes Ergebnis',tryIt:'Selbst testen',last:'Dein letztes Ergebnis',
+b1:'Außergewöhnlich',b2:'Sehr hoch',b3:'Überdurchschnittlich',b4:'Durchschnittlich',b5:'Unterdurchschnittlich',b6:'Niedrig',red:'ROT',blue:'BLAU',green:'GRÜN',yellow:'GELB',span:'Spanne',testId:'Test-ID',avg:'Durchschnitt = 100',quit:'Test beenden? Der Fortschritt geht verloren.'},
+zh:{tagline:'15 分钟绘制你的大脑地图。八项基于经典认知科学的任务、自适应难度，生成一份精美的大脑档案。',start:'开始测试',meta:'8 项任务 · 约 15 分钟 · 自适应 · 无需注册',privacy:'完全在浏览器中运行，不上传任何数据。',disclaimer:'这不是临床智商测试。分数是基于近似常模的估计值。',begin:'开始',task:'第 {n} 项，共 {t} 项',done:'任务完成',next:'下一项',
+d_logic:'逻辑',d_numbers:'数字',d_memory:'记忆',d_spatial:'空间',d_speed:'速度',d_attention:'注意力',d_control:'自控力',d_reflex:'反应',
+i_reflex:'等待区域变绿，然后尽快点击或按空格键。共 5 轮，不要抢跑。',
+i_memory:'方块会依次亮起。按相同顺序点击重复该序列。每轮序列都会变长。',
+i_logic:'每个网格的行都遵循隐藏规则。找出能补全图案的那一块。10 道题会根据你的水平自适应调整。',
+i_control:'屏幕上会出现用彩色字体写的颜色词。请选择字体的颜色，而不是文字本身。也可使用 1–4 键。',
+i_spatial:'这两个 3D 形状是同一物体旋转后的样子，还是镜像？按键：← 相同，→ 镜像。',
+i_speed:'每个符号在对照表中对应一个数字。输入所示符号对应的数字。60 秒内越多越好。',
+i_attention:'按数字和字母交替连接圆圈：1 → A → 2 → B → 3 …… 越快越好。',
+i_numbers:'找出每个数列的规律并选择下一个数字。8 道题会根据你的水平自适应调整。',
+wait:'等待变绿…',click:'点击！',early:'太早了！点击重试',watch:'仔细看…',repeat:'轮到你了',same:'相同',mirror:'镜像',q_matrix:'哪一块能补全图案？',q_series:'下一个数是什么？',q_stroop:'选择字体颜色',
+results:'你的大脑地图',index:'认知指数',better:'高于 {p}% 的人',range:'95% 区间',strong:'最强项',grow:'提升空间',download:'下载卡片',share:'分享结果',challenge:'挑战朋友',retake:'重新测试',copied:'链接已复制！',shared:'分享的结果',tryIt:'亲自测试',last:'你上次的结果',
+b1:'卓越',b2:'非常高',b3:'中上',b4:'中等',b5:'中下',b6:'偏低',red:'红',blue:'蓝',green:'绿',yellow:'黄',span:'广度',testId:'测试 ID',avg:'平均 = 100',quit:'退出测试？进度将丢失。'},
+ja:{tagline:'15分で脳の地図を描こう。古典的な認知科学に基づく8つの課題、適応型の難易度、美しい脳プロフィール。',start:'テストを始める',meta:'8課題 · 約15分 · 適応型 · 登録不要',privacy:'すべてブラウザ内で動作し、データは送信されません。',disclaimer:'これは臨床的なIQテストではありません。スコアはおおよその基準に基づく推定値です。',begin:'スタート',task:'課題 {n} / {t}',done:'課題クリア',next:'次へ',
+d_logic:'論理',d_numbers:'数',d_memory:'記憶',d_spatial:'空間',d_speed:'速度',d_attention:'注意',d_control:'自制心',d_reflex:'反射',
+i_reflex:'画面が緑になったら、できるだけ速くクリックかスペースキーを押してください。5回。フライング禁止。',
+i_memory:'ブロックが順番に光ります。同じ順番でタップして再現してください。ラウンドごとに長くなります。',
+i_logic:'各グリッドの行には隠れたルールがあります。パターンを完成させるピースを選んでください。10問があなたのレベルに適応します。',
+i_control:'色の名前が色付きの文字で表示されます。単語ではなく文字の色を選んでください。1–4キーも使えます。',
+i_spatial:'2つの3D図形は同じ物体を回転させたものか、鏡像か？キー：← 同じ、→ 鏡像。',
+i_speed:'各記号には対応表の数字があります。表示された記号の数字を入力してください。60秒でできるだけ多く。',
+i_attention:'数字と文字を交互に結んでください：1 → A → 2 → B → 3 … できるだけ速く。',
+i_numbers:'各数列の規則を見つけ、次の数を選んでください。8問があなたのレベルに適応します。',
+wait:'緑を待って…',click:'クリック！',early:'早すぎ！タップで再挑戦',watch:'よく見て…',repeat:'あなたの番',same:'同じ',mirror:'鏡像',q_matrix:'パターンを完成させるのは？',q_series:'次の数は？',q_stroop:'文字の色を選んで',
+results:'あなたの脳マップ',index:'認知インデックス',better:'{p}% の人より高い',range:'95%範囲',strong:'最も強い分野',grow:'伸びしろ',download:'カードを保存',share:'結果を共有',challenge:'友達に挑戦',retake:'もう一度',copied:'リンクをコピーしました！',shared:'共有された結果',tryIt:'自分も受ける',last:'前回の結果',
+b1:'卓越',b2:'非常に高い',b3:'平均より上',b4:'平均',b5:'平均より下',b6:'低め',red:'あか',blue:'あお',green:'みどり',yellow:'きいろ',span:'スパン',testId:'テストID',avg:'平均 = 100',quit:'テストを終了しますか？進行状況は失われます。'},
+hi:{tagline:'15 मिनट में अपने दिमाग का नक्शा बनाइए। क्लासिक संज्ञानात्मक विज्ञान पर आधारित आठ कार्य, अनुकूली कठिनाई और एक शानदार ब्रेन प्रोफ़ाइल।',start:'टेस्ट शुरू करें',meta:'8 कार्य · ~15 मिनट · अनुकूली · बिना साइन-अप',privacy:'पूरी तरह आपके ब्राउज़र में चलता है। कुछ भी अपलोड नहीं होता।',disclaimer:'यह क्लिनिकल IQ टेस्ट नहीं है। स्कोर अनुमानित मानकों पर आधारित अनुमान हैं।',begin:'शुरू करें',task:'कार्य {n} / {t}',done:'कार्य पूरा',next:'अगला',
+d_logic:'तर्क',d_numbers:'संख्याएँ',d_memory:'स्मृति',d_spatial:'स्थानिक',d_speed:'गति',d_attention:'ध्यान',d_control:'आत्म-नियंत्रण',d_reflex:'प्रतिक्रिया',
+i_reflex:'क्षेत्र के हरा होने की प्रतीक्षा करें, फिर जितनी जल्दी हो सके क्लिक करें या स्पेस दबाएँ। 5 राउंड। पहले से न दबाएँ।',
+i_memory:'ब्लॉक एक-एक करके चमकेंगे। उसी क्रम में उन्हें टैप करके दोहराएँ। हर राउंड में क्रम लंबा होगा।',
+i_logic:'हर ग्रिड की पंक्तियाँ छिपे नियमों का पालन करती हैं। पैटर्न पूरा करने वाला टुकड़ा चुनें। 10 पहेलियाँ आपके स्तर के अनुसार बदलती हैं।',
+i_control:'रंगीन स्याही में एक रंग का नाम दिखेगा। शब्द नहीं, स्याही का रंग चुनें। कुंजियाँ 1–4 भी काम करती हैं।',
+i_spatial:'क्या दोनों 3D आकृतियाँ एक ही वस्तु घुमाई हुई हैं या दर्पण छवियाँ? कुंजियाँ: ← समान, → दर्पण।',
+i_speed:'कुंजी में हर प्रतीक की एक संख्या है। दिखाए गए प्रतीक की संख्या दर्ज करें। 60 सेकंड — जितने हो सकें।',
+i_attention:'संख्याओं और अक्षरों को बारी-बारी से जोड़ें: 1 → A → 2 → B → 3 … जितनी जल्दी हो सके।',
+i_numbers:'हर संख्या-क्रम का नियम खोजें और अगली संख्या चुनें। 8 पहेलियाँ आपके स्तर के अनुसार बदलती हैं।',
+wait:'हरे का इंतज़ार करें…',click:'क्लिक!',early:'बहुत जल्दी! फिर से टैप करें',watch:'ध्यान से देखें…',repeat:'आपकी बारी',same:'समान',mirror:'दर्पण',q_matrix:'कौन सा टुकड़ा पैटर्न पूरा करता है?',q_series:'अगली संख्या क्या है?',q_stroop:'स्याही का रंग चुनें',
+results:'आपका ब्रेन मैप',index:'संज्ञानात्मक सूचकांक',better:'{p}% लोगों से बेहतर',range:'95% सीमा',strong:'सबसे मज़बूत',grow:'सुधार की गुंजाइश',download:'कार्ड डाउनलोड करें',share:'परिणाम साझा करें',challenge:'दोस्त को चुनौती दें',retake:'फिर से करें',copied:'लिंक कॉपी हो गया!',shared:'साझा परिणाम',tryIt:'खुद टेस्ट दें',last:'आपका पिछला परिणाम',
+b1:'असाधारण',b2:'बहुत उच्च',b3:'औसत से ऊपर',b4:'औसत',b5:'औसत से नीचे',b6:'निम्न',red:'लाल',blue:'नीला',green:'हरा',yellow:'पीला',span:'स्पैन',testId:'टेस्ट ID',avg:'औसत = 100',quit:'टेस्ट छोड़ें? प्रगति खो जाएगी।'},
+ar:{tagline:'ارسم خريطة عقلك في 15 دقيقة. ثماني مهام مبنية على علم الإدراك الكلاسيكي، صعوبة تكيفية، وملف دماغي رائع.',start:'ابدأ الاختبار',meta:'8 مهام · ~15 دقيقة · تكيفي · بدون تسجيل',privacy:'يعمل بالكامل في متصفحك. لا يُرفع أي شيء.',disclaimer:'هذا ليس اختبار ذكاء سريريًا. الدرجات تقديرات مبنية على معايير تقريبية.',begin:'ابدأ',task:'المهمة {n} من {t}',done:'اكتملت المهمة',next:'التالي',
+d_logic:'المنطق',d_numbers:'الأرقام',d_memory:'الذاكرة',d_spatial:'المكاني',d_speed:'السرعة',d_attention:'الانتباه',d_control:'ضبط النفس',d_reflex:'ردّ الفعل',
+i_reflex:'انتظر حتى تصبح المساحة خضراء، ثم انقر أو اضغط المسافة بأسرع ما يمكن. 5 جولات. لا تستبق.',
+i_memory:'ستضيء المربعات واحدًا تلو الآخر. كرر التسلسل بالنقر عليها بنفس الترتيب. يطول التسلسل في كل جولة.',
+i_logic:'كل شبكة تتبع قواعد خفية في صفوفها. اعثر على القطعة التي تكمل النمط. 10 ألغاز تتكيف مع مستواك.',
+i_control:'ستظهر كلمة لون مكتوبة بحبر ملون. اختر لون الحبر وليس الكلمة. يمكنك استخدام المفاتيح 1–4.',
+i_spatial:'هل الشكلان ثلاثيا الأبعاد نفس الجسم بعد تدويره أم صورتان مرآتيتان؟ المفاتيح: ← متطابق، → مرآة.',
+i_speed:'لكل رمز رقم في المفتاح. أدخل رقم الرمز المعروض. 60 ثانية — أكبر عدد ممكن.',
+i_attention:'صِل الدوائر بالتناوب بين الأرقام والحروف: 1 → A → 2 → B → 3 … بأسرع ما يمكن.',
+i_numbers:'اكتشف قاعدة كل متتالية واختر الرقم التالي. 8 ألغاز تتكيف مع مستواك.',
+wait:'انتظر الأخضر…',click:'انقر!',early:'مبكر جدًا! انقر للإعادة',watch:'راقب…',repeat:'دورك',same:'متطابق',mirror:'مرآة',q_matrix:'أي قطعة تكمل النمط؟',q_series:'ما الرقم التالي؟',q_stroop:'اختر لون الحبر',
+results:'خريطة دماغك',index:'المؤشر الإدراكي',better:'أعلى من {p}% من الناس',range:'نطاق 95%',strong:'الأقوى',grow:'مجال للتحسن',download:'تنزيل البطاقة',share:'مشاركة النتيجة',challenge:'تحدَّ صديقًا',retake:'إعادة',copied:'تم نسخ الرابط!',shared:'نتيجة مشتركة',tryIt:'جرّب الاختبار',last:'نتيجتك السابقة',
+b1:'استثنائي',b2:'مرتفع جدًا',b3:'فوق المتوسط',b4:'متوسط',b5:'دون المتوسط',b6:'منخفض',red:'أحمر',blue:'أزرق',green:'أخضر',yellow:'أصفر',span:'المدى',testId:'معرّف الاختبار',avg:'المتوسط = 100',quit:'الخروج من الاختبار؟ سيضيع التقدم.'}
+};
+
+const I18N_EXTRA={
+en:{age_q:'How old are you?',age_sub:'Abilities change with age, so your scores are compared with your own age group.',age_skip:'Skip',privacy2:'🔒 Stays on your device.',practice:'Practice',go_real:'Practice over — now it counts!',p_same:'These were the SAME shape — just rotated.',p_mirror:'These were MIRROR images — no rotation can make them match.',cont:'Continue · task {n} of {t}',archetype:'Cognitive type',rare:'Rarer than 1 in {n} people',age_adj:'Age-adjusted · {a}',no_age:'Not age-adjusted',tab_warn:'You left the tab during: {x}. Those scores may be less accurate.',vs_intro:'Your friend scored {s}. Can you beat it?',you:'You',friend:'Friend',vs_win:'You win by {d} points!',vs_lose:'Your friend leads by {d} points',vs_tie:'A perfect tie!',brain_note:'Brain regions are illustrative: the areas most linked to each ability in neuroimaging research.',hover_hint:'drag to spin · hover a domain to light it up',
+ a_logic:'The Strategist',ad_logic:'You see hidden structure where others see noise.',a_numbers:'The Analyst',ad_numbers:'Numbers reveal their patterns to you.',a_spatial:'The Architect',ad_spatial:'You turn objects over in your mind with ease.',a_memory:'The Archivist',ad_memory:'Your mind holds sequences like a vault.',a_attention:'The Navigator',ad_attention:'You switch tracks without losing the thread.',a_speed:'The Processor',ad_speed:'Information flows through you at high bandwidth.',a_control:'The Stoic',ad_control:'Distractions bounce off your focus.',a_reflex:'The Pilot',ad_reflex:'Your hands move before the thought is finished.'},
+ru:{age_q:'Сколько тебе лет?',age_sub:'Способности меняются с возрастом, поэтому баллы сравниваются с твоей возрастной группой.',age_skip:'Пропустить',privacy2:'🔒 Остаётся на твоём устройстве.',practice:'Тренировка',go_real:'Тренировка окончена — теперь по-настоящему!',p_same:'Это была ОДНА И ТА ЖЕ фигура — просто повёрнутая.',p_mirror:'Это были ЗЕРКАЛЬНЫЕ отражения — никакой поворот их не совместит.',cont:'Продолжить · задание {n} из {t}',archetype:'Когнитивный тип',rare:'Реже, чем 1 из {n} человек',age_adj:'С поправкой на возраст · {a}',no_age:'Без поправки на возраст',tab_warn:'Ты уходил со вкладки во время: {x}. Эти баллы могут быть менее точными.',vs_intro:'Твой друг набрал {s}. Сможешь обойти?',you:'Ты',friend:'Друг',vs_win:'Ты победил с отрывом {d}!',vs_lose:'Друг впереди на {d}',vs_tie:'Идеальная ничья!',brain_note:'Зоны мозга условны: области, которые нейровизуализация чаще всего связывает с каждой способностью.',hover_hint:'крути мышкой · наведи на область, чтобы подсветить',
+ a_logic:'Стратег',ad_logic:'Ты видишь скрытую структуру там, где другие видят шум.',a_numbers:'Аналитик',ad_numbers:'Числа сами раскрывают тебе свои закономерности.',a_spatial:'Архитектор',ad_spatial:'Ты легко вращаешь объекты в уме.',a_memory:'Хранитель',ad_memory:'Твой разум держит последовательности, как сейф.',a_attention:'Навигатор',ad_attention:'Ты переключаешься, не теряя нити.',a_speed:'Процессор',ad_speed:'Информация проходит через тебя на высокой скорости.',a_control:'Стоик',ad_control:'Отвлекающие факторы отскакивают от твоего фокуса.',a_reflex:'Пилот',ad_reflex:'Руки действуют раньше, чем закончилась мысль.'},
+es:{age_q:'¿Cuántos años tienes?',age_sub:'Las capacidades cambian con la edad, así que tus puntuaciones se comparan con tu grupo de edad.',age_skip:'Omitir',privacy2:'🔒 Se queda en tu dispositivo.',practice:'Práctica',go_real:'Fin de la práctica: ¡ahora cuenta!',p_same:'Era la MISMA figura, solo girada.',p_mirror:'Eran imágenes ESPECULARES: ningún giro las hace coincidir.',cont:'Continuar · prueba {n} de {t}',archetype:'Tipo cognitivo',rare:'Más raro que 1 de cada {n} personas',age_adj:'Ajustado por edad · {a}',no_age:'Sin ajuste por edad',tab_warn:'Saliste de la pestaña durante: {x}. Esas puntuaciones pueden ser menos precisas.',vs_intro:'Tu amigo sacó {s}. ¿Puedes superarlo?',you:'Tú',friend:'Amigo',vs_win:'¡Ganas por {d} puntos!',vs_lose:'Tu amigo va {d} puntos por delante',vs_tie:'¡Empate perfecto!',brain_note:'Las regiones cerebrales son ilustrativas: áreas más asociadas a cada capacidad en estudios de neuroimagen.',hover_hint:'arrastra para girar · pasa el cursor por un área',
+ a_logic:'El Estratega',ad_logic:'Ves estructura oculta donde otros ven ruido.',a_numbers:'El Analista',ad_numbers:'Los números te revelan sus patrones.',a_spatial:'El Arquitecto',ad_spatial:'Giras objetos en tu mente con facilidad.',a_memory:'El Archivista',ad_memory:'Tu mente guarda secuencias como una bóveda.',a_attention:'El Navegante',ad_attention:'Cambias de pista sin perder el hilo.',a_speed:'El Procesador',ad_speed:'La información fluye por ti a gran velocidad.',a_control:'El Estoico',ad_control:'Las distracciones rebotan en tu concentración.',a_reflex:'El Piloto',ad_reflex:'Tus manos actúan antes de que termine el pensamiento.'},
+pt:{age_q:'Quantos anos você tem?',age_sub:'As habilidades mudam com a idade, então suas pontuações são comparadas com sua faixa etária.',age_skip:'Pular',privacy2:'🔒 Fica no seu dispositivo.',practice:'Treino',go_real:'Fim do treino — agora vale!',p_same:'Era a MESMA figura, só girada.',p_mirror:'Eram imagens ESPELHADAS — nenhuma rotação as faz coincidir.',cont:'Continuar · tarefa {n} de {t}',archetype:'Tipo cognitivo',rare:'Mais raro que 1 em {n} pessoas',age_adj:'Ajustado por idade · {a}',no_age:'Sem ajuste por idade',tab_warn:'Você saiu da aba durante: {x}. Essas pontuações podem ser menos precisas.',vs_intro:'Seu amigo fez {s}. Consegue superar?',you:'Você',friend:'Amigo',vs_win:'Você venceu por {d} pontos!',vs_lose:'Seu amigo está {d} pontos à frente',vs_tie:'Empate perfeito!',brain_note:'As regiões cerebrais são ilustrativas: áreas mais ligadas a cada habilidade em estudos de neuroimagem.',hover_hint:'arraste para girar · passe o cursor numa área',
+ a_logic:'O Estrategista',ad_logic:'Você vê estrutura oculta onde outros veem ruído.',a_numbers:'O Analista',ad_numbers:'Os números revelam seus padrões para você.',a_spatial:'O Arquiteto',ad_spatial:'Você gira objetos na mente com facilidade.',a_memory:'O Arquivista',ad_memory:'Sua mente guarda sequências como um cofre.',a_attention:'O Navegador',ad_attention:'Você troca de trilha sem perder o fio.',a_speed:'O Processador',ad_speed:'A informação flui por você em alta velocidade.',a_control:'O Estoico',ad_control:'As distrações ricocheteiam no seu foco.',a_reflex:'O Piloto',ad_reflex:'Suas mãos agem antes de o pensamento terminar.'},
+fr:{age_q:'Quel âge avez-vous ?',age_sub:'Les capacités évoluent avec l’âge : vos scores sont donc comparés à votre tranche d’âge.',age_skip:'Passer',privacy2:'🔒 Reste sur votre appareil.',practice:'Entraînement',go_real:'Fin de l’entraînement — maintenant, ça compte !',p_same:'C’était la MÊME forme, simplement tournée.',p_mirror:'C’étaient des images MIROIR — aucune rotation ne les superpose.',cont:'Continuer · épreuve {n} sur {t}',archetype:'Type cognitif',rare:'Plus rare que 1 personne sur {n}',age_adj:'Ajusté selon l’âge · {a}',no_age:'Non ajusté selon l’âge',tab_warn:'Vous avez quitté l’onglet pendant : {x}. Ces scores peuvent être moins fiables.',vs_intro:'Votre ami a obtenu {s}. Pouvez-vous faire mieux ?',you:'Vous',friend:'Ami',vs_win:'Vous gagnez de {d} points !',vs_lose:'Votre ami mène de {d} points',vs_tie:'Égalité parfaite !',brain_note:'Les régions cérébrales sont illustratives : zones les plus liées à chaque capacité en neuro-imagerie.',hover_hint:'glissez pour tourner · survolez un domaine',
+ a_logic:'Le Stratège',ad_logic:'Vous voyez une structure cachée là où d’autres voient du bruit.',a_numbers:'L’Analyste',ad_numbers:'Les nombres vous dévoilent leurs motifs.',a_spatial:'L’Architecte',ad_spatial:'Vous faites pivoter les objets mentalement avec aisance.',a_memory:'L’Archiviste',ad_memory:'Votre esprit garde les séquences comme un coffre-fort.',a_attention:'Le Navigateur',ad_attention:'Vous changez de piste sans perdre le fil.',a_speed:'Le Processeur',ad_speed:'L’information vous traverse à haut débit.',a_control:'Le Stoïque',ad_control:'Les distractions rebondissent sur votre concentration.',a_reflex:'Le Pilote',ad_reflex:'Vos mains agissent avant la fin de la pensée.'},
+de:{age_q:'Wie alt bist du?',age_sub:'Fähigkeiten verändern sich mit dem Alter, daher werden deine Werte mit deiner Altersgruppe verglichen.',age_skip:'Überspringen',privacy2:'🔒 Bleibt auf deinem Gerät.',practice:'Übung',go_real:'Übung vorbei — jetzt zählt es!',p_same:'Das war DIESELBE Form — nur gedreht.',p_mirror:'Das waren SPIEGELBILDER — keine Drehung bringt sie zur Deckung.',cont:'Fortsetzen · Aufgabe {n} von {t}',archetype:'Kognitiver Typ',rare:'Seltener als 1 von {n} Menschen',age_adj:'Altersnormiert · {a}',no_age:'Nicht altersnormiert',tab_warn:'Du hast den Tab verlassen während: {x}. Diese Werte sind evtl. ungenauer.',vs_intro:'Dein Freund hat {s} erreicht. Schaffst du mehr?',you:'Du',friend:'Freund',vs_win:'Du gewinnst mit {d} Punkten!',vs_lose:'Dein Freund führt mit {d} Punkten',vs_tie:'Perfektes Unentschieden!',brain_note:'Gehirnregionen sind illustrativ: Areale, die in der Bildgebung am stärksten mit der Fähigkeit verknüpft sind.',hover_hint:'ziehen zum Drehen · Bereich überfahren',
+ a_logic:'Der Stratege',ad_logic:'Du siehst verborgene Struktur, wo andere Rauschen sehen.',a_numbers:'Der Analytiker',ad_numbers:'Zahlen verraten dir ihre Muster.',a_spatial:'Der Architekt',ad_spatial:'Du drehst Objekte mühelos im Kopf.',a_memory:'Der Archivar',ad_memory:'Dein Geist bewahrt Abfolgen wie ein Tresor.',a_attention:'Der Navigator',ad_attention:'Du wechselst die Spur, ohne den Faden zu verlieren.',a_speed:'Der Prozessor',ad_speed:'Informationen fließen mit hoher Bandbreite durch dich.',a_control:'Der Stoiker',ad_control:'Ablenkungen prallen an deinem Fokus ab.',a_reflex:'Der Pilot',ad_reflex:'Deine Hände handeln, bevor der Gedanke zu Ende ist.'},
+zh:{age_q:'你多大了？',age_sub:'能力会随年龄变化，因此你的分数将与同龄人比较。',age_skip:'跳过',privacy2:'🔒 数据只保存在你的设备上。',practice:'练习',go_real:'练习结束——现在开始计分！',p_same:'这是同一个形状，只是旋转了。',p_mirror:'这是镜像——任何旋转都无法让它们重合。',cont:'继续 · 第 {n} 项，共 {t} 项',archetype:'认知类型',rare:'比 {n} 人中的 1 人还稀有',age_adj:'已按年龄校正 · {a}',no_age:'未按年龄校正',tab_warn:'你在以下任务中离开了页面：{x}。这些分数可能不够准确。',vs_intro:'你的朋友得了 {s} 分。你能超过吗？',you:'你',friend:'朋友',vs_win:'你赢了 {d} 分！',vs_lose:'朋友领先 {d} 分',vs_tie:'完美平局！',brain_note:'脑区仅为示意：神经影像研究中与各能力最相关的区域。',hover_hint:'拖动旋转 · 悬停领域以点亮脑区',
+ a_logic:'战略家',ad_logic:'别人看到噪音，你看到隐藏的结构。',a_numbers:'分析师',ad_numbers:'数字向你揭示它们的规律。',a_spatial:'建筑师',ad_spatial:'你能轻松地在脑中旋转物体。',a_memory:'档案师',ad_memory:'你的头脑像保险库一样保存序列。',a_attention:'领航员',ad_attention:'你切换轨道而不丢失线索。',a_speed:'处理器',ad_speed:'信息以高带宽流过你的大脑。',a_control:'斯多葛',ad_control:'干扰无法撼动你的专注。',a_reflex:'飞行员',ad_reflex:'念头还没结束，你的手已经行动。'},
+ja:{age_q:'あなたの年齢は？',age_sub:'能力は年齢とともに変化するため、スコアは同年代と比較されます。',age_skip:'スキップ',privacy2:'🔒 データは端末内に保存されます。',practice:'練習',go_real:'練習終了 — ここから本番！',p_same:'同じ図形を回転させたものでした。',p_mirror:'鏡像でした — どう回転しても重なりません。',cont:'続ける · 課題 {n} / {t}',archetype:'認知タイプ',rare:'{n} 人に 1 人より希少',age_adj:'年齢補正済み · {a}',no_age:'年齢補正なし',tab_warn:'次の課題中にタブを離れました：{x}。これらのスコアは精度が下がる可能性があります。',vs_intro:'友達のスコアは {s}。超えられる？',you:'あなた',friend:'友達',vs_win:'{d} 点差であなたの勝ち！',vs_lose:'友達が {d} 点リード',vs_tie:'完全な引き分け！',brain_note:'脳の領域はイメージです：脳画像研究で各能力と最も関連する部位。',hover_hint:'ドラッグで回転 · 項目にカーソルで点灯',
+ a_logic:'ストラテジスト',ad_logic:'他人がノイズを見る所に、隠れた構造を見抜く。',a_numbers:'アナリスト',ad_numbers:'数字があなたにパターンを明かす。',a_spatial:'アーキテクト',ad_spatial:'頭の中で物体を自在に回転できる。',a_memory:'アーキビスト',ad_memory:'金庫のように系列を記憶する。',a_attention:'ナビゲーター',ad_attention:'糸を見失わずに切り替えられる。',a_speed:'プロセッサー',ad_speed:'情報が高速であなたの中を流れる。',a_control:'ストア派',ad_control:'雑念はあなたの集中に弾き返される。',a_reflex:'パイロット',ad_reflex:'考え終わる前に手が動く。'},
+hi:{age_q:'आपकी उम्र क्या है?',age_sub:'क्षमताएँ उम्र के साथ बदलती हैं, इसलिए आपके स्कोर की तुलना आपके आयु-वर्ग से होती है।',age_skip:'छोड़ें',privacy2:'🔒 यह आपके डिवाइस पर ही रहता है।',practice:'अभ्यास',go_real:'अभ्यास खत्म — अब असली परीक्षा!',p_same:'यह एक ही आकृति थी — बस घुमाई हुई।',p_mirror:'ये दर्पण छवियाँ थीं — कोई भी घुमाव इन्हें मिला नहीं सकता।',cont:'जारी रखें · कार्य {n} / {t}',archetype:'संज्ञानात्मक प्रकार',rare:'{n} में से 1 व्यक्ति से भी दुर्लभ',age_adj:'आयु-समायोजित · {a}',no_age:'आयु-समायोजित नहीं',tab_warn:'आपने इन कार्यों के दौरान टैब छोड़ा: {x}। ये स्कोर कम सटीक हो सकते हैं।',vs_intro:'आपके दोस्त ने {s} स्कोर किया। क्या आप आगे निकल सकते हैं?',you:'आप',friend:'दोस्त',vs_win:'आप {d} अंकों से जीते!',vs_lose:'दोस्त {d} अंकों से आगे है',vs_tie:'बिल्कुल बराबरी!',brain_note:'मस्तिष्क क्षेत्र उदाहरणात्मक हैं: न्यूरोइमेजिंग शोध में हर क्षमता से सबसे जुड़े क्षेत्र।',hover_hint:'घुमाने के लिए खींचें · किसी क्षेत्र पर होवर करें',
+ a_logic:'रणनीतिकार',ad_logic:'जहाँ दूसरे शोर देखते हैं, आप छिपी संरचना देखते हैं।',a_numbers:'विश्लेषक',ad_numbers:'संख्याएँ आपको अपने पैटर्न बता देती हैं।',a_spatial:'वास्तुकार',ad_spatial:'आप वस्तुओं को मन में आसानी से घुमाते हैं।',a_memory:'अभिलेखपाल',ad_memory:'आपका मन क्रमों को तिजोरी की तरह सहेजता है।',a_attention:'नाविक',ad_attention:'आप धागा खोए बिना रास्ता बदलते हैं।',a_speed:'प्रोसेसर',ad_speed:'जानकारी आपके भीतर तेज़ी से बहती है।',a_control:'स्टोइक',ad_control:'भटकाव आपके फ़ोकस से टकराकर लौट जाते हैं।',a_reflex:'पायलट',ad_reflex:'विचार पूरा होने से पहले ही हाथ चल पड़ते हैं।'},
+ar:{age_q:'كم عمرك؟',age_sub:'تتغير القدرات مع العمر، لذا تُقارن درجاتك بفئتك العمرية.',age_skip:'تخطٍّ',privacy2:'🔒 تبقى البيانات على جهازك.',practice:'تدريب',go_real:'انتهى التدريب — الآن تُحتسب النتائج!',p_same:'كان الشكل نفسه، لكنه مُدار فقط.',p_mirror:'كانتا صورتين مرآتيتين — لا يمكن لأي تدوير أن يطابقهما.',cont:'متابعة · المهمة {n} من {t}',archetype:'النمط الإدراكي',rare:'أندر من 1 من كل {n} أشخاص',age_adj:'معدّل حسب العمر · {a}',no_age:'غير معدّل حسب العمر',tab_warn:'غادرت علامة التبويب أثناء: {x}. قد تكون هذه الدرجات أقل دقة.',vs_intro:'حصل صديقك على {s}. هل يمكنك التفوق عليه؟',you:'أنت',friend:'صديق',vs_win:'فزت بفارق {d} نقاط!',vs_lose:'صديقك متقدم بـ {d} نقاط',vs_tie:'تعادل تام!',brain_note:'مناطق الدماغ توضيحية: المناطق الأكثر ارتباطًا بكل قدرة في أبحاث التصوير العصبي.',hover_hint:'اسحب للتدوير · مرّر على مجال لإضاءته',
+ a_logic:'الاستراتيجي',ad_logic:'ترى بنية خفية حيث يرى الآخرون ضجيجًا.',a_numbers:'المحلل',ad_numbers:'تكشف لك الأرقام أنماطها.',a_spatial:'المعماري',ad_spatial:'تدير الأجسام في ذهنك بسهولة.',a_memory:'الحافظ',ad_memory:'يحفظ عقلك التسلسلات كخزنة.',a_attention:'الملّاح',ad_attention:'تبدّل المسار دون أن تفقد الخيط.',a_speed:'المعالج',ad_speed:'تتدفق المعلومات عبرك بسرعة عالية.',a_control:'الرواقي',ad_control:'ترتد المشتتات عن تركيزك.',a_reflex:'الطيار',ad_reflex:'تتحرك يداك قبل أن تكتمل الفكرة.'}
+};
+for(const k in I18N_EXTRA)Object.assign(I18N[k],I18N_EXTRA[k]);
+let L='en';
+function t(k,v){let s=(I18N[L]&&I18N[L][k])??I18N.en[k]??k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s}
+
+/* ---------------------------- utils ---------------------------- */
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+let rng=Math.random;
+const R=()=>rng(),ri=n=>Math.floor(R()*n),pick=a=>a[ri(a.length)];
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=ri(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function evTime(e){const ts=e&&e.timeStamp;return ts>0&&ts<performance.now()+1000?ts:performance.now()}
+function Phi(z){const t=1/(1+.2316419*Math.abs(z)),d=.3989423*Math.exp(-z*z/2),p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p}
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer=matchMedia('(pointer:fine)').matches;
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm=v=>{const l=Math.hypot(v[0],v[1],v[2]);return[v[0]/l,v[1]/l,v[2]/l]};
+function hexA(h,a){const n=parseInt(h.slice(1),16);return`rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
+
+/* lifecycle: every screen clears the previous screen's timers, loops & key handlers */
+const live={timers:new Set(),keys:[],loops:new Set(),disp:[]};
+function later(fn,ms){const id=setTimeout(()=>{live.timers.delete(id);fn()},ms);live.timers.add(id);return id}
+function every(fn,ms){const id=setInterval(fn,ms);live.timers.add(id);return id}
+function onKey(fn){live.keys.push(fn)}
+function onClean(fn){live.disp.push(fn)}
+function loop(fn){const h={on:true};live.loops.add(h);let last=performance.now();const f=now=>{if(!h.on)return;const dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;fn(now,dt);requestAnimationFrame(f)};requestAnimationFrame(f);return h}
+document.addEventListener('keydown',e=>{if(e.repeat||e.target.tagName==='SELECT')return;for(const f of live.keys)f(e)});
+function cleanup(){live.timers.forEach(id=>{clearTimeout(id);clearInterval(id)});live.timers.clear();live.keys=[];live.loops.forEach(h=>h.on=false);live.loops.clear();live.disp.forEach(f=>{try{f()}catch(e){}});live.disp=[]}
+const app=$('#app');
+let current=null;
+function show(html){cleanup();app.innerHTML='<section class="screen">'+html+'</section>';window.scrollTo(0,0);return app.firstElementChild}
+
+/* fx & "physics" */
+function burst(x,y,col){col=col||'#5ef2ff';for(let i=0;i<16;i++){const s=document.createElement('i');s.className='spark';const a=Math.random()*6.283,d=30+Math.random()*70;s.style.cssText=`left:${x-3}px;top:${y-3}px;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;background:${col};color:${col}`;document.body.appendChild(s);setTimeout(()=>s.remove(),750)}}
+function burstEl(el,col){const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,col)}
+const buzz=()=>{try{navigator.vibrate&&navigator.vibrate(35)}catch(e){}};
+function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1800)}
+function tilt(el,max){if(!finePointer||reduceMotion)return;el.classList.add('tilt');el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(900px) rotateX(${(-py*max).toFixed(2)}deg) rotateY(${(px*max).toFixed(2)}deg) translateY(-3px)`;el.style.setProperty('--mx',(e.clientX-r.left)+'px');el.style.setProperty('--my',(e.clientY-r.top)+'px')});el.addEventListener('pointerleave',()=>el.style.transform='')}
+function magnet(el){if(!finePointer||reduceMotion)return;el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect();el.style.transform=`translate(${((e.clientX-r.left)/r.width-.5)*12}px,${((e.clientY-r.top)/r.height-.5)*10}px)`});el.addEventListener('pointerleave',()=>el.style.transform='')}
+(function(){const g=$('#glowc');if(!finePointer){g.style.display='none';return}addEventListener('pointermove',e=>{g.style.transform=`translate3d(${e.clientX}px,${e.clientY}px,0)`},{passive:true})})();
+
+/* sound (WebAudio, no files) */
+const sfx=(()=>{let ac,on=store.get('nm_mute')!=='1';
+  function tone(f,d=.12,type='sine',v=.08,when=0){if(!on)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const t0=ac.currentTime+when,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t0);g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+d);o.connect(g).connect(ac.destination);o.start(t0);o.stop(t0+d+.03)}catch(e){}}
+  return{tone,ok(){tone(660,.09,'sine',.07);tone(990,.14,'sine',.05,.06)},bad(){tone(150,.2,'triangle',.09)},tick(){tone(1250,.04,'sine',.035)},
+    combo(n){tone(520+Math.min(n,12)*60,.08,'sine',.05)},
+    win(){[523,659,784,1047].forEach((f,i)=>tone(f,.4,'sine',.055,i*.09))},toggle(){on=!on;store.set('nm_mute',on?'0':'1');return on},get on(){return on}};})();
+
+/* ---------------------------- icons ---------------------------- */
+const ICON={logic:'M4 4h16v16H4zM9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16',numbers:'M18 5H6l6 7-6 7h12',memory:'M4 4h7v7H4zM13 13h7v7h-7zM13 4h7v7h-7z',
+  spatial:'M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5',speed:'M13 2L4 14h7l-1 8 9-12h-7z',
+  attention:'M12 3v4M12 17v4M3 12h4M17 12h4M12 8a4 4 0 1 0 .01 0',control:'M8 3h8l5 5v8l-5 5H8l-5-5V8zM8 12h8',reflex:'M3 12h4l2-6 4 12 2-6h6',
+  age:'M12 7v5l3 2M12 3a9 9 0 1 0 .01 0'};
+const icon=id=>`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${ICON[id]}"/></svg>`;
+const SND_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4zM16.5 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11"/></svg>';
+const SND_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4zM16 9.5l5 5M21 9.5l-5 5"/></svg>';
+
+/* ---------------------------- config ---------------------------- */
+const ORDER=['reflex','memory','logic','control','spatial','speed','attention','numbers'];
+const RADAR=['logic','numbers','spatial','memory','attention','speed','control','reflex'];
+const DCOL={logic:'#5ef2ff',numbers:'#5b8cff',spatial:'#a77bff',memory:'#ff5fd2',attention:'#ffc65c',speed:'#3ddc97',control:'#ff7a6b',reflex:'#c6ff6b'};
+const METHOD={reflex:'Simple reaction time',memory:'Corsi block-tapping',logic:'Raven-style matrices',control:'Stroop interference',spatial:'Shepard–Metzler rotation',speed:'Digit-symbol coding',attention:'Trail Making B',numbers:'Number series'};
+/* g-loadings used as composite weights + average subtest intercorrelation */
+const WEIGHT={logic:.80,numbers:.72,spatial:.65,memory:.60,speed:.55,attention:.50,control:.45,reflex:.30};
+const RHO=.30, RELIABILITY=.88;
+/* age bands & cross-sectional decline per decade after ~22 (SD units; after Salthouse 2009/2010) */
+const AGES=[['16–24',20],['25–34',30],['35–44',40],['45–54',50],['55–64',60],['65+',70]];
+const AGE_SLOPE={speed:.28,attention:.24,reflex:.20,spatial:.20,logic:.20,memory:.18,control:.16,numbers:.15};
+const ageAdj=(id,z,ai)=>ai==null||ai<0||!AGES[ai]?z:z+AGE_SLOPE[id]*Math.max(0,AGES[ai][1]-22)/10;
+
+/* seed: same seed => same puzzles (challenge links) */
+const params=new URLSearchParams(location.search);
+const newSeed=()=>Array.from({length:5},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+function parseScores(s){if(!s)return null;const v=String(s).split('.').map(Number);if(v.length!==ORDER.length||!v.every(n=>Number.isFinite(n)&&n>=40&&n<=160))return null;const o={};ORDER.forEach((id,i)=>o[id]=Math.round(v[i]));return o}
+let SEED=(params.get('seed')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+let CHALLENGE=!!SEED; if(!SEED)SEED=newSeed();
+let VS=parseScores(params.get('vs'));
+let state={i:0,res:{},age:null,flags:{}};
+let taskActive=null;
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&taskActive){state.flags=state.flags||{};state.flags[taskActive]=1}});
+
+/* =====================================================================
+   PSYCHOMETRICS
+   ===================================================================== */
+/* EAP ability estimate, 3PL-style model with guessing c, N(0,1) prior */
+function eap(resp,c){let s0=0,s1=0,s2=0;for(let th=-4;th<=4.0001;th+=.05){let Lk=Math.exp(-th*th/2);for(const r of resp){const p=c+(1-c)/(1+Math.exp(-1.6*(th-r.b)));Lk*=r.x?p:1-p}s0+=Lk;s1+=th*Lk;s2+=th*th*Lk}const m=s1/s0;return{theta:m,se:Math.sqrt(Math.max(0,s2/s0-m*m))}}
+/* weighted composite of correlated z-scores, rescaled to unit variance */
+function composite(zs){let S=0,sw=0,sw2=0;for(const id in WEIGHT){S+=WEIGHT[id]*zs[id];sw+=WEIGHT[id];sw2+=WEIGHT[id]**2}return S/Math.sqrt(sw2+RHO*(sw*sw-sw2))}
+const bandOf=iq=>iq>=130?'b1':iq>=120?'b2':iq>=110?'b3':iq>=90?'b4':iq>=80?'b5':'b6';
+
+/* =====================================================================
+   3D PARTICLE BRAIN
+   ===================================================================== */
+const Brain=(()=>{
+  const cache={},sprites={},BASE='#7d9bff';
+  function region(x,y,z){
+    if(z<-.6)return'speed';                                    // occipital: visual processing
+    if(z>.48)return'logic';                                     // prefrontal
+    if(z>.12)return y>.34?'attention':'control';                // FEF / ventrolateral PFC + ACC
+    if(z>-.16)return'reflex';                                   // sensorimotor strip
+    return y>.38?'spatial':'numbers';                           // superior parietal / intraparietal (temporal lobe → memory)
+  }
+  function build(N){
+    if(cache[N])return cache[N];
+    const r=mulberry32(20261015),X=new Float32Array(N),Y=new Float32Array(N),Z=new Float32Array(N),PH=new Float32Array(N),BR=new Float32Array(N),REG=new Array(N);
+    /* meandering gyri: sulci are where this pattern dips */
+    const gyri=(a,b,c)=>Math.sin(12*a+5*Math.sin(6*c))*Math.cos(11*b+4*Math.sin(5*a))+.55*Math.sin(14*c+7*b+3*Math.sin(4*a));
+    const sph=()=>{const u=r()*2-1,th=r()*6.2832,s=Math.sqrt(1-u*u);return[s*Math.cos(th),u,s*Math.sin(th)]};
+    let n=0,guard=0;
+    while(n<N&&guard++<N*40){
+      const k=r();let x,y,z,reg=null,br=1;
+      if(k<.13){ /* cerebellum with folia */
+        const[dx,dy,dz]=sph();if(dy>.4)continue;
+        x=dx*.52;y=-.5+dy*.2;z=-.6+dz*.3;reg='reflex';
+        br=.45+.55*Math.abs(Math.sin(dy*34+dz*6));
+      }else if(k<.16){ /* brainstem */
+        const a=r()*6.2832,h=r();x=Math.cos(a)*.11*(1-h*.25);z=-.22-h*.12+Math.sin(a)*.11;y=-.38-h*.6;br=.7;
+      }else if(k<.37){ /* temporal lobes: separate, below the Sylvian fissure */
+        const[dx,dy,dz]=sph(),side=r()<.5?-1:1;if(side*dx<-.3&&r()<.85)continue;
+        const g=gyri(dx,dy,dz);if(g<-.45&&r()<.75)continue;
+        const bump=1+.05*g;x=side*(.47+dx*.27*bump);y=-.36+dy*.19*bump;z=.08+dz*.5*bump;
+        if(z>.38)y+=(z-.38)*.25;
+        reg='memory';br=.55+.45*clamp((g+1.2)/2,0,1);
+      }else{ /* cerebral hemispheres */
+        const[dx,dy,dz]=sph(),side=r()<.5?-1:1;
+        if(side*dx<-.5&&r()<.8)continue; /* thin out the hidden medial wall */
+        const g=gyri(dx*1.1,dy*1.1,dz*1.1);
+        if(g<-.45&&r()<.72)continue;      /* sulci → visible grooves */
+        const bump=1+.05*g;
+        x=side*.37+dx*.43*bump;y=.02+dy*.68*bump;z=dz*1.0*bump;
+        if(y<-.16)y=-.16+(y+.16)*.45;     /* flatter base */
+        if(z<-.55){x*=1-(-.55-z)*.5;y*=1-(-.55-z)*.3} /* occipital pole */
+        if(z>.6)y*=1-(z-.6)*.35;          /* frontal pole */
+        if(Math.abs(x)>.5&&y<-.04&&z>-.3&&z<.62&&r()<.9)continue; /* Sylvian fissure */
+        if(Math.abs(z-(.02-.28*y))<.03&&y>.05&&r()<.85)continue;  /* central sulcus */
+        if(Math.abs(x)<.06&&y>.25&&r()<.85)continue;              /* longitudinal fissure */
+        reg=region(x,y,z);br=.5+.5*clamp((g+1.2)/2,0,1);
+      }
+      X[n]=x;Y[n]=y+.1;Z[n]=z;REG[n]=reg;BR[n]=br;PH[n]=r()*6.2832;n++;
+    }
+    const cen={};for(const id in DCOL)cen[id]=[0,0,0,0];
+    for(let i=0;i<n;i++){const c=cen[REG[i]];if(c&&!(REG[i]==='reflex'&&Y[i]<-.2)){c[0]+=X[i];c[1]+=Y[i];c[2]+=Z[i];c[3]++}}
+    for(const id in cen){const c=cen[id];cen[id]=c[3]?[c[0]/c[3],c[1]/c[3],c[2]/c[3]]:[0,0,0]}
+    return cache[N]={N:n,X,Y,Z,REG,PH,BR,cen};
+  }
+  function sprite(col){if(sprites[col])return sprites[col];const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d'),g=x.createRadialGradient(16,16,0,16,16,16);
+    g.addColorStop(0,'#ffffff');g.addColorStop(.16,col);g.addColorStop(.45,hexA(col,.3));g.addColorStop(1,hexA(col,0));x.fillStyle=g;x.fillRect(0,0,32,32);return sprites[col]=c}
+  function render(x,W,H,G,o,now){
+    const cy=Math.cos(o.yaw),sy=Math.sin(o.yaw),cp=Math.cos(o.pitch),sp=Math.sin(o.pitch);
+    const S=Math.min(W,H)*.42,F=3.4,ox=W/2,oy=H/2,tt=now/1000,ss=S/200;
+    const proj=(px,py,pz)=>{const rx=px*cy+pz*sy;let rz=-px*sy+pz*cy;const ry=py*cp-rz*sp;rz=py*sp+rz*cp;const p=F/(F-rz);return[ox+rx*S*p,oy-ry*S*p,rz,p]};
+    x.globalCompositeOperation='lighter';
+    const waves=o.waves||[];
+    for(let i=0;i<G.N;i++){
+      const px=G.X[i],py=G.Y[i],pz=G.Z[i];
+      const rx=px*cy+pz*sy;let rz=-px*sy+pz*cy;const ry=py*cp-rz*sp;rz=py*sp+rz*cp;
+      const p=F/(F-rz),d=clamp((rz+1.05)/2.1,0,1),reg=G.REG[i];
+      let b=0;for(const w of waves){const dd=Math.hypot(px-w.x,py-w.y,pz-w.z)-w.r;b+=Math.exp(-dd*dd*70)*w.a}
+      let lvl,col;
+      if(o.mode==='hero'){
+        lvl=.6+b*1.5;col=reg&&b>.18?DCOL[reg]:BASE;
+        if(o.focus){if(reg===o.focus){lvl=1.1+.25*Math.sin(tt*4+G.PH[i]);col=DCOL[reg]}else lvl*=.4}
+      }else{
+        const v=reg?o.lv[reg]:.18;
+        lvl=.16+.84*v*(.82+.18*Math.sin(tt*2.2+G.PH[i]))+b*.9;col=reg?DCOL[reg]:BASE;
+        if(o.focus){if(reg===o.focus)lvl=1.3+.25*Math.sin(tt*4+G.PH[i]);else lvl*=.25}
+      }
+      const a=Math.min(1,(.1+.9*d*d)*lvl*G.BR[i]);
+      if(a<.02)continue;
+      const sz=(1.05+2.3*d)*p*ss*(1+b*.7);
+      x.globalAlpha=a;x.drawImage(sprite(col),rx*S*p+ox-sz*2,oy-ry*S*p-sz*2,sz*4,sz*4);
+    }
+    x.globalAlpha=1;x.globalCompositeOperation='source-over';
+    if(o.labels&&o.focus){
+      x.font=`600 ${Math.max(10,Math.round(S*.068))}px ${getComputedStyle(document.body).fontFamily}`;x.textBaseline='middle';
+      for(const id in o.labels){
+        const c=G.cen[id];if(!c)continue;const[sx,sy2,z]=proj(c[0]*1.18,c[1]*1.18,c[2]*1.12);
+        if(o.focus!==id)continue;const al=1;
+        x.globalAlpha=al;x.fillStyle=DCOL[id];x.beginPath();x.arc(sx,sy2,3,0,6.283);x.fill();
+        x.textAlign=sx<ox?'right':'left';const tx=sx+(sx<ox?-8:8);
+        x.lineWidth=3;x.strokeStyle='rgba(4,5,11,.85)';x.strokeText(o.labels[id],tx,sy2);x.fillStyle='#fff';x.fillText(o.labels[id],tx,sy2);
+      }
+      x.globalAlpha=1;
+    }
+  }
+  function mount(cv,opt){
+    const G=build(innerWidth<700?2000:3800),x=cv.getContext('2d');
+    const st={yaw:-1.35,pitch:.2,vy:.2,drag:false,lx:0,ly:0,waves:[],focus:null,lv:opt.lv,mode:opt.mode,labels:opt.labels,next:0};
+    let W=0,H=0,dpr=1,visible=true;
+    cv.addEventListener('pointerdown',e=>{st.drag=true;st.lx=e.clientX;st.ly=e.clientY;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+    cv.addEventListener('pointermove',e=>{if(!st.drag)return;const dx=e.clientX-st.lx;st.yaw+=dx*.009;st.vy=clamp(dx*.009*30,-6,6);st.pitch=clamp(st.pitch+(e.clientY-st.ly)*.005,-.5,.9);st.lx=e.clientX;st.ly=e.clientY});
+    const up=()=>{st.drag=false};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+    if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>{visible=es[0].isIntersecting});io.observe(cv);onClean(()=>io.disconnect())}
+    const pickWave=()=>{let i=Math.floor(Math.random()*G.N);if(st.mode!=='hero'&&st.lv){for(let k=0;k<12;k++){const j=Math.floor(Math.random()*G.N),r=G.REG[j];if(r&&Math.random()<st.lv[r]){i=j;break}}}return{x:G.X[i],y:G.Y[i],z:G.Z[i],r:0,a:1}};
+    loop((now,dt)=>{
+      if(!visible||document.hidden)return;
+      dpr=Math.min(devicePixelRatio||1,2);const w=cv.clientWidth,h=cv.clientHeight;if(!w)return;
+      if(Math.round(w*dpr)!==cv.width||Math.round(h*dpr)!==cv.height){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}W=w;H=h;
+      if(!st.drag&&!reduceMotion){st.vy+=(.2-st.vy)*Math.min(1,dt*1.6);st.yaw+=st.vy*dt}
+      for(const w of st.waves){w.r+=dt*.85;w.a=Math.max(0,1-w.r/2)}st.waves=st.waves.filter(w=>w.a>0);
+      if(now>st.next&&!reduceMotion){st.waves.push(pickWave());st.next=now+(st.mode==='hero'?900:1500)+Math.random()*900}
+      x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);render(x,W,H,G,st,now);
+    });
+    return st;
+  }
+  function drawStatic(x,x0,y0,size,lv){const G=build(3800);x.save();x.translate(x0,y0);render(x,size,size,G,{yaw:-1.35,pitch:.2,mode:'result',lv,waves:[]},0);x.restore()}
+  return{mount,drawStatic};
+})();
+const levels=sc=>{const o={};for(const id in DCOL)o[id]=clamp((sc[id]-55)/75,.06,1);return o};
+
+/* =====================================================================
+   TESTS — each is (stage, done) => void ; done({z, raw})
+   ===================================================================== */
+const TESTS={};
+
+/* 1. Simple reaction time ------------------------------------------- */
+TESTS.reflex=(S,done)=>{
+  const N=5,times=[];let early=0,phase='',t0=0,tid=0,touch=0;
+  S.innerHTML=`<div class="hud mono"><span>${t('d_reflex')}</span><span><b id="cnt">0</b> / ${N}</span></div>
+    <div class="rt" id="pad"><div class="rt-big" id="msg"></div><div class="rt-sub mono" id="sub"></div></div>
+    <div class="pills" id="pl">${'<span>—</span>'.repeat(N)}</div>`;
+  const pad=S.querySelector('#pad'),msg=S.querySelector('#msg'),sub=S.querySelector('#sub'),pl=S.querySelectorAll('#pl span'),cnt=S.querySelector('#cnt');
+  const set=(c,m,s)=>{pad.className='rt '+c;msg.textContent=m;sub.textContent=s||''};
+  function shock(e){const r=pad.getBoundingClientRect(),s=document.createElement('i');s.className='shock';
+    s.style.left=((e&&e.clientX)?e.clientX-r.left:r.width/2)+'px';s.style.top=((e&&e.clientY)?e.clientY-r.top:r.height/2)+'px';pad.appendChild(s);setTimeout(()=>s.remove(),750)}
+  function arm(){phase='wait';set('wait',t('wait'));tid=later(go,1200+R()*2600)}
+  function go(){phase='go';set('go',t('click'));t0=performance.now();requestAnimationFrame(()=>{t0=performance.now()})}
+  function hit(ts,e){
+    if(phase==='wait'){clearTimeout(tid);early++;phase='early';set('early',t('early'));sfx.bad();buzz();return}
+    if(phase==='early'){arm();return}
+    if(phase!=='go')return;
+    const rt=ts-t0;
+    if(rt<100){early++;phase='early';set('early',t('early'));sfx.bad();return} /* anticipation */
+    times.push(rt);phase='res';shock(e);set('res',Math.round(rt)+' ms');sfx.ok();
+    pl[times.length-1].textContent=Math.round(rt)+' ms';pl[times.length-1].classList.add('on');cnt.textContent=times.length;
+    if(times.length>=N)later(fin,900);else later(arm,900);
+  }
+  pad.addEventListener('pointerdown',e=>{e.preventDefault();if(e.pointerType==='touch')touch++;hit(evTime(e),e)});
+  onKey(e=>{if(e.code==='Space'||e.key==='Enter'){e.preventDefault();hit(evTime(e))}});
+  /* touchscreens add ~30–40 ms of input latency: correct the norm, not the data */
+  function fin(){const s=[...times].sort((a,b)=>a-b),med=s[2],lat=touch>=3?35:0;
+    done({z:(285+lat-med)/45-early*.08,raw:`median ${Math.round(med)} ms · best ${Math.round(s[0])} ms${lat?' · touch':''}`})}
+  later(arm,500);
+};
+
+/* 2. Corsi block-tapping (visuospatial working memory) — Kessels et al. 2000 procedure */
+TESTS.memory=(S,done)=>{
+  const P=[[.10,.12],[.58,.05],[.36,.28],[.76,.26],[.06,.52],[.50,.52],[.78,.64],[.26,.78],[.58,.80]];
+  const NOTE=[262,294,330,392,440,523,587,659,784];
+  S.innerHTML=`<div class="hud mono"><span id="st">…</span><span>${t('span')} <b id="lv">3</b></span></div>
+    <div class="corsi lock" id="bd">${P.map((p,i)=>`<button class="blk" data-i="${i}" style="left:${p[0]*100}%;top:${p[1]*100}%" aria-label="${i+1}"></button>`).join('')}</div>
+    <div class="dots" id="dots"></div>`;
+  const bd=S.querySelector('#bd'),B=[...bd.querySelectorAll('.blk')],st=S.querySelector('#st'),lv=S.querySelector('#lv'),dots=S.querySelector('#dots');
+  let len=3,fails=0,best=2,okTrials=0,seq=[],inp=[],acc=false;
+  function ring(i,col){const r=document.createElement('i');r.className='cring';r.style.cssText=`left:${P[i][0]*100}%;top:${P[i][1]*100}%;border-color:${col}`;bd.appendChild(r);setTimeout(()=>r.remove(),700)}
+  function lit(i,c){B[i].classList.add(c);ring(i,c==='show'?'#5ef2ff':'#9b6bff');sfx.tone(NOTE[i],.28,'sine',.06);later(()=>B[i].classList.remove(c),c==='show'?700:240)}
+  function round(){seq=shuffle([0,1,2,3,4,5,6,7,8]).slice(0,len);inp=[];acc=false;bd.classList.add('lock');st.textContent=t('watch');lv.textContent=len;
+    dots.innerHTML='<i></i>'.repeat(len);let k=0;
+    const step=()=>{if(k>=seq.length){later(()=>{acc=true;bd.classList.remove('lock');st.textContent=t('repeat')},200);return}lit(seq[k++],'show');later(step,1000)};later(step,800)}
+  bd.addEventListener('pointerdown',e=>{const b=e.target.closest('.blk');if(!b||!acc)return;e.preventDefault();const i=+b.dataset.i;lit(i,'tap');inp.push(i);
+    const d=dots.children[inp.length-1];if(d)d.classList.add('on');
+    if(i!==seq[inp.length-1]){acc=false;bd.classList.add('lock','bad');sfx.bad();buzz();later(()=>bd.classList.remove('bad'),500);
+      if(++fails>=2)later(end,900);else later(round,1100);}
+    else if(inp.length===seq.length){acc=false;bd.classList.add('lock','good');burstEl(b);sfx.ok();later(()=>bd.classList.remove('good'),500);
+      best=len;okTrials++;fails=0;len++;if(len>9)later(end,700);else later(round,1100);}});
+  function end(){done({z:(best-6)/1.2,raw:`${t('span')} ${best} · ${okTrials} ✓`})}
+  round();
+};
+
+/* 3. Procedural Raven-style matrices (fluid reasoning)
+      rule taxonomy after Carpenter, Just & Shell (1990): constant, progression,
+      distribution-of-three, figure addition (XOR) and quantitative addition */
+const SIDES=[0,3,4,5,6],MCOL=['#5ef2ff','#b38bff','#ffc65c'];
+const POS={1:[[40,40,20]],2:[[23,40,13],[57,40,13]],3:[[40,23,12],[22,56,12],[58,56,12]],4:[[24,24,11.5],[56,24,11.5],[24,56,11.5],[56,56,11.5]]};
+const LN=['M8 40H72','M40 8V72','M13 13L67 67','M67 13L13 67'];
+function shp(s,x,y,r,rot,fill,ci){const col=MCOL[ci],f=fill===2?col:fill===1?`url(#h${ci})`:'none',a=`fill="${f}" stroke="${col}" stroke-width="2.4" stroke-linejoin="round"${fill===2?' fill-opacity=".88"':''}`;
+  if(!s)return`<circle cx="${x}" cy="${y}" r="${(r*.92).toFixed(2)}" ${a}/>`;
+  const rr=s===3?r*1.15:r,p=[];for(let i=0;i<s;i++){const g=(-90+rot+i*360/s)*Math.PI/180;p.push((x+rr*Math.cos(g)).toFixed(2)+','+(y+rr*Math.sin(g)).toFixed(2))}return`<polygon points="${p.join(' ')}" ${a}/>`}
+function cellSVG(c){let s='<svg viewBox="0 0 80 80">';for(const[x,y,r]of POS[c.count])s+=shp(c.shape,x,y,r,c.rot*45,c.fill,c.color);for(let b=0;b<4;b++)if(c.lines>>b&1)s+=`<path d="${LN[b]}" stroke="#e9edff" stroke-opacity=".8" stroke-width="2.2" stroke-linecap="round"/>`;return s+'</svg>'}
+const DOM={count:[1,2,3,4],shape:SIDES,fill:[0,1,2],color:[0,1,2]};
+function genMatrix(level){
+  const nVar=[1,1,2,2,3,2,2,3][level-1],lines=level>=6;
+  for(let tr=0;tr<300;tr++){
+    const pool=level===1?['count','shape']:['count','shape','fill','color','rot'];
+    const vars=shuffle(pool).slice(0,nVar);
+    if(vars.includes('rot')&&vars.includes('shape'))continue;
+    const base={shape:pick(SIDES),count:1+ri(3),fill:ri(3),color:ri(3),rot:0,lines:0};
+    if(vars.includes('rot'))base.shape=pick([3,5]);
+    if(lines)base.count=1+ri(2);
+    const g=[0,1,2].map(()=>[0,1,2].map(()=>({...base}))),rules={};
+    for(const a of vars){
+      if(a==='count'&&level>=4&&R()<.4){ /* quantitative addition: col3 = col1 + col2 */
+        const pairs=shuffle([[1,1],[1,2],[2,1],[1,3],[3,1],[2,2]]).slice(0,3);
+        for(let r=0;r<3;r++){g[r][0].count=pairs[r][0];g[r][1].count=pairs[r][1];g[r][2].count=pairs[r][0]+pairs[r][1]}
+        rules.count={kind:'add'};continue;
+      }
+      const kind=a==='color'?'dist':a==='rot'?'prog':(R()<.5?'prog':'dist');
+      if(kind==='prog'){let step,bases;
+        if(a==='count'){step=pick([1,-1]);bases=[0,1,2].map(()=>step>0?1+ri(2):3+ri(2))}
+        else if(a==='shape'){step=1;bases=[0,1,2].map(()=>3+ri(2))}
+        else if(a==='fill'){step=pick([1,-1]);bases=[0,1,2].map(()=>step>0?0:2)}
+        else{step=pick([1,-1]);bases=[0,1,2].map(()=>ri(8))}
+        for(let r=0;r<3;r++)for(let c=0;c<3;c++)g[r][c][a]=a==='rot'?(((bases[r]+step*c)%8)+8)%8:bases[r]+step*c;
+        rules[a]={kind,step};
+      }else{const vals=shuffle(DOM[a]).slice(0,3),s=1+ri(2);
+        for(let r=0;r<3;r++)for(let c=0;c<3;c++)g[r][c][a]=vals[(c+r*s)%3];
+        rules[a]={kind,vals};}
+    }
+    if(lines){for(let r=0;r<3;r++){let m1,m2;do{m1=1+ri(15);m2=1+ri(15)}while(m1===m2);g[r][0].lines=m1;g[r][1].lines=m2;g[r][2].lines=m1^m2}rules.lines={kind:'xor'}}
+    const ans=g[2][2];
+    const alt=a=>{const v=ans[a],ru=rules[a];
+      if(a==='lines')return v^(1<<ri(4));
+      if(ru&&ru.kind==='add')return pick([1,2,3,4].filter(x=>x!==v&&Math.abs(x-v)<=2));
+      if(ru&&ru.kind==='prog')return a==='rot'?(((v-ru.step)%8)+8)%8:v-ru.step;
+      if(ru&&ru.kind==='dist')return pick(ru.vals.filter(x=>x!==v));
+      return pick(DOM[a].filter(x=>x!==v));};
+    const keys=shuffle([...vars,...(lines?['lines']:[])]);
+    for(const a of shuffle(['shape','count','fill','color']))if(keys.length<3&&!keys.includes(a))keys.push(a);
+    const k3=keys.slice(0,3),alts=k3.map(alt);
+    /* options = balanced combinations of correct/alternative attribute values (defeats "pick the majority" tricks) */
+    const opts=[0,...shuffle([1,2,3,4,5,6,7]).slice(0,5)].map(m=>{const o={...ans};k3.forEach((a,j)=>{if(m>>j&1)o[a]=alts[j]});return o});
+    const order=shuffle([0,1,2,3,4,5]);
+    return{g,opts:order.map(i=>opts[i]),ans:order.indexOf(0)};
+  }
+  return genMatrix(1);
+}
+const renderMatrix=it=>`<div class="mxw"><div class="mx" dir="ltr">${it.g.flat().map((c,i)=>i===8?'<div class="cell qc" id="qc"><span>?</span></div>':`<div class="cell">${cellSVG(c)}</div>`).join('')}</div>
+  <div class="opts six" dir="ltr">${it.opts.map((c,i)=>`<button class="opt"><em>${i+1}</em>${cellSVG(c)}</button>`).join('')}</div></div>`;
+const revealMatrix=(S,it)=>{const q=S.querySelector('#qc'),b=S.querySelectorAll('.opt')[it.ans];
+  const fill=()=>{q.innerHTML=cellSVG(it.opts[it.ans]);q.classList.add('filled')};
+  if(!b||reduceMotion)return fill();
+  const a=b.getBoundingClientRect(),z=q.getBoundingClientRect(),f=document.createElement('div');
+  f.className='fly';f.innerHTML=cellSVG(it.opts[it.ans]);f.style.cssText=`left:${a.left}px;top:${a.top}px;width:${a.width}px;height:${a.height}px`;document.body.appendChild(f);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transform=`translate(${z.left-a.left}px,${z.top-a.top}px) scale(${z.width/a.width})`}));
+  setTimeout(()=>{f.remove();fill()},470)};
+
+/* 8. Number series ---------------------------------------------------- */
+function genSeries(level){
+  const mk=f=>Array.from({length:7},(_,i)=>f(i)),rec=(a,f)=>{const s=[a];for(let i=1;i<7;i++)s.push(f(s[i-1],i));return s};
+  const G=[
+    ()=>{const a=1+ri(20),d=2+ri(8);return mk(i=>a+d*i)},
+    ()=>pick([()=>{const a=60+ri(40),d=3+ri(7);return mk(i=>a-d*i)},()=>{const a=1+ri(4);return mk(i=>a*2**i)}])(),
+    ()=>pick([()=>{const k=1+ri(6);return mk(i=>(i+k)**2)},()=>{const a=1+ri(3);return mk(i=>a*3**i)},()=>{const a=2+ri(10),d=1+ri(4);return mk(i=>a+d*i+i*(i-1)/2)}])(),
+    ()=>pick([()=>{const a=1+ri(9),b=30+ri(30),d1=2+ri(4),d2=1+ri(3);return mk(i=>i%2?b-d2*((i-1)/2):a+d1*(i/2))},()=>{const d=2+ri(4);return rec(2+ri(5),(x,i)=>i%2?x+d:x*2)}])(),
+    ()=>pick([()=>{const c=pick([1,-1,3]);return rec(c===-1?2+ri(4):1+ri(5),x=>x*2+c)},()=>{const a=1+ri(20),d=1+ri(3);return mk(i=>a+d*(2**i-1))}])(),
+    ()=>pick([()=>{const a=1+ri(5),s=[a,a+1+ri(5)];while(s.length<7)s.push(s[s.length-1]+s[s.length-2]);return s},()=>{const k=ri(10);return mk(i=>(i+1)**3+k)}])(),
+    ()=>pick([()=>{const P=[2,3,5,7,11,13];return rec(1+ri(10),(x,i)=>x+P[i-1])},()=>rec(1+ri(10),(x,i)=>x+i*i),()=>{const d=2+ri(3);return rec(2+ri(3),(x,i)=>i%2?x*3:x-d)}])(),
+    ()=>pick([()=>{const s=[1+ri(3),2+ri(4)];while(s.length<7)s.push(s[s.length-1]+2*s[s.length-2]);return s},()=>{const a=2+ri(3),b=50+ri(40),d=3+ri(5);return mk(i=>i%2?b-d*((i-1)/2):a*3**(i/2))},()=>rec(1+ri(3),(x,i)=>x*i+i)])()
+  ];
+  const seq=G[level-1](),ans=seq[6],d1=seq[5]-seq[4],naive=seq[5]+d1;
+  const set=[ans];if(naive!==ans)set.push(naive);
+  for(const c of shuffle([ans+1,ans-1,ans+2,ans-2,ans+d1,ans-d1,ans+10,ans-10,ans+(seq[5]-seq[3]),Math.round(ans*1.5)])){if(set.length>=5)break;if(!set.includes(c)&&Number.isFinite(c))set.push(c)}
+  const opts=shuffle(set);return{seq,opts,ans:opts.indexOf(ans)};
+}
+const renderSeries=it=>`<div class="seq" dir="ltr">${it.seq.slice(0,6).map((v,i)=>`<span class="num" style="animation-delay:${i*70}ms">${v}</span>`).join('<i>›</i>')}<i>›</i><span class="num qn" id="qc" style="animation-delay:420ms">?</span></div>
+  <div class="opts five" dir="ltr">${it.opts.map((v,i)=>`<button class="opt nb"><em>${i+1}</em>${v}</button>`).join('')}</div>`;
+const revealSeries=(S,it)=>{const q=S.querySelector('#qc');q.textContent=it.seq[6];q.classList.add('filled')};
+
+
+/* shared adaptive engine (computerized adaptive testing) */
+function adaptive(S,done,o){
+  const resp=[];let k=0,correct=0,cur=null;
+  onKey(e=>{const n=parseInt(e.key,10);if(cur&&n>=1&&n<=o.keys)cur(n-1)});
+  function next(){
+    const est=eap(resp,o.c);
+    if(k>=o.n)return done({z:est.theta,raw:`${correct}/${o.n} · θ ${est.theta>=0?'+':''}${est.theta.toFixed(2)} ± ${est.se.toFixed(2)}`});
+    const target=k===0?-1.2:est.theta+(R()-.5)*.5,lvl=clamp(Math.round((target+2.45)/.7)+1,1,8),b=-2.45+.7*(lvl-1),it=o.gen(lvl);
+    S.innerHTML=`<div class="hud mono"><span>${k+1} / ${o.n}</span><span class="lvl" title="difficulty">${'▮'.repeat(lvl)}<i>${'▮'.repeat(8-lvl)}</i></span></div>
+      <div class="tbar"><i style="animation-duration:${o.time}s"></i></div><p class="q">${t(o.q)}</p>${o.render(it)}`;
+    const btns=[...S.querySelectorAll('.opt')];let tm=0;
+    const answer=i=>{cur=null;clearTimeout(tm);const ok=i===it.ans;resp.push({b,x:ok?1:0});if(ok)correct++;
+      const bar=S.querySelector('.tbar i');if(bar)bar.style.animationPlayState='paused';
+      if(i>=0)btns[i].classList.add(ok?'right':'wrong');if(!ok)btns[it.ans].classList.add('right');
+      o.reveal(S,it);if(ok){burstEl(btns[i]);sfx.ok()}else{sfx.bad();buzz()}
+      k++;later(next,ok?750:1300)};
+    btns.forEach((bt,i)=>bt.onclick=()=>{if(cur)cur(i)});
+    cur=answer;tm=later(()=>{if(cur)cur(-1)},o.time*1000);
+  }
+  next();
+}
+TESTS.logic=(S,done)=>adaptive(S,done,{n:10,c:1/6,time:50,q:'q_matrix',keys:6,gen:genMatrix,render:renderMatrix,reveal:revealMatrix});
+TESTS.numbers=(S,done)=>adaptive(S,done,{n:8,c:1/5,time:50,q:'q_series',keys:5,gen:genSeries,render:renderSeries,reveal:revealSeries});
+
+
+/* 4. Stroop (inhibitory control) with practice trials ------------------ */
+TESTS.control=(S,done)=>{
+  const C=[['red','#ff4d5e'],['blue','#4d8dff'],['green','#34d67b'],['yellow','#ffd23f']],N=24,NP=4;
+  const prac=Array.from({length:NP},(_,i)=>{const w=ri(4);let c=w;if(i%2){do{c=ri(4)}while(c===w)}return{w,c,p:1}});
+  const main=shuffle(Array.from({length:N},(_,i)=>{const w=ri(4);if(i<8)return{w,c:w};let c;do{c=ri(4)}while(c===w);return{w,c}}));
+  const trials=[...prac,...main];
+  S.innerHTML=`<div class="hud mono"><span id="n"></span><span class="combo" id="cb"></span></div>
+    <div class="stroop"><div class="sw fix" id="w">+</div></div>
+    <div class="opts four">${C.map((c,i)=>`<button class="opt sb"><em>${i+1}</em>${t(c[0])}</button>`).join('')}</div>
+    <p class="fb mono">${t('q_stroop')}</p>`;
+  const W=S.querySelector('#w'),Nn=S.querySelector('#n'),cb=S.querySelector('#cb'),btns=[...S.querySelectorAll('.opt')];
+  let k=0,t0=0,on=false,tm=0,streak=0,announced=false;const rec=[];
+  function label(){const tr=trials[k];Nn.innerHTML=tr.p?`<span class="pbadge">${t('practice')}</span>`:`<b>${k-NP+1}</b> / ${N}`}
+  function step(){
+    if(k>=trials.length)return end();
+    if(k===NP&&!announced){announced=true;on=false;W.textContent=t('go_real');W.style.color='';W.className='sw msg';sfx.win();later(step,1400);return}
+    on=false;W.textContent='+';W.style.color='';W.className='sw fix';label();
+    later(()=>{const tr=trials[k];W.textContent=t(C[tr.w][0]);W.style.color=C[tr.c][1];W.className='sw';on=true;t0=performance.now();requestAnimationFrame(()=>{t0=performance.now()});tm=later(()=>resp(-1,performance.now()),3000)},380+R()*260)}
+  function resp(i,ts){if(!on)return;on=false;clearTimeout(tm);const tr=trials[k],ok=i===tr.c;
+    if(!tr.p)rec.push({con:tr.w===tr.c,ok,rt:ts-t0});
+    streak=ok?streak+1:0;cb.textContent=streak>=3?'×'+streak:'';cb.classList.toggle('hot',streak>=6);
+    if(i>=0){btns[i].classList.add(ok?'right':'wrong');later(()=>btns[i].classList.remove('right','wrong'),240)}
+    if(ok){streak>=3?sfx.combo(streak):sfx.tick()}else{sfx.bad();buzz()}k++;later(step,160)}
+  btns.forEach((b,i)=>b.addEventListener('pointerdown',e=>{e.preventDefault();resp(i,evTime(e))}));
+  onKey(e=>{const n=parseInt(e.key,10);if(n>=1&&n<=4)resp(n-1,evTime(e))});
+  function end(){const mean=a=>a.length?a.reduce((s,r)=>s+r.rt,0)/a.length:NaN;
+    const inc=rec.filter(r=>!r.con),con=rec.filter(r=>r.con),ic=inc.filter(r=>r.ok),cc=con.filter(r=>r.ok);
+    const accI=ic.length/Math.max(1,inc.length),mI=ic.length?mean(ic):3000,mC=cc.length?mean(cc):mI;
+    const ies=mI/Math.max(accI,.25); /* inverse efficiency score on incongruent trials */
+    done({z:(1000-ies)/230,raw:`Δ ${Math.round(mI-mC)} ms · ${Math.round(rec.filter(r=>r.ok).length/N*100)}%`})}
+  later(step,400);
+};
+
+/* 5. Shepard–Metzler mental rotation with a hand-written 3D renderer ---- */
+const DIRS=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
+const ROTS24=(()=>{const out=[],perms=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]],par=[1,-1,-1,1,1,-1];
+  perms.forEach((p,pi)=>{for(let s=0;s<8;s++){const sg=[s&1?-1:1,s&2?-1:1,s&4?-1:1];if(par[pi]*sg[0]*sg[1]*sg[2]===1)out.push(v=>[sg[0]*v[p[0]],sg[1]*v[p[1]],sg[2]*v[p[2]]])}});return out})();
+const normShape=cs=>{const m=[0,1,2].map(k=>Math.min(...cs.map(c=>c[k])));return cs.map(c=>c.map((v,k)=>v-m[k]).join(',')).sort().join('|')};
+function genPoly(){
+  for(let tr=0;tr<800;tr++){
+    const arms=shuffle([3,2,2,2]);let pos=[0,0,0],pa=-1,ok=true;const cs=[[0,0,0]],seen=new Set(['0,0,0']),ax=new Set(),dirs=[];
+    for(const len of arms){const d=pick(DIRS.filter((_,i)=>(i>>1)!==pa));pa=DIRS.indexOf(d)>>1;ax.add(pa);dirs.push(d);
+      for(let j=0;j<len;j++){pos=pos.map((v,k)=>v+d[k]);const key=pos.join(',');if(seen.has(key)){ok=false;break}seen.add(key);cs.push(pos)}if(!ok)break}
+    if(!ok||ax.size<3)continue;
+    const mir=normShape(cs.map(([x,y,z])=>[-x,y,z]));if(ROTS24.some(f=>normShape(cs.map(f))===mir))continue; /* must be chiral */
+    return{cs,dirs,c:[0,1,2].map(k=>cs.reduce((s,v)=>s+v[k],0)/cs.length)};
+  }
+}
+const mirrorShape=sh=>({cs:sh.cs.map(([a,b,d])=>[-a,b,d]),dirs:sh.dirs.map(([a,b,d])=>[-a,b,d]),c:[-sh.c[0],sh.c[1],sh.c[2]]});
+function rotM(ax,an){const[x,y,z]=ax,c=Math.cos(an),s=Math.sin(an),C=1-c;return[[c+x*x*C,x*y*C-z*s,x*z*C+y*s],[y*x*C+z*s,c+y*y*C,y*z*C-x*s],[z*x*C-y*s,z*y*C+x*s,c+z*z*C]]}
+const rotY=a=>{const c=Math.cos(a),s=Math.sin(a);return[[c,0,s],[0,1,0],[-s,0,c]]};
+const mul=(A,B)=>A.map(r=>[0,1,2].map(j=>r[0]*B[0][j]+r[1]*B[1][j]+r[2]*B[2][j]));
+const app3=(M,v)=>[M[0][0]*v[0]+M[0][1]*v[1]+M[0][2]*v[2],M[1][0]*v[0]+M[1][1]*v[1]+M[1][2]*v[2],M[2][0]*v[0]+M[2][1]*v[1]+M[2][2]*v[2]];
+function randAxis(){let v;do v=[R()*2-1,R()*2-1,R()*2-1];while(Math.hypot(...v)<.25);return norm(v)}
+const VIEW_P=.42,RV=[[1,0,0],[0,Math.cos(VIEW_P),-Math.sin(VIEW_P)],[0,Math.sin(VIEW_P),Math.cos(VIEW_P)]]; /* camera looks slightly down */
+const viewable=(sh,M)=>{const T=mul(RV,M);return sh.dirs.every(d=>Math.abs(app3(T,d)[2])<.8)}; /* no arm pointing straight at the camera */
+const L1=norm([-.45,.8,.55]),L2=norm([.75,-.05,.45]);
+function drawPoly(x,W,sh,M,wob){
+  const Mw=mul(rotY(wob),M),Rt=mul(RV,Mw),D=13;
+  if(!sh.set)sh.set=new Set(sh.cs.map(c=>c.join(',')));
+  if(!sh.rad)sh.rad=Math.max(...sh.cs.map(c=>Math.hypot(c[0]-sh.c[0],c[1]-sh.c[1],c[2]-sh.c[2])));
+  const rad=sh.rad,sc=W*.335/(rad+.75),cx0=W/2,cy0=W*.45;
+  const P=v=>{const p=D/(D-v[2]);return[cx0+v[0]*sc*p,cy0-v[1]*sc*p,p]};
+  const rel=sh.cs.map(c=>[c[0]-sh.c[0],c[1]-sh.c[1],c[2]-sh.c[2]]);
+  /* ground plane under the object (world space, before camera pitch) */
+  const wpos=rel.map(v=>app3(Mw,v));let gy=Infinity;for(const p of wpos)gy=Math.min(gy,p[1]);gy-=.95;
+  const pr=rad+.7,ring=[];for(let i=0;i<=56;i++){const a=i/56*6.2832;ring.push(P(app3(RV,[Math.cos(a)*pr,gy,Math.sin(a)*pr])))}
+  const gc=P(app3(RV,[0,gy,0]));
+  x.beginPath();ring.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.closePath();
+  const gg=x.createRadialGradient(gc[0],gc[1],0,gc[0],gc[1],sc*pr);gg.addColorStop(0,'rgba(94,242,255,.16)');gg.addColorStop(.7,'rgba(124,92,255,.05)');gg.addColorStop(1,'rgba(94,242,255,0)');
+  x.fillStyle=gg;x.fill();x.strokeStyle='rgba(94,242,255,.3)';x.lineWidth=1.2;x.stroke();
+  /* soft contact shadows */
+  const fl=Math.sin(VIEW_P);
+  for(const p of wpos){const g=app3(RV,[p[0],gy,p[2]]),s=P(g),r=sc*s[2]*.9;x.save();x.translate(s[0],s[1]);x.scale(1,fl);
+    const sg=x.createRadialGradient(0,0,0,0,0,r);sg.addColorStop(0,'rgba(0,0,10,.34)');sg.addColorStop(1,'rgba(0,0,10,0)');x.fillStyle=sg;x.beginPath();x.arc(0,0,r,0,6.2832);x.fill();x.restore()}
+  /* cubes back-to-front, visible faces only */
+  const cubes=sh.cs.map((c,i)=>({c,v:app3(Rt,rel[i])})).sort((a,b)=>Math.hypot(b.v[0],b.v[1],D-b.v[2])-Math.hypot(a.v[0],a.v[1],D-a.v[2]));
+  const faces=[];
+  for(const cb of cubes)for(const d of DIRS){
+    if(sh.set.has((cb.c[0]+d[0])+','+(cb.c[1]+d[1])+','+(cb.c[2]+d[2])))continue;
+    const n=app3(Rt,d),fc=[cb.v[0]+n[0]*.5,cb.v[1]+n[1]*.5,cb.v[2]+n[2]*.5];
+    if(-n[0]*fc[0]-n[1]*fc[1]+n[2]*(D-fc[2])<=0)continue;
+    const ax=d.findIndex(v=>v!==0),u=[0,0,0],w=[0,0,0];u[(ax+1)%3]=.5;w[(ax+2)%3]=.5;
+    const U=app3(Rt,u),V=app3(Rt,w);
+    const vs=[[1,1],[1,-1],[-1,-1],[-1,1]].map(([a,b])=>P([fc[0]+a*U[0]+b*V[0],fc[1]+a*U[1]+b*V[1],fc[2]+a*U[2]+b*V[2]]));
+    faces.push({vs,I:.2+.68*Math.max(0,dot(n,L1))+.22*Math.max(0,dot(n,L2))});
+  }
+  const poly=vs=>{x.moveTo(vs[0][0],vs[0][1]);for(let i=1;i<vs.length;i++)x.lineTo(vs[i][0],vs[i][1]);x.closePath()};
+  /* glow silhouette (single path → one shadow pass) */
+  x.save();x.shadowColor='rgba(94,242,255,.5)';x.shadowBlur=W*.07;x.fillStyle='#0a1330';x.beginPath();for(const f of faces)poly(f.vs);x.fill();x.restore();
+  const lw=Math.max(1.3,W/240);x.lineJoin='round';
+  for(const f of faces){
+    const hue=196+(1-f.I)*52,l=16+f.I*60;
+    let top=f.vs[0],bot=f.vs[0];for(const v of f.vs){if(v[1]<top[1])top=v;if(v[1]>bot[1])bot=v}
+    const g=x.createLinearGradient(top[0],top[1],bot[0],bot[1]);g.addColorStop(0,`hsl(${hue},80%,${Math.min(93,l+10)}%)`);g.addColorStop(1,`hsl(${hue+10},74%,${Math.max(7,l-8)}%)`);
+    x.beginPath();poly(f.vs);x.fillStyle=g;x.fill();x.strokeStyle='rgba(3,5,16,.95)';x.lineWidth=lw;x.stroke();
+    const mx=(f.vs[0][0]+f.vs[2][0])/2,my=(f.vs[0][1]+f.vs[2][1])/2;
+    x.beginPath();poly(f.vs.map(v=>[mx+(v[0]-mx)*.78,my+(v[1]-my)*.78]));x.strokeStyle=`rgba(255,255,255,${(.05+.17*f.I).toFixed(3)})`;x.lineWidth=1;x.stroke();
+  }
+}
+TESTS.spatial=(S,done)=>{
+  const ANG=[40,80,120,160],plan=[];
+  for(const a of ANG)for(const m of[0,1])for(let r=0;r<2;r++)plan.push({a,m});
+  const trials=[{a:40,m:0,p:1},{a:60,m:1,p:1},...shuffle(plan)],N=plan.length,NP=2,TL=15;
+  let k=0,ok=0,cur=null,announced=false;const rec=[];
+  onKey(e=>{if(!cur)return;const kk=e.key.toLowerCase();if(e.key==='ArrowLeft'||kk==='1'||kk==='s')cur(0);else if(e.key==='ArrowRight'||kk==='2'||kk==='m')cur(1)});
+  function stim(tr){
+    const sh=genPoly();let M1=null,M2=null;
+    for(let i=0;i<80&&!M1;i++){const M=rotM(randAxis(),R()*6.2832);if(viewable(sh,M))M1=M}
+    M1=M1||rotM(randAxis(),R()*6.2832);
+    const sh2=tr.m?mirrorShape(sh):sh;
+    for(let i=0;i<80&&!M2;i++){const M=mul(rotM(randAxis(),tr.a*Math.PI/180),M1);if(viewable(sh2,M))M2=M}
+    M2=M2||mul(rotM(randAxis(),tr.a*Math.PI/180),M1);
+    return{sh,sh2,M1,M2};
+  }
+  function step(){
+    if(k>=trials.length)return finish();
+    const tr=trials[k],prac=!!tr.p;
+    if(!prac&&!announced){announced=true;S.innerHTML=`<div class="stroop"><div class="sw msg">${t('go_real')}</div></div>`;sfx.win();later(step,1300);return}
+    const s=stim(tr);
+    S.innerHTML=`<div class="hud mono"><span>${prac?`<span class="pbadge">${t('practice')}</span>`:`<b>${k-NP+1}</b> / ${N}`}</span><span>✓ <b>${ok}</b></span></div>
+      <div class="tbar${prac?' off':''}"><i style="animation-duration:${TL}s"></i></div>
+      <div class="rot" dir="ltr"><div class="rbox"><canvas></canvas><b class="rl">A</b></div><div class="rbox"><canvas></canvas><b class="rl">B</b></div></div>
+      <div class="opts two" dir="ltr"><button class="opt"><em>←</em>${t('same')}</button><button class="opt"><em>→</em>${t('mirror')}</button></div>
+      <p class="fb" id="fb"></p>`;
+    const cvs=[...S.querySelectorAll('canvas')],ctx=cvs.map(c=>c.getContext('2d')),btns=[...S.querySelectorAll('.opt')],fb=S.querySelector('#fb');
+    let t0=0,tm=0,frozen=false,wob=0;
+    loop(now=>{
+      if(!frozen)wob=reduceMotion?0:.1*Math.sin(now/1000*1.25);
+      const dpr=Math.min(devicePixelRatio||1,2);
+      cvs.forEach((cv,i)=>{const w=cv.clientWidth;if(!w)return;const px=Math.round(w*dpr);if(cv.width!==px){cv.width=cv.height=px}
+        const x=ctx[i];x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,w);drawPoly(x,w,i?s.sh2:s.sh,i?s.M2:s.M1,wob)});
+      if(!t0)t0=performance.now();
+    });
+    const ans=i=>{cur=null;clearTimeout(tm);const right=i===tr.m,rt=performance.now()-(t0||performance.now());
+      if(!prac){if(right)ok++;rec.push({a:tr.a,m:tr.m,ok:right,rt})}
+      const bar=S.querySelector('.tbar i');if(bar)bar.style.animationPlayState='paused';
+      if(i>=0)btns[i].classList.add(right?'right':'wrong');if(!right)btns[tr.m].classList.add('right');
+      if(right){burstEl(btns[i]);sfx.ok()}else{sfx.bad();buzz()}
+      if(prac){fb.className='fb '+(right?'good':'bad');fb.textContent=(right?'✓ ':'✕ ')+t(tr.m?'p_mirror':'p_same')}
+      k++;later(step,prac?2400:right?550:1000)};
+    btns.forEach((b,i)=>b.onclick=()=>{if(cur)cur(i)});cur=ans;
+    if(!prac)tm=later(()=>{if(cur)cur(-1)},TL*1000);
+  }
+  function finish(){
+    const acc=ok/N,cr=rec.filter(r=>r.ok),mrt=cr.length?cr.reduce((a,r)=>a+r.rt,0)/cr.length/1000:TL;
+    /* classic analysis: RT grows linearly with angle on "same" trials → slope = time per degree */
+    const sm=cr.filter(r=>!r.m);let rs=null;
+    if(sm.length>=4){const mx=sm.reduce((a,r)=>a+r.a,0)/sm.length,my=sm.reduce((a,r)=>a+r.rt,0)/sm.length;let sxy=0,sxx=0;for(const r of sm){sxy+=(r.a-mx)*(r.rt-my);sxx+=(r.a-mx)**2}const sl=sxx?sxy/sxx:0;if(sl>1.5)rs=Math.round(1000/sl)}
+    done({z:(acc-.78)/.13+clamp((5.5-mrt)/6,-.35,.35),raw:`${ok}/${N} · ${mrt.toFixed(1)} s${rs?` · ↻ ${rs}°/s`:''}`});
+  }
+  step();
+};
+
+/* 6. Digit-symbol coding (processing speed) -------------------------- */
+const GLY=['M5 19L12 5l7 14','M5 5h14v14','M12 4v16M4 12h16','M6 6l12 12M18 6L6 18','M5 17a7 7 0 0 1 14 0','M5 9h14M5 15h14','M12 4v8M12 12l-7 7M12 12l7 7','M12 5a7 7 0 1 1-.01 0M12 12h.01','M5 19V5l14 14V5'];
+TESTS.speed=(S,done)=>{
+  const g=i=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${GLY[i]}"/></svg>`;
+  const map=shuffle([0,1,2,3,4,5,6,7,8]),T=60,end=performance.now()+T*1000;let cnt=0,err=0,cur=-1,fin=false,streak=0;
+  S.innerHTML=`<div class="hud mono"><span>✓ <b id="ok">0</b> · ✕ <b id="er">0</b> <span class="combo" id="cb"></span></span><span class="big-t mono" id="tl">${T}</span></div>
+    <div class="tbar"><i style="animation-duration:${T}s"></i></div>
+    <div class="keyrow" dir="ltr">${map.map((gi,d)=>`<div><span>${g(gi)}</span><b>${d+1}</b></div>`).join('')}</div>
+    <div class="target" id="tg"></div>
+    <div class="pad9" dir="ltr">${map.map((_,d)=>`<button class="opt" data-d="${d}">${d+1}</button>`).join('')}</div>`;
+  const tg=S.querySelector('#tg'),okE=S.querySelector('#ok'),erE=S.querySelector('#er'),tl=S.querySelector('#tl'),cb=S.querySelector('#cb');
+  function nextSym(){let n;do n=ri(9);while(n===cur);cur=n;tg.innerHTML=g(map[cur]);tg.classList.remove('pop');void tg.offsetWidth;tg.classList.add('pop')}
+  function press(d){if(fin)return;if(d===cur){cnt++;streak++;okE.textContent=cnt;streak>=5?sfx.combo(streak/2|0):sfx.tick();nextSym()}
+    else{err++;streak=0;erE.textContent=err;tg.classList.remove('shake');void tg.offsetWidth;tg.classList.add('shake');sfx.bad();buzz()}
+    cb.textContent=streak>=5?'×'+streak:'';cb.classList.toggle('hot',streak>=10)}
+  S.querySelector('.pad9').addEventListener('pointerdown',e=>{const b=e.target.closest('.opt');if(!b)return;e.preventDefault();press(+b.dataset.d)});
+  onKey(e=>{const n=parseInt(e.key,10);if(n>=1&&n<=9)press(n-1)});
+  every(()=>{const left=Math.max(0,Math.ceil((end-performance.now())/1000));tl.textContent=left;if(left<=0&&!fin){fin=true;done({z:(cnt-36)/9-err*.03,raw:`${cnt} ✓ · ${err} ✕ / 60 s`})}},150);
+  nextSym();
+};
+
+/* 7. Trail Making B (attention + set-shifting) ----------------------- */
+TESTS.attention=(S,done)=>{
+  const LB=[];for(let i=0;i<8;i++)LB.push(String(i+1),'ABCDEFGH'[i]);
+  const narrow=window.innerWidth<640,VW=100,VH=narrow?125:62,r=narrow?5.4:3.7,md=narrow?14.5:10.8,P=[];
+  for(let i=0;i<LB.length;i++){let p,tries=0;do{p=[r+2+R()*(VW-2*r-4),r+2+R()*(VH-2*r-4)];tries++}while(tries<600&&P.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<md));P.push(p)}
+  S.innerHTML=`<div class="hud mono"><span>1 → A → 2 → B → 3 …</span><span><b id="tt">0.0</b> s · ✕ <b id="er">0</b></span></div>
+    <div class="trail"><svg viewBox="0 0 ${VW} ${VH}" id="sv"><g id="ln"></g>${P.map((p,i)=>`<g class="tn${i?'':' first'}" data-k="${i}" transform="translate(${p[0].toFixed(2)} ${p[1].toFixed(2)})"><circle r="${r}"/><text dy="${(r*.36).toFixed(2)}" font-size="${(r*.95).toFixed(2)}">${LB[i]}</text></g>`).join('')}</svg></div>`;
+  const nodes=[...S.querySelectorAll('.tn')],ln=S.querySelector('#ln'),tt=S.querySelector('#tt'),er=S.querySelector('#er'),t0=performance.now();let cur=0,err=0,fin=false;
+  every(()=>{if(!fin)tt.textContent=((performance.now()-t0)/1000).toFixed(1)},100);
+  S.querySelector('#sv').addEventListener('pointerdown',e=>{const g=e.target.closest('.tn');if(!g||fin)return;e.preventDefault();const k=+g.dataset.k;
+    if(k===cur){g.classList.add('ok');g.classList.remove('first');
+      if(cur>0)ln.insertAdjacentHTML('beforeend',`<line class="tl" x1="${P[cur-1][0]}" y1="${P[cur-1][1]}" x2="${P[cur][0]}" y2="${P[cur][1]}"/>`);
+      sfx.tone(380+cur*45,.09,'sine',.05);cur++;
+      if(cur===LB.length){fin=true;const sec=(performance.now()-t0)/1000;tt.textContent=sec.toFixed(1);burstEl(g);
+        later(()=>done({z:(30-(sec+2*err))/10,raw:`${sec.toFixed(1)} s · ${err} ✕`}),700)}}
+    else if(k>cur){err++;er.textContent=err;g.classList.add('err');later(()=>g.classList.remove('err'),350);sfx.bad();buzz()}});
+};
+
+
+/* =====================================================================
+   FLOW
+   ===================================================================== */
+function progress(hide){const p=$('#prog');if(hide){p.classList.remove('on');return}p.classList.add('on');
+  p.innerHTML=ORDER.map((id,i)=>`<i class="${i===state.i?'pc':''}" style="${i<state.i?`background:${DCOL[id]};box-shadow:0 0 8px ${hexA(DCOL[id],.5)}`:''}"></i>`).join('')}
+function setTesting(on){document.body.classList.toggle('testing',on);$('#lang').disabled=on;if(!on)progress(true)}
+function saveRun(){store.set('nm_run',JSON.stringify({seed:SEED,i:state.i,res:state.res,age:state.age,flags:state.flags,vs:VS,at:Date.now()}))}
+function loadRun(){try{const r=JSON.parse(store.get('nm_run')||'null');if(r&&r.i>0&&r.i<ORDER.length&&Date.now()-r.at<864e5)return r}catch(e){}return null}
+const clearRun=()=>store.set('nm_run','');
+
+function intro(){
+  setTesting(false);current=intro;
+  let last=null;try{last=JSON.parse(store.get('nm_last')||'null')}catch(e){}
+  const run=loadRun();
+  const el=show(`<div class="hero">
+    <div class="hero-txt">
+      <div class="badge mono"><span class="pulse"></span>${VS?`⚔ ${t('vs_intro',{s:calc(VS).iq})}`:CHALLENGE?`⚔ ${t('challenge')} · ${SEED}`:t('meta')}</div>
+      <h1 class="title">Neuro<span>Map</span></h1>
+      <p class="tag">${t('tagline')}</p>
+      <div class="cta"><button class="btn primary big" id="st">${t('start')} <span>→</span></button>
+        ${run?`<button class="btn ghost" id="cont">↻ ${t('cont',{n:run.i+1,t:ORDER.length})}</button>`:''}</div>
+      ${last&&last.scores?`<div class="last">${t('last')}: <button id="lastb">${calc(last.scores).iq} · ${t('a_'+topOf(last.scores))} →</button></div>`:''}
+    </div>
+    <div class="brainwrap"><canvas id="brain" aria-hidden="true"></canvas><div class="hint mono">${t('hover_hint')}</div></div>
+    <div class="cards">${RADAR.map((id,i)=>`<div class="card" data-id="${id}" style="--d:${120+i*60}ms;--dc:${DCOL[id]}"><div class="cico">${icon(id)}</div><div><b>${t('d_'+id)}</b><span class="mono">${METHOD[id]}</span></div></div>`).join('')}</div>
+    <p class="fine">🔒 ${t('privacy')}<br>${t('disclaimer')}</p></div>`);
+  const br=Brain.mount(el.querySelector('#brain'),{mode:'hero'});
+  const stb=el.querySelector('#st');stb.onclick=start;magnet(stb);
+  const cb=el.querySelector('#cont');if(cb)cb.onclick=()=>{state={i:run.i,res:run.res,age:run.age,flags:run.flags||{}};SEED=run.seed;if(run.vs)VS=run.vs;setTesting(true);taskIntro()};
+  const lb=el.querySelector('#lastb');if(lb)lb.onclick=()=>results(last.scores,last.raws,{fromLast:true,meta:last.meta||{}});
+  el.querySelectorAll('.card').forEach(c=>{tilt(c,10);c.addEventListener('pointerenter',()=>br.focus=c.dataset.id);c.addEventListener('pointerleave',()=>br.focus=null)});
+  onKey(e=>{if(e.key==='Enter'){e.preventDefault();start()}});
+}
+function start(){state={i:0,res:{},age:null,flags:{}};setTesting(true);ageScreen()}
+function ageScreen(){
+  current=null;
+  const el=show(`<div class="panel ti"><div class="orb" style="--dc:#9b6bff">${icon('age')}</div>
+    <h2>${t('age_q')}</h2><p class="lead">${t('age_sub')}</p>
+    <div class="ages">${AGES.map((a,i)=>`<button class="opt" data-i="${i}"><em>${i+1}</em>${a[0]}</button>`).join('')}</div>
+    <button class="btn ghost" id="skip" style="margin-top:16px">${t('age_skip')}</button>
+    <p class="privacy">${t('privacy2')}</p></div>`);
+  const go=i=>{state.age=i;taskIntro()};
+  el.querySelectorAll('.ages .opt').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+  el.querySelector('#skip').onclick=()=>go(null);
+  onKey(e=>{const n=parseInt(e.key,10);if(n>=1&&n<=AGES.length)go(n-1)});
+}
+function taskIntro(){
+  const id=ORDER[state.i];current=null;
+  const el=show(`<div class="panel ti"><div class="orb" style="--dc:${DCOL[id]}">${icon(id)}</div>
+    <div class="kicker mono">${t('task',{n:state.i+1,t:ORDER.length})} · ${METHOD[id]}</div>
+    <h2>${t('d_'+id)}</h2><p class="lead">${t('i_'+id)}</p>
+    <button class="btn primary" id="go">${t('begin')} <span class="kbd">↵</span></button></div>`);
+  progress();
+  const go=()=>runTask(),b=el.querySelector('#go');b.onclick=go;magnet(b);onKey(e=>{if(e.key==='Enter'){e.preventDefault();go()}});
+}
+function runTask(){
+  const id=ORDER[state.i];rng=mulberry32((hashStr(SEED)+state.i*7919)>>>0);
+  const el=show('<div class="stage" id="stage"></div>');progress();taskActive=id;
+  TESTS[id](el.querySelector('#stage'),res=>{taskActive=null;res.z=clamp(res.z,-3,3);state.res[id]=res;sfx.win();taskDone(id,res)});
+}
+function taskDone(id,res){
+  const el=show(`<div class="panel done"><div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <div class="kicker mono">${t('done')} · ${state.i+1}/${ORDER.length}</div><h2>${t('d_'+id)}</h2><div class="raw mono">${res.raw}</div>
+    <button class="btn primary" id="nx">${t('next')} <span class="kbd">↵</span></button></div>`);
+  state.i++;progress();saveRun();
+  const nx=()=>state.i<ORDER.length?taskIntro():finish(),b=el.querySelector('#nx');b.onclick=nx;magnet(b);onKey(e=>{if(e.key==='Enter'){e.preventDefault();nx()}});
+}
+function finish(){
+  const scores={},raws={};
+  ORDER.forEach(id=>{const z=clamp(ageAdj(id,state.res[id].z,state.age),-3.3,3.3);scores[id]=Math.round(100+15*z);raws[id]=state.res[id].raw});
+  const meta={age:state.age,flags:Object.keys(state.flags||{}),seed:SEED};
+  store.set('nm_last',JSON.stringify({scores,raws,meta,at:Date.now()}));clearRun();
+  results(scores,raws,{meta,vs:VS,fresh:true});
+}
+const topOf=sc=>[...RADAR].sort((a,b)=>sc[b]-sc[a])[0];
+function calc(scores){
+  const zs={};ORDER.forEach(id=>zs[id]=(scores[id]-100)/15);
+  const zc=composite(zs),iq=Math.round(clamp(100+15*zc,55,160)),p=Phi(zc)*100;
+  const sem=15*Math.sqrt(1-RELIABILITY),half=Math.round(1.96*sem);
+  const n=p>=75?1/(1-Math.min(p,99.99)/100):0,rare=n?(n<20?n.toFixed(n<10?1:0):Math.round(n).toLocaleString()):null;
+  return{iq,p,pct:p>99?Math.min(99.9,p).toFixed(1):String(Math.max(1,Math.round(p))),lo:iq-half,hi:iq+half,band:t(bandOf(iq)),rare};
+}
+
+/* ---------------------------- results ---------------------------- */
+function bellSVG(iq,viq){
+  const W=520,H=150,X=v=>(v-55)/90*W,Y=v=>H-8-(H-26)*Math.exp(-(((v-100)/15)**2)/2);
+  let d='';for(let v=55;v<=145;v++)d+=(v===55?'M':'L')+X(v).toFixed(1)+' '+Y(v).toFixed(1);
+  const cl=clamp(iq,55,145);let a=`M0 ${H-8}`;for(let v=55;v<=cl;v++)a+=`L${X(v).toFixed(1)} ${Y(v).toFixed(1)}`;a+=`L${X(cl).toFixed(1)} ${H-8}Z`;
+  const mk=(v,col,lab)=>{const c=clamp(v,55,145);return`<line x1="${X(c)}" y1="${Y(c)-14}" x2="${X(c)}" y2="${H-8}" stroke="${col}" stroke-width="2"/><circle cx="${X(c)}" cy="${Y(c)}" r="5" fill="#fff" stroke="${col}" stroke-width="2"/>
+    <text x="${clamp(X(c),24,W-24)}" y="${Y(c)-20}" fill="${col}" font-family="JetBrains Mono,monospace" font-size="13" font-weight="600" text-anchor="middle">${lab}</text>`};
+  return`<svg class="bell" viewBox="0 -22 ${W} ${H+42}"><defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#9b6bff" stop-opacity=".08"/><stop offset="1" stop-color="#5ef2ff" stop-opacity=".5"/></linearGradient></defs>
+    <path d="${a}" fill="url(#bg1)"/><path d="${d}" fill="none" stroke="rgba(233,237,255,.55)" stroke-width="1.6"/>
+    <line x1="0" y1="${H-8}" x2="${W}" y2="${H-8}" stroke="rgba(150,175,255,.2)"/>
+    ${[70,85,100,115,130].map(v=>`<text class="tk" x="${X(v)}" y="${H+10}">${v}</text>`).join('')}
+    ${viq?mk(viq,'#ff5fd2',viq):''}${mk(iq,'#5ef2ff',iq)}</svg>`;
+}
+function radarSVG(sc,vs){
+  const n=RADAR.length,cx=210,cy=210,Rr=150,ang=i=>-Math.PI/2+i*2*Math.PI/n,rad=s=>Rr*clamp((s-55)/90,.03,1),pt=(i,r)=>[cx+r*Math.cos(ang(i)),cy+r*Math.sin(ang(i))];
+  const pts=s=>RADAR.map((id,i)=>pt(i,rad(s[id])).map(q=>q.toFixed(1)).join(',')).join(' ');
+  let s=`<svg class="radar" viewBox="-95 -5 610 ${vs?460:430}"><defs><radialGradient id="rg"><stop offset="0" stop-color="#5ef2ff" stop-opacity=".55"/><stop offset="1" stop-color="#9b6bff" stop-opacity=".25"/></radialGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+  [70,85,100,115,130,145].forEach(v=>{s+=`<polygon class="ring${v===100?' avg':''}" points="${RADAR.map((_,i)=>pt(i,rad(v)).map(q=>q.toFixed(1)).join(',')).join(' ')}"/>`});
+  RADAR.forEach((_,i)=>{const[a,b]=pt(i,Rr);s+=`<line class="axis" x1="${cx}" y1="${cy}" x2="${a.toFixed(1)}" y2="${b.toFixed(1)}"/>`});
+  if(vs)s+=`<polygon points="${pts(vs)}" fill="rgba(255,95,210,.1)" stroke="#ff5fd2" stroke-width="2" stroke-dasharray="6 5" stroke-linejoin="round"/>`;
+  s+=`<g class="rpoly"><polygon points="${pts(sc)}" fill="url(#rg)" stroke="#5ef2ff" stroke-width="2" stroke-linejoin="round" filter="url(#glow)"/>
+    ${RADAR.map((id,i)=>{const[a,b]=pt(i,rad(sc[id]));return`<circle cx="${a.toFixed(1)}" cy="${b.toFixed(1)}" r="5" fill="${DCOL[id]}" stroke="#fff" stroke-width="1.5"/>`}).join('')}</g>`;
+  RADAR.forEach((id,i)=>{const[a,b]=pt(i,Rr+24),c=Math.cos(ang(i)),anc=Math.abs(c)<.2?'middle':c>0?'start':'end',dy=Math.sin(ang(i))<-.9?-10:Math.sin(ang(i))>.9?6:0;
+    s+=`<text class="rl" x="${a.toFixed(1)}" y="${(b+dy).toFixed(1)}" text-anchor="${anc}">${t('d_'+id)}</text><text class="rv" x="${a.toFixed(1)}" y="${(b+dy+17).toFixed(1)}" text-anchor="${anc}" fill="${DCOL[id]}">${sc[id]}${vs?`<tspan fill="#ff5fd2"> / ${vs[id]}</tspan>`:''}</text>`});
+  if(vs)s+=`<g font-family="JetBrains Mono,monospace" font-size="13"><rect x="100" y="436" width="22" height="4" fill="#5ef2ff"/><text x="130" y="442" fill="#e9edff">${t('you')}</text><rect x="230" y="436" width="22" height="4" fill="#ff5fd2"/><text x="260" y="442" fill="#e9edff">${t('friend')}</text></g>`;
+  return s+'</svg>';
+}
+function results(scores,raws,o){
+  o=o||{};setTesting(false);current=()=>results(scores,raws,o);
+  const c=calc(scores),C=2*Math.PI*86,sorted=[...RADAR].sort((a,b)=>scores[b]-scores[a]),top=sorted[0],meta=o.meta||{};
+  const vc=o.vs?calc(o.vs):null,diff=vc?c.iq-vc.iq:0;
+  const chips=[];
+  if(!o.shared){chips.push(`<span>${meta.age!=null&&AGES[meta.age]?t('age_adj',{a:AGES[meta.age][0]}):t('no_age')}</span>`);
+    if(meta.flags&&meta.flags.length)chips.push(`<span class="warn">⚠ ${t('tab_warn',{x:meta.flags.map(f=>t('d_'+f)).join(', ')})}</span>`)}
+  const el=show(`<div class="res">
+    ${o.shared?`<div class="shared-b"><span class="badge mono">↗ ${t('shared')}</span><button class="btn primary" id="try">${t('tryIt')} →</button></div>`:''}
+    ${vc?`<div class="panel vs"><div class="me"><span>${t('you')}</span><b>${c.iq}</b></div><div class="vsmid">${diff>0?'🏆 '+t('vs_win',{d:diff}):diff<0?t('vs_lose',{d:-diff}):t('vs_tie')}</div><div class="fr"><span>${t('friend')}</span><b>${vc.iq}</b></div></div>`:''}
+    <div class="res-hero">
+      <div class="panel bpanel" style="--ac:${DCOL[top]}">
+        <div class="brainwrap"><canvas id="brain" aria-hidden="true"></canvas></div>
+        <div class="arch"><div class="kicker mono">${t('archetype')}</div><h3>${t('a_'+top)}</h3><p>${t('ad_'+top)}</p></div>
+      </div>
+      <div class="panel spanel">
+        <div class="scoreline">
+          <div class="gw"><svg viewBox="0 0 200 200"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ef2ff"/><stop offset=".6" stop-color="#9b6bff"/><stop offset="1" stop-color="#ff5fd2"/></linearGradient></defs>
+            <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="12"/>
+            <circle class="garc" cx="100" cy="100" r="86" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${C.toFixed(2)}" style="--o:${(C*(1-clamp(c.p,1,99.5)/100)).toFixed(2)}"/></svg>
+            <div class="gnum"><b id="iqn">0</b><span>${t('index')}</span></div></div>
+          <div><div class="kicker mono">${t('results')}</div><div class="band">${c.band}</div><div class="pct">${t('better',{p:c.pct})}</div>${c.rare?`<div class="rare">◆ ${t('rare',{n:c.rare})}</div>`:''}</div>
+        </div>
+        <div class="rng mono">${t('range')}: ${c.lo}–${c.hi} · ${t('avg')}</div>
+        ${bellSVG(c.iq,vc&&vc.iq)}
+        <div class="hl"><div>▲ ${t('strong')}: <b>${t('d_'+sorted[0])}</b></div><div>◇ ${t('grow')}: <b>${t('d_'+sorted[sorted.length-1])}</b></div></div>
+      </div>
+    </div>
+    <div class="res-mid">
+      <div class="panel radarp">${radarSVG(scores,o.vs)}</div>
+      <div class="panel bars">${RADAR.map((id,i)=>`<div class="bar" data-id="${id}" style="--dc:${DCOL[id]}"><div class="cico">${icon(id)}</div><div class="bm"><div class="bt"><span>${t('d_'+id)}</span>${raws&&raws[id]?`<small>${raws[id]}</small>`:''}<b>${scores[id]}</b></div>
+        <div class="track"><i style="--w:${(clamp((scores[id]-55)/90,.02,1)*100).toFixed(1)}%;--dl:${300+i*90}ms"></i><span class="mid"></span></div></div></div>`).join('')}</div>
+    </div>
+    ${chips.length?`<div class="chips mono">${chips.join('')}</div>`:''}
+    ${o.shared?'':`<div class="actions">
+      <button class="btn primary" id="dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>${t('download')}</button>
+      <button class="btn ghost" id="sh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>${t('share')}</button>
+      <button class="btn ghost" id="ch">⚔ ${t('challenge')}</button>
+      <button class="btn ghost" id="rt">↺ ${t('retake')}</button></div>`}
+    <p class="meta-l mono">${t('brain_note')}<br>${o.shared?'':`${t('testId')}: ${meta.seed||'—'} · `}${t('disclaimer')}</p></div>`);
+  const labels={};for(const id in DCOL)labels[id]=`${t('d_'+id)} ${scores[id]}`;
+  const br=Brain.mount(el.querySelector('#brain'),{mode:'result',lv:levels(scores),labels});
+  el.querySelectorAll('.bar').forEach(b=>{b.addEventListener('pointerenter',()=>br.focus=b.dataset.id);b.addEventListener('pointerleave',()=>br.focus=null)});
+  el.querySelectorAll('.panel.radarp,.panel.bars').forEach(p=>tilt(p,3));
+  /* count-up */
+  const num=el.querySelector('#iqn'),t0=performance.now();
+  (function tick(now){const k=clamp((now-t0)/1700,0,1),e=1-Math.pow(1-k,3);num.textContent=Math.round(c.iq*e);if(k<1&&document.body.contains(num))requestAnimationFrame(tick)})(t0);
+  if(o.fresh)later(()=>{sfx.win();burstEl(num,'#9b6bff');burstEl(num,DCOL[top]);burstEl(num)},1700);
+  const base=location.href.split(/[?#]/)[0],packed=ORDER.map(id=>scores[id]).join('.');
+  if(o.shared){el.querySelector('#try').onclick=()=>{VS=scores;SEED=newSeed();CHALLENGE=false;history.replaceState(null,'',base);intro()};return}
+  el.querySelector('#dl').onclick=()=>downloadCard(c,scores,top,meta.seed);
+  el.querySelector('#sh').onclick=()=>shareLink(base+'#r='+packed,c,top);
+  el.querySelector('#ch').onclick=()=>shareLink(base+'?seed='+(meta.seed||SEED)+'&vs='+packed,c,top);
+  el.querySelector('#rt').onclick=()=>{SEED=newSeed();CHALLENGE=false;VS=null;history.replaceState(null,'',base);start()};
+  magnet(el.querySelector('#dl'));
+}
+async function shareLink(url,c,top){
+  const text=`NeuroMap: ${c.iq} — ${t('a_'+top)}`;
+  if(navigator.share&&matchMedia('(pointer:coarse)').matches){try{await navigator.share({title:'NeuroMap',text,url});return}catch(e){if(e&&e.name==='AbortError')return}}
+  try{await navigator.clipboard.writeText(url);toast(t('copied'))}catch(e){window.prompt('URL',url)}
+}
+async function downloadCard(c,sc,top,seed){
+  try{await document.fonts.ready}catch(e){}
+  const cv=document.createElement('canvas');cv.width=1080;cv.height=1350;const x=cv.getContext('2d'),F='"Space Grotesk",system-ui,sans-serif',M='"JetBrains Mono",monospace';
+  const g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#0c0822');g.addColorStop(.55,'#05060d');g.addColorStop(1,'#031c26');x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  const blob=(cx,cy,r,col)=>{const rg=x.createRadialGradient(cx,cy,0,cx,cy,r);rg.addColorStop(0,col);rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(0,0,1080,1350)};
+  blob(920,120,560,'rgba(155,107,255,.36)');blob(120,1260,560,'rgba(94,242,255,.2)');blob(540,800,330,hexA(DCOL[top],.12));
+  const pts=Array.from({length:60},()=>[Math.random()*1080,Math.random()*1350]);x.strokeStyle='rgba(120,170,255,.07)';x.lineWidth=1;
+  pts.forEach((p,i)=>pts.slice(i+1).forEach(q=>{if(Math.hypot(p[0]-q[0],p[1]-q[1])<170){x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke()}}));
+  x.textAlign='left';x.fillStyle='#e9edff';x.font=`700 46px ${F}`;x.fillText('NeuroMap',80,112);
+  x.textAlign='right';x.fillStyle='#8790b5';x.font=`500 24px ${M}`;x.fillText(`${t('testId')} ${seed||SEED}`,1000,108);
+  x.textAlign='center';x.fillStyle='#8790b5';x.font=`600 26px ${F}`;x.fillText(t('index').toUpperCase(),540,210);
+  const tg=x.createLinearGradient(340,0,740,0);tg.addColorStop(0,'#5ef2ff');tg.addColorStop(1,'#c08bff');x.fillStyle=tg;x.shadowColor='rgba(94,242,255,.5)';x.shadowBlur=40;x.font=`700 210px ${F}`;x.fillText(c.iq,540,395);x.shadowBlur=0;
+  x.fillStyle='#e9edff';x.font=`600 40px ${F}`;x.fillText(c.band,540,460);x.fillStyle='#b9c1e2';x.font=`500 28px ${F}`;x.fillText(t('better',{p:c.pct}),540,504);
+  if(c.rare){x.fillStyle='#ff5fd2';x.font=`500 23px ${M}`;x.fillText('◆ '+t('rare',{n:c.rare}),540,544)}
+  Brain.drawStatic(x,250,520,580,levels(sc));
+  x.fillStyle='#8790b5';x.font=`600 22px ${M}`;x.fillText(t('archetype').toUpperCase(),540,1060);
+  x.fillStyle=DCOL[top];x.shadowColor=hexA(DCOL[top],.6);x.shadowBlur=24;x.font=`700 50px ${F}`;x.fillText(t('a_'+top),540,1114);x.shadowBlur=0;
+  x.fillStyle='#b9c1e2';x.font=`500 25px ${F}`;x.fillText(t('ad_'+top),540,1154);
+  RADAR.forEach((id,i)=>{const col=i%2,row=i>>1,bx=col?570:90,by=1196+row*30,w=420;
+    x.textAlign='left';x.fillStyle='#e9edff';x.font=`500 19px ${F}`;x.fillText(t('d_'+id),bx,by);
+    x.textAlign='right';x.fillStyle=DCOL[id];x.font=`600 19px ${M}`;x.fillText(sc[id],bx+w,by);
+    x.fillStyle='rgba(255,255,255,.08)';x.fillRect(bx+150,by-8,w-200,6);x.fillStyle=DCOL[id];x.fillRect(bx+150,by-8,(w-200)*clamp((sc[id]-55)/90,.02,1),6)});
+  x.textAlign='center';x.fillStyle='#8790b5';x.font=`500 20px ${M}`;x.fillText(REPO.replace(/^https?:\/\//,''),540,1328);
+  cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`neuromap-${c.iq}.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},'image/png');
+}
+
+/* =====================================================================
+   BACKGROUND — living neural network
+   ===================================================================== */
+(function(){
+  const cv=$('#bg'),x=cv.getContext('2d');let W=0,H=0,P=[],pulses=[];const mouse={x:-1e4,y:-1e4};
+  function resize(){const dpr=Math.min(window.devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);
+    const N=Math.round(clamp(W*H/16000,26,96));P=Array.from({length:N},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26,r:Math.random()*1.5+.6,h:Math.random()}))}
+  addEventListener('resize',resize);resize();
+  addEventListener('pointermove',e=>{mouse.x=e.clientX;mouse.y=e.clientY},{passive:true});
+  document.addEventListener('pointerleave',()=>{mouse.x=mouse.y=-1e4});
+  const D=135;
+  function frame(){
+    if(!document.hidden){
+      x.clearRect(0,0,W,H);
+      for(const p of P){
+        if(!reduceMotion){p.x+=p.vx;p.y+=p.vy}
+        const dx=mouse.x-p.x,dy=mouse.y-p.y,dd=Math.hypot(dx,dy);if(dd<200&&dd>1){p.x+=dx/dd*.3;p.y+=dy/dd*.3}
+        if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+      }
+      for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<D){x.strokeStyle=`rgba(${120+a.h*60|0},${150+b.h*60|0},255,${(1-d/D)*.24})`;x.lineWidth=1;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+      for(const p of P){const d=Math.hypot(mouse.x-p.x,mouse.y-p.y);if(d<170){x.strokeStyle=`rgba(94,242,255,${(1-d/170)*.45})`;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(mouse.x,mouse.y);x.stroke()}}
+      if(!reduceMotion&&Math.random()<.1&&pulses.length<22){const i=Math.random()*P.length|0,a=P[i];const nb=P.filter(b=>b!==a&&Math.hypot(a.x-b.x,a.y-b.y)<D);if(nb.length)pulses.push({a,b:nb[Math.random()*nb.length|0],t:0})}
+      pulses=pulses.filter(q=>(q.t+=.025)<1);
+      for(const q of pulses){const px=q.a.x+(q.b.x-q.a.x)*q.t,py=q.a.y+(q.b.y-q.a.y)*q.t;x.fillStyle='rgba(94,242,255,.16)';x.beginPath();x.arc(px,py,7,0,7);x.fill();x.fillStyle='#bff9ff';x.beginPath();x.arc(px,py,1.8,0,7);x.fill()}
+      for(const p of P){x.fillStyle=p.h>.5?'rgba(180,150,255,.8)':'rgba(120,235,255,.8)';x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()}
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';store.set('nm_lang',L);$('#lang').value=L;if(current)current()}
+(function boot(){
+  const sel=$('#lang');sel.innerHTML=Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  sel.onchange=()=>setLang(sel.value);
+  let l=params.get('lang');if(!I18N[l])l=store.get('nm_lang');
+  if(!I18N[l]){l='en';for(const n of(navigator.languages||[navigator.language||'en'])){const k=String(n).slice(0,2).toLowerCase();if(I18N[k]){l=k;break}}}
+  $('#gh').href=REPO;
+  const snd=$('#snd');const paint=()=>{snd.innerHTML=sfx.on?SND_ON:SND_OFF};paint();snd.onclick=()=>{sfx.toggle();paint();sfx.tick()};
+  $('#home').onclick=e=>{e.preventDefault();if(document.body.classList.contains('testing')&&!confirm(t('quit')))return;taskActive=null;history.replaceState(null,'',location.href.split('#')[0]);intro()};
+  const m=location.hash.match(/^#r=([\d.]+)$/),shared=m?parseScores(m[1]):null;
+  L=l;setLang(l);
+  if(shared)results(shared,null,{shared:true});else intro();
+})();
+</script>
+</body>
+</html>
