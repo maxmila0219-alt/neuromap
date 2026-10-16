@@ -13,6 +13,22 @@
 
 ---
 
+## 🧬 NEW in v5: a living brain
+
+- **WebGL engine** (`neurogl.js`, no dependencies): tens of thousands of glowing particles, HDR bloom, filmic tonemapping and adaptive resolution for weak phones. It falls back to the 2D renderer automatically.
+- **My brain**: your own brain grows from your real training data.
+  - 8 regions light up by skill and are linked by white-matter tracts.
+  - Tap a region to fly *inside* it, into a **cortical column of procedurally grown neurons**. You see pyramidal cells and interneurons, dendrites with spines, axons, myelin sheaths with nodes of Ranvier and synaptic boutons.
+  - The network is a real **leaky integrate-and-fire spiking network** with conduction delays. Impulses travel along axons and cross synapses, and they jump from node to node when myelinated. Tap to make neurons fire.
+  - Practice adds neurons and synapses, consistency adds myelin (signals get faster), and regions you don't train fall asleep.
+  - Every region shows your progress since day one, trend, percentile, next milestone and a real finding from neuroscience.
+  - **Brain tour** flies the camera through your brain, region by region.
+- **Journey into the Brain 2.0**: a GL brain with a continuous zoom from the whole organ into a firing cortical network, plus 4 new experiments: hearing range ("how old are your ears"), attentional blink, Müller-Lyer illusion and number sense (Weber fraction, fitted by maximum likelihood).
+
+> Honesty note: the neurons, synapses and myelin in "My brain" visualise *your practice* (a metaphor for neuroplasticity). They are not a scan of your real brain.
+
+---
+
 ## 🧠 NEW: Journey into the Brain
 
 **[Open the journey →](https://maxmila0219-alt.github.io/neuromap/journey.html)**
@@ -29,6 +45,10 @@ A scroll-driven voyage from the whole brain down to a single firing neuron. A 3D
 | 🌀 Temporal lobe | **False memory**: your brain "remembers" a word it never saw | Roediger & McDermott 1995 |
 | ⚡ Motor system | **Reaction time**, with the signal path from eye to finger | — |
 | 🔬 Neuron | A real **Hodgkin–Huxley** model running live: stimulate, hold current, remove myelin, add pufferfish toxin | Hodgkin & Huxley 1952 |
+| 👂 Temporal lobe | **Hearing range**: how old are your ears? | ISO 7029 · Rodríguez Valiente et al. 2014 |
+| ⏱ Attention | **Attentional blink** in a 10-per-second letter stream | Raymond, Shapiro & Arnell 1992 |
+| 📏 Vision | **Müller-Lyer** illusion strength in % | Segall et al. 1966 |
+| 🎯 Parietal lobe | **Number sense**: your Weber fraction | Halberda et al. 2008 |
 | 🌍 Global Brain | Anonymous results on an **open world map**, "when is humanity fastest?" chart, shareable brain card, friend challenges | — |
 
 ### 🌍 Global Brain backend (optional, free)
