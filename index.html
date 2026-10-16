@@ -2322,27 +2322,37 @@ const lerp=(a,b,k)=>a+(b-a)*k;
 /* =====================================================================
    v5 — LIVING BRAIN: WebGL brain everywhere + "My brain" explorer
    ===================================================================== */
-const GL_OK=!!(window.NGL&&NGL.supported());
+let GL_OK=!!(window.NGL&&NGL.supported());
 const DIDX=d=>NGL.DOMAINS.indexOf(d);
 const TRACTS=[['logic','memory'],['logic','attention'],['attention','spatial'],['spatial','numbers'],['control','logic'],['reflex','control'],
   ['speed','spatial'],['memory','numbers'],['speed','attention'],['reflex','spatial'],['memory','control'],['numbers','logic']];
 let _glBrain={};
 function glBrainData(mob){const k=mob?'m':'d';if(!_glBrain[k]){const b=NGL.brain({n:mob?13000:24000,colors:DCOL});_glBrain[k]={b,tr:NGL.tracts(b.cen,TRACTS,DCOL,mob?90:140),dust:NGL.dust(mob?500:1100,5.5)}}return _glBrain[k]}
+/* heavy extras (glass shell + tractography) are built after the first frame, then cached */
+function glExtras(mob,cb){const D=glBrainData(mob);if(D.shell){setTimeout(()=>cb(D),0);return}
+  const go=()=>{try{D.shell=D.shell||NGL.shell(D.b,{res:mob?40:56});D.fib=D.fib||NGL.fibers({n:mob?450:1000,steps:mob?56:70})}catch(e){console.warn(e)}cb(D)};
+  (window.requestIdleCallback||setTimeout)(go,{timeout:600})}
+/* a GPU that fails the self-test is remembered, so the 2D renderer is used next time */
+function noGL(why){if(!/probe|framebuffer|gl error/.test(why||''))return;GL_OK=false;try{localStorage.setItem('nm_nogl','2')}catch(e){}const tb=document.querySelector('#tabs [data-tab="brain"]');if(tb)tb.remove()}
 /* drop-in replacement for the 2D Brain.mount: same API, real glow */
-if(GL_OK){const mount2D=Brain.mount;Brain.mount=(cv,opt)=>{try{return glMount(cv,opt)}catch(e){console.warn('GL fallback',e);return mount2D(cv,opt)}}}
+let mount2D=Brain.mount;
+if(GL_OK)Brain.mount=(cv,opt)=>{if(!GL_OK)return mount2D(cv,opt);try{return glMount(cv,opt)}catch(e){console.warn('GL fallback',e);return mount2D(cv,opt)}};
 function glMount(cv,opt){
   const mob=innerWidth<700,R=NGL.create(cv,{auto:.22,maxDpr:mob?1.5:1.75,minDist:2.2,maxDist:5});if(!R)throw new Error('no gl');
   const D=glBrainData(mob),L=R.addLayer(D.b,{sat:1.1}),T=R.addLayer(D.tr),U=R.addLayer(D.dust);U.fade=.7;
+  let SH=null,FB=null,alive=true;glExtras(mob,d=>{if(!alive||!d.shell)return;SH=R.addMesh(d.shell,{tint:[.42,.58,1],fade:0,scan:opt.mode==='hero'?1:.6});FB=R.addLines(d.fib,{fade:0})});
   R.setCam({dist:3.05,yaw:-.95,pitch:.22});
-  let focus=null,next=0;
+  let focus=null,next=0,fb2=null;
   R.onFrame=(t,dt)=>{
     for(const d of NGL.DOMAINS){const i=DIDX(d);L.gain[i]=opt.mode==='hero'?.42:(opt.lv?opt.lv[d]:.5)}L.gain[8]=.22;
     T.tr.fill(opt.mode==='hero'?.35:.22);
+    if(SH)SH.fade=Math.min(.75,SH.fade+dt*.5);if(FB)FB.fade=Math.min(focus?.12:.3,FB.fade+dt*.3);
     for(const w of L.waves){w.r+=dt*.9;w.a=Math.max(0,w.a-dt*.55)}L.waves=L.waves.filter(w=>w.a>0);
     if(t>next&&!reduceMotion){const i=Math.random()*D.b.n|0;L.waves.push({x:D.b.pos[i*3],y:D.b.pos[i*3+1],z:D.b.pos[i*3+2],r:0,a:1});next=t+.8+Math.random()*.9}
   };
-  R.start();onClean(()=>R.destroy());
-  return{get focus(){return focus},set focus(v){focus=v;L.focus=v?DIDX(v):-1}};
+  R.onFail=why=>{alive=false;noGL(why);try{R.destroy()}catch(e){}const nc=cv.cloneNode(false);cv.replaceWith(nc);fb2=mount2D(nc,opt);if(focus)fb2.focus=focus};
+  R.start();onClean(()=>{alive=false;R.destroy()});
+  return{get focus(){return focus},set focus(v){focus=v;if(fb2){fb2.focus=v;return}L.focus=v?DIDX(v):-1}};
 }
 
 /* ---------- growth model: everything derived from your real training data ---------- */
@@ -2392,6 +2402,8 @@ function brainScreen(){
   onClean(()=>{R.destroy();if(tour)tour.stop=1});
   const ovD=()=>{const[w,h]=R.size,asp=w/Math.max(1,h);return Math.max(3.35,1.28/(Math.tan(.4)*Math.min(1.3,asp)))};
   const D=glBrainData(mob),BL=R.addLayer(D.b,{sat:1.15}),TL=R.addLayer(D.tr),DU=R.addLayer(D.dust);
+  let SHL=null,FBL=null;glExtras(mob,d=>{if(!d.shell||!document.body.contains(el))return;SHL=R.addMesh(d.shell,{tint:[.4,.55,1],fade:0,scan:.8});FBL=R.addLines(d.fib,{fade:0});if(deep){SHL.visible=FBL.visible=false}});
+  R.dof=.22;R.onFail=why=>{noGL(why);progressScreen()};
   const cen=D.b.cen,mid=[0,.1,0];
   const gainOf=d=>{const s=ST[d];return s.bpi==null?.07:clamp((s.bpi-55)/75,.12,1)*(.35+.65*s.act)};
   RADAR.forEach(d=>BL.gain[DIDX(d)]=gainOf(d));BL.gain[8]=.12;
@@ -2404,6 +2416,7 @@ function brainScreen(){
   let deep=null,net=null,COL=null,CL=null,busy=false,tour=null;
   R.onFrame=(t,dt)=>{
     for(const w of BL.waves){w.r+=dt*.9;w.a=Math.max(0,w.a-dt*.5)}BL.waves=BL.waves.filter(w=>w.a>0);
+    if(SHL&&!deep){SHL.fade=Math.min(.7*BL.fade,SHL.fade+dt*.6);FBL.fade=Math.min((BL.focus>=0?.14:.34)*BL.fade,FBL.fade+dt*.4)}
     if(!deep){
       if(Math.random()<dt*1.2){const d=RADAR[Math.random()*8|0];if(ST[d].plays&&Math.random()<ST[d].act){const c=cen[d];BL.waves.push({x:c[0],y:c[1],z:c[2],r:0,a:.8})}}
       const ex=R.eye;if(!ex)return;const ed=Math.hypot(ex[0],ex[1],ex[2])||1;
@@ -2420,7 +2433,7 @@ function brainScreen(){
     await R.flyTo({target:[c[0]*.6,c[1]*.6+.04,c[2]*.6],dist:1.5,yaw,pitch},1.1);
     const fl=el.querySelector('#mbf');fl.classList.add('on');
     const t0=performance.now();await new Promise(r=>{const f=()=>{const k=clamp((performance.now()-t0)/700,0,1);R.cam.dist=R.goal.dist=lerp(1.5,.25,k*k);BL.fade=TL.fade=1-k;if(k<1)requestAnimationFrame(f);else r()};f()});
-    BL.visible=TL.visible=false;
+    BL.visible=TL.visible=false;if(SHL){SHL.visible=FBL.visible=false}R.dof=mob?.3:.38;
     COL=NGL.column({n:s.neurons,density:s.density,myelin:s.myl,seed:hashStr('region'+d)%100000,color:DCOL[d],detail:mob?.7:1});
     CL=R.addLayer(COL,{vel:.85,my:s.myl>0?1:0,inn:.1});CL.fade=s.plays?.35+.65*Math.max(.35,s.act):.3;
     net=NGL.Net(COL,R,{act:s.plays?Math.max(.25,s.act):.12,vel:.85,myVel:1.2+.55*s.myl});
@@ -2436,7 +2449,7 @@ function brainScreen(){
     el.querySelector('#rp').hidden=true;R.onTap=null;
     await R.flyTo({dist:9,pitch:.3},.9);
     if(CL){R.removeLayer(CL);CL=null}net=null;COL=null;
-    BL.visible=TL.visible=true;BL.fade=TL.fade=0;BL.focus=-1;R.auto=.12;
+    BL.visible=TL.visible=true;BL.fade=TL.fade=0;BL.focus=-1;R.auto=.12;R.dof=.22;if(SHL){SHL.visible=FBL.visible=true;SHL.fade=FBL.fade=0}
     R.setCam({target:[c[0]*.6,c[1]*.6,c[2]*.6],dist:.4,yaw,pitch:.2});
     const t0=performance.now();(function f(){const k=clamp((performance.now()-t0)/900,0,1);BL.fade=TL.fade=k;if(k<1)requestAnimationFrame(f)})();
     await R.flyTo({target:[0,0,0],dist:ovD(),yaw:yaw-.5,pitch:.24},1.6);

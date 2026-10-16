@@ -25,6 +25,10 @@
   - **Brain tour** flies the camera through your brain, region by region.
 - **Journey into the Brain 2.0**: a GL brain with a continuous zoom from the whole organ into a firing cortical network, plus 4 new experiments: hearing range ("how old are your ears"), attentional blink, Müller-Lyer illusion and number sense (Weber fraction, fitted by maximum likelihood).
 
+- **Glass brain + tractography** (v5.1): a translucent glass cortex, built with naive surface nets from the particle density field, with fresnel rim, thin-film iridescence and an MRI-style scan plane. Inside it run ~1000 white-matter streamlines coloured with the real **diffusion-MRI convention** (red = left↔right, green = front↔back, blue = up↔down).
+- **Cinematic post-processing**: depth of field (bokeh), ACES filmic tonemapping, lens chromatic aberration, HDR bloom.
+- **Bullet-proof on phones**: the engine draws a probe frame through the whole HDR pipeline and reads it back. If a GPU can't render half-float targets it switches to 8-bit; if it still fails, it hands over to the 2D renderer and remembers that choice. Add `?gldebug` to the URL to see renderer, format and fps, and `?gl` to re-enable 3D.
+
 > Honesty note: the neurons, synapses and myelin in "My brain" visualise *your practice* (a metaphor for neuroplasticity). They are not a scan of your real brain.
 
 ---
