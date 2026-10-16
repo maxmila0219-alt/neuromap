@@ -1,0 +1,17 @@
+{
+  "name": "NeuroMap — Brain Training",
+  "short_name": "NeuroMap",
+  "description": "Daily brain training and a cognitive test built on classic cognitive science. 8 games, streaks, a living 3D brain map.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#04050b",
+  "theme_color": "#04050b",
+  "categories": ["education", "games", "health"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

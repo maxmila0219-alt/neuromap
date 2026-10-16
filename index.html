@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NeuroMap — Cognitive Brain Test</title>
+<title>NeuroMap — Brain Training & Cognitive Test</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="description" content="Open-source cognitive test: 8 scientific tasks, adaptive difficulty, age norms and a living 3D brain map. Runs entirely in your browser. 10 languages.">
 <meta name="theme-color" content="#04050b">
 <meta property="og:title" content="NeuroMap — map your mind in 15 minutes">
@@ -25,7 +30,7 @@
 html{color-scheme:dark}
 body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(1100px 700px at 78% -12%,rgba(124,77,255,.28),transparent 60%),radial-gradient(900px 620px at -6% 108%,rgba(0,190,220,.18),transparent 55%)}
+  background:radial-gradient(1100px 700px at 78% -12%,var(--amb,rgba(124,77,255,.28)),transparent 60%),radial-gradient(900px 620px at -6% 108%,rgba(0,190,220,.18),transparent 55%)}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:30;opacity:.07;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 #bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;transition:opacity 1s}
@@ -308,11 +313,198 @@ main{position:relative;z-index:1;min-height:100vh;display:flex;align-items:cente
 @media(max-width:520px){.scoreline{flex-direction:column;text-align:center}.spanel{align-items:center;text-align:center}.hl{justify-content:center}.vs{padding:14px}.vs b{font-size:34px}}
 
 .tilt{transition:transform .6s var(--spring)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);opacity:0;padding:12px 18px;border-radius:14px;background:#11152b;border:1px solid var(--line2);z-index:60;transition:.3s;pointer-events:none;font-size:14px}
+.toast{position:fixed;bottom:calc(96px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,20px);opacity:0;padding:12px 18px;border-radius:14px;background:#11152b;border:1px solid var(--line2);z-index:60;transition:.3s;pointer-events:none;font-size:14px}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .spark{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:50;animation:spark .7s ease-out forwards;box-shadow:0 0 10px currentColor}
 @keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ---------- v2: app shell ---------- */
+main{padding-bottom:130px}
+#tabs{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:25;display:flex;gap:4px;padding:6px;border-radius:24px;background:rgba(14,17,36,.8);border:1px solid var(--line2);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);box-shadow:0 20px 50px -14px rgba(0,0,0,.85);transition:transform .55s var(--spring),opacity .3s}
+#tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:76px;padding:8px 10px;border-radius:18px;color:var(--mute);font-size:11px;font-weight:600;transition:color .25s,background .25s,transform .3s var(--spring)}
+#tabs button:hover{color:var(--text)}
+#tabs button:active{transform:scale(.92)}
+#tabs svg{width:22px;height:22px}
+#tabs button.on{color:#fff;background:linear-gradient(135deg,rgba(94,242,255,.18),rgba(155,107,255,.24));box-shadow:inset 0 0 0 1px rgba(94,242,255,.3)}
+#tabs button.on svg{filter:drop-shadow(0 0 6px rgba(94,242,255,.7))}
+body.testing #tabs{transform:translate(-50%,170%);opacity:0;pointer-events:none}
+@media(max-width:420px){#tabs button{min-width:66px;padding:8px 6px}}
+.confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:70}
+.up{color:var(--ok)}.dn{color:#ff8da0}
+.home,.gscreen,.pscreen{display:flex;flex-direction:column;gap:18px}
+.home-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.hello{font-size:clamp(34px,5.4vw,56px);letter-spacing:-.04em;line-height:1.02;margin-top:8px;background:linear-gradient(180deg,#fff 40%,#aab3df);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sec-head p{color:var(--soft);margin-top:8px}
+.lvl-chip{min-width:240px;padding:12px 16px;border-radius:18px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.lvl-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.lvl-chip b{font-size:14px}.lvl-chip span{font-size:11px;color:var(--mute)}
+.xpbar{height:8px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;margin:8px 0 4px}
+.xpbar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--c2),var(--c1));box-shadow:0 0 12px rgba(94,242,255,.6);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.xpbar.big{height:12px;margin:10px 0 6px}
+.home-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}
+.workout{padding:26px;display:flex;flex-direction:column;gap:18px}
+.wk-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.wk-head h2{font-size:clamp(24px,3vw,32px);letter-spacing:-.02em}
+.wk-head p{font-size:12px;color:var(--mute);margin-top:6px}
+.streak{display:flex;flex-direction:column;align-items:center;min-width:86px;padding:10px 12px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid var(--line);filter:grayscale(1);opacity:.55}
+.streak.on{filter:none;opacity:1;border-color:rgba(255,140,60,.5);background:radial-gradient(circle at 50% 0%,rgba(255,120,40,.28),transparent 70%);box-shadow:0 0 40px -10px rgba(255,120,40,.6)}
+.streak .flame{font-size:26px;display:inline-block}
+.streak.on .flame{animation:flick 1.6s ease-in-out infinite}
+.streak b{font-size:26px;line-height:1.05}.streak small{font-size:9.5px;color:var(--soft);text-transform:uppercase;letter-spacing:.1em;margin-top:3px;text-align:center}
+@keyframes flick{50%{transform:scale(1.14) rotate(-5deg)}}
+.week{display:flex;gap:6px}.week i{flex:1;height:6px;border-radius:6px;background:rgba(255,255,255,.08)}
+.week i.on{background:linear-gradient(90deg,#ff9a3c,#ff5fd2);box-shadow:0 0 10px rgba(255,120,60,.5)}
+.week i.now{outline:1px solid rgba(255,255,255,.45);outline-offset:2px}
+.wk-games{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.wg{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px;border-radius:20px;text-align:start;background:var(--panel2);border:1px solid var(--line);transition:transform .35s var(--spring),border-color .2s,box-shadow .2s}
+.wg:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--dc) 60%,transparent)}
+.wgt b{display:block;font-size:16px}.wgt span{display:block;font-size:11px;color:var(--mute);margin-top:3px}
+.wg em{position:absolute;top:12px;inset-inline-end:14px;font-style:normal;font-family:var(--mono);font-size:12px;color:var(--mute)}
+.wg.fin{background:color-mix(in srgb,var(--dc) 10%,transparent);border-color:color-mix(in srgb,var(--dc) 45%,transparent)}
+.wg.fin em{color:var(--dc);font-size:18px;font-weight:700}
+.wg.fin .wgt span{color:var(--text)}
+.wg.next{border-color:color-mix(in srgb,var(--dc) 70%,transparent);box-shadow:0 0 34px -10px var(--dc);animation:nextp 2.2s ease-in-out infinite}
+@keyframes nextp{50%{box-shadow:0 0 44px -6px var(--dc)}}
+.wk-done{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 18px;border-radius:18px;background:rgba(61,220,151,.08);border:1px solid rgba(61,220,151,.35)}
+.wk-done b{display:block;color:var(--ok)}.wk-done span{font-size:12px;color:var(--soft)}
+.workout .btn.big{align-self:flex-start}
+.brainp{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;overflow:hidden}
+.brainp .brainwrap{max-width:360px}
+.bpi{text-align:center;margin-top:-34px;padding:0 16px 20px}
+.bpi b{display:block;font-size:52px;font-weight:700;letter-spacing:-.04em;line-height:1.1;background:linear-gradient(120deg,#fff,var(--c1));-webkit-background-clip:text;background-clip:text;color:transparent}
+.bpi small{color:var(--mute);font-size:12px}
+.promo{display:flex;align-items:center;gap:14px;padding:18px 22px;text-align:start;width:100%;transition:transform .4s var(--spring),border-color .2s}
+.promo:hover{border-color:var(--line2)}.promo b{display:block;font-size:16px}.promo span{display:block;font-size:13px;color:var(--mute);margin-top:4px;line-height:1.5}
+.promo em{margin-inline-start:auto;font-style:normal;font-size:22px;color:var(--c1)}
+.home .fine,.pscreen .fine{margin-top:4px}
+@media(max-width:860px){.home-grid{grid-template-columns:1fr}.brainp{order:2}.brainp .brainwrap{max-width:280px}.wk-games{grid-template-columns:1fr}.wg{flex-direction:row;align-items:center}.lvl-chip{width:100%}.workout{padding:20px}.workout .btn.big{align-self:stretch}}
+/* free play */
+.ggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.gcard{--mx:50%;--my:0%;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:18px;border-radius:22px;text-align:start;background:radial-gradient(260px circle at var(--mx) var(--my),color-mix(in srgb,var(--dc) 17%,transparent),transparent 65%),var(--panel);border:1px solid var(--line);animation:in .6s both;animation-delay:var(--d);transition:border-color .3s,transform .5s var(--spring)}
+.gcard:hover{border-color:color-mix(in srgb,var(--dc) 55%,transparent)}
+.gcard .cico{width:50px;height:50px;border-radius:15px;margin-bottom:6px}
+.gcard>b{font-size:18px}.gcard>span{font-size:11px;color:var(--mute)}
+.gstats{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:11px;color:var(--mute)}.gstats b{color:var(--text);font-size:12px}
+@media(max-width:860px){.ggrid{grid-template-columns:repeat(2,1fr)}.gcard{padding:14px}}
+/* game result & workout done */
+.gres .orb,.wdone .orb{margin-bottom:12px}
+.pts{display:flex;flex-direction:column;align-items:center;margin:6px 0 12px}
+.pts b{font-size:clamp(64px,11vw,100px);font-weight:700;letter-spacing:-.05em;line-height:1;background:linear-gradient(120deg,#fff,var(--dc,var(--c1)));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pts span{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-top:4px}
+.nb{color:#ffd23f}
+.deltas{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-bottom:26px}
+.deltas>div{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--line);text-align:start}
+.deltas b{display:block;font-size:26px;margin-top:6px}.deltas i{font-style:normal;font-size:13px;font-family:var(--mono)}
+.deltas i.up{color:var(--ok)}.deltas i.dn{color:#ff8da0}.deltas small{color:var(--c1)}
+.bigflame{position:relative;font-size:92px;line-height:1;animation:pop .7s var(--spring);filter:drop-shadow(0 0 34px rgba(255,120,40,.65));margin-bottom:10px}
+.bigflame b{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);font-size:32px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.7)}
+.wsum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;margin:20px 0 10px}
+.wsum>div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:16px;background:color-mix(in srgb,var(--dc) 9%,transparent);border:1px solid color-mix(in srgb,var(--dc) 35%,transparent);animation:pop .5s var(--spring) both}
+.wsum>div:nth-child(2){animation-delay:.12s}.wsum>div:nth-child(3){animation-delay:.24s}
+.wsum b{font-size:22px}.wsum span{font-size:12px;color:var(--soft)}
+/* progress */
+.line{width:100%;margin-top:8px}
+.empty{padding:46px 10px;text-align:center;color:var(--mute);font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.stat{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line)}.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:var(--mute)}
+.calp{padding:22px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px;max-width:340px}
+.cal i{aspect-ratio:1;border-radius:7px;background:rgba(255,255,255,.05)}
+.cal i.l1{background:rgba(94,242,255,.22)}.cal i.l2{background:rgba(94,242,255,.45)}.cal i.l3{background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 0 12px rgba(94,242,255,.5)}
+.cal i.now{outline:1px solid rgba(255,255,255,.55);outline-offset:2px}
+.achs{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:12px}
+.ach{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:14px;text-align:center;background:rgba(255,255,255,.03);border:1px solid var(--line);filter:grayscale(1);opacity:.38}
+.ach.on{filter:none;opacity:1;border-color:rgba(255,210,63,.45);background:radial-gradient(circle at 50% 0%,rgba(255,210,63,.16),transparent 70%)}
+.ach span{font-size:24px}.ach small{font-size:10px;color:var(--soft);line-height:1.25}
+.pscreen .arch h3{font-size:clamp(44px,6vw,64px)}
+@media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}.deltas{grid-template-columns:1fr}}
+@media(max-width:560px){.cta{width:100%}.cta .btn{flex:1 1 100%;white-space:normal;text-align:center;height:auto;min-height:58px;padding:12px 20px}.wk-done .btn{width:100%}}
+.hero-cta2{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* ---------- v3 ---------- */
+body::before{transition:background .8s}
+.ava{display:inline-block;-webkit-text-fill-color:initial;animation:pop .6s var(--spring)}
+.lvl-chip b{white-space:nowrap}
+.newb{position:absolute;top:10px;inset-inline-end:12px;text-decoration:none;font-size:9.5px;font-weight:700;letter-spacing:.1em;padding:3px 7px;border-radius:99px;color:#060714;background:linear-gradient(90deg,#ffd23f,#ff9a3c);box-shadow:0 0 14px rgba(255,190,60,.6)}
+.wg .newb{top:auto;bottom:10px}
+.cite{color:var(--soft);border-style:dashed!important}
+.rival{display:flex;align-items:center;gap:14px;padding:14px 18px;border-color:rgba(255,95,210,.4);background:radial-gradient(circle at 0% 50%,rgba(255,95,210,.16),transparent 60%),var(--panel)}
+.rival>div{flex:1;font-weight:600}.rival b{font-size:22px;color:var(--c3)}
+.rv-ic{font-size:30px;animation:flick 1.8s ease-in-out infinite}
+.rival-res{margin:6px 0 14px;padding:12px 16px;border-radius:14px;font-weight:600;border:1px solid var(--line)}
+.rival-res.win{color:var(--ok);border-color:rgba(61,220,151,.45);background:rgba(61,220,151,.08)}.rival-res.lose{color:#ffb4c2;border-color:rgba(255,95,210,.4);background:rgba(255,95,210,.07)}
+.rival-res span{margin-inline-start:8px;color:var(--soft)}
+.pctl{width:100%;max-width:420px;margin:0 0 22px}
+.pbar{position:relative;height:10px;border-radius:10px;background:linear-gradient(90deg,#ff5470,#ffc65c 35%,#3ddc97 65%,#5ef2ff);opacity:.85;margin-bottom:8px}
+.pbar b{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(4,5,11,.8),0 0 20px #fff;animation:slidein 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slidein{from{left:0}}
+.pctl span{font-size:12.5px;color:var(--soft)}
+.prof{display:flex;align-items:center;gap:16px;padding:16px 20px;flex-wrap:wrap}
+.ava-b{width:68px;height:68px;border-radius:22px;font-size:38px;display:grid;place-items:center;background:radial-gradient(circle at 40% 30%,rgba(155,107,255,.35),rgba(94,242,255,.08));border:1px solid var(--line2);transition:transform .4s var(--spring)}
+.ava-b:hover{transform:scale(1.08) rotate(-6deg)}.ava-b.spin{animation:pop .45s var(--spring)}
+.prof-m{flex:1;min-width:180px;display:flex;flex-direction:column;gap:6px}
+.prof-m input{font:600 22px var(--font);color:var(--text);background:transparent;border:0;border-bottom:1px dashed var(--line2);padding:4px 0;outline:none;width:100%}
+.prof-m input:focus{border-bottom-color:var(--c1)}
+.prof-m span{font-size:12px;color:var(--mute)}
+.pscreen .bars{justify-content:flex-start}
+.dgroup{display:flex;flex-direction:column;gap:10px}
+.dg-head{display:flex;align-items:center;gap:10px;margin-top:6px}
+.dg-head .cico{width:34px;height:34px;border-radius:10px}
+.dg-head b{font-size:18px}.dg-head span{margin-inline-start:auto;font-size:12px;color:var(--mute)}
+.dgroup .ggrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.gcard{position:relative}
+/* n-back */
+.nbgrid{--dc:#ff5fd2;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(78vw,330px);aspect-ratio:1;padding:12px;border-radius:26px;background:var(--panel);border:1px solid var(--line)}
+.nbgrid i{border-radius:18px;background:linear-gradient(160deg,#262b55,#121531);border:1px solid rgba(255,95,210,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 5px 0 #090b1b;transition:background .12s,box-shadow .12s,transform .3s var(--spring)}
+.nbgrid i.on{background:radial-gradient(circle at 38% 32%,#fff,var(--dc) 45%,#7a1f63);box-shadow:0 0 46px var(--dc),0 0 0 5px rgba(255,95,210,.18);transform:translateY(4px) scale(1.04)}
+.nbbtn{min-width:220px}.nbbtn.ok{box-shadow:0 0 50px var(--ok)}.nbbtn.no{animation:shake .35s}
+/* MOT */
+.arena{position:relative;width:100%;height:min(56vh,470px);border-radius:26px;background:radial-gradient(circle at 50% 40%,rgba(94,242,255,.07),transparent 70%),#070917;border:1px solid var(--line);overflow:hidden;touch-action:none}
+.arena canvas{width:100%;height:100%;display:block}
+.arena.pick{border-color:rgba(255,198,92,.55);box-shadow:0 0 44px -10px rgba(255,198,92,.6);cursor:crosshair}
+/* visual search */
+.field{position:relative;width:100%;height:min(58vh,480px);border-radius:26px;background:radial-gradient(circle at 50% 50%,rgba(155,107,255,.07),transparent 70%),var(--panel);border:1px solid var(--line);overflow:hidden}
+.si{position:absolute;width:clamp(30px,6.4vw,42px);height:clamp(30px,6.4vw,42px);transform:translate(-50%,-50%) rotate(var(--r));display:grid;place-items:center;border-radius:10px;transition:background .2s}
+.field.in .si{animation:sipop .35s var(--spring) both}
+@keyframes sipop{from{opacity:0;transform:translate(-50%,-50%) rotate(var(--r)) scale(.3)}}
+.si svg{width:100%;height:100%;fill:none;stroke:var(--c);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px var(--c))}
+.si.hit{background:rgba(94,242,255,.22);box-shadow:0 0 34px var(--c1)}.si.miss{background:rgba(255,84,112,.18)}
+/* flanker */
+.fl{position:relative;width:100%;height:min(32vh,250px);display:grid;place-items:center;border-radius:28px;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+.fl .fix{font-size:40px;color:var(--mute);font-weight:300}
+.fl .row{display:flex;gap:clamp(4px,1.6vw,12px);animation:pop .14s ease-out}
+.fl svg{width:clamp(38px,10vw,70px);height:clamp(38px,10vw,70px);fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.flb svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.opts.two .flb{display:grid;place-items:center}
+/* go / no-go */
+.gng{position:relative;width:100%;height:min(56vh,460px);border-radius:28px;background:radial-gradient(circle at 50% 50%,rgba(198,255,107,.06),transparent 70%),#070917;border:1px solid var(--line);overflow:hidden;touch-action:manipulation;cursor:pointer}
+.gng.shake{animation:shake .35s;border-color:var(--bad)}
+.gorb{position:absolute;width:clamp(70px,16vw,96px);height:clamp(70px,16vw,96px);transform:translate(-50%,-50%);border-radius:50%;animation:gpop .32s var(--spring) both;pointer-events:none}
+.gorb.go{background:radial-gradient(circle at 34% 30%,#fff,#3ddc97 38%,#0a6b44);box-shadow:0 0 50px #3ddc97,inset 0 -8px 18px rgba(0,0,0,.35)}
+.gorb.no{background:radial-gradient(circle at 34% 30%,#ffd5dc,#ff5470 38%,#7a1022);box-shadow:0 0 50px #ff5470,inset 0 -8px 18px rgba(0,0,0,.35)}
+.gorb.no::after{content:"";position:absolute;inset:30%;background:linear-gradient(45deg,transparent 42%,#fff 42% 58%,transparent 58%),linear-gradient(-45deg,transparent 42%,#fff 42% 58%,transparent 58%)}
+.gorb.out{animation:gout .26s forwards}
+@keyframes gpop{from{transform:translate(-50%,-50%) scale(0)}}@keyframes gout{to{transform:translate(-50%,-50%) scale(1.7);opacity:0}}
+/* dots */
+.dotf{width:100%;height:min(40vh,320px);border-radius:26px;background:#070917;border:1px solid var(--line);overflow:hidden}
+.dotf canvas{width:100%;height:100%;display:block}
+.db{height:66px}.db i{display:block;width:30px;height:30px;margin:auto;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--c) 45%,rgba(0,0,0,.5));box-shadow:0 0 22px var(--c)}
+/* pattern comparison */
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.pc>div{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;padding:24px 10px;border-radius:22px;background:var(--panel);border:1px solid var(--line);color:#3ddc97}
+.pc>div:last-child{color:#5ef2ff}
+.pc svg{width:clamp(26px,7.5vw,48px);height:clamp(26px,7.5vw,48px);filter:drop-shadow(0 0 6px currentColor)}
+.pc.pop>div{animation:pop .2s var(--spring)}
+/* 2D rotation */
+.r2{display:flex;gap:14px;width:100%;justify-content:center}
+.r2>div{flex:1;max-width:340px;aspect-ratio:1;border-radius:26px;background:radial-gradient(circle at 50% 40%,rgba(167,123,255,.14),transparent 70%),var(--panel);border:1px solid var(--line);display:grid;place-items:center}
+.r2 svg{width:88%;height:88%;filter:drop-shadow(0 6px 18px rgba(167,123,255,.45))}
+/* odd one out */
+.opts.odd{grid-template-columns:repeat(3,1fr);width:min(92vw,470px)}
+.opts.odd .opt{aspect-ratio:1;display:grid;place-items:center}
+.opts.odd .opt svg{width:84%;height:84%}
+@media(max-width:560px){.dgroup .ggrid{grid-template-columns:repeat(2,1fr)}.prof .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -335,6 +527,7 @@ main{position:relative;z-index:1;min-height:100vh;display:flex;align-items:cente
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <pattern id="h0" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.9" height="5" fill="#5ef2ff"/></pattern>
   <pattern id="h1" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.9" height="5" fill="#b38bff"/></pattern>
+  <linearGradient id="pgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9b3ff"/><stop offset=".5" stop-color="#a77bff"/><stop offset="1" stop-color="#5b3bd6"/></linearGradient>
   <pattern id="h2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.9" height="5" fill="#ffc65c"/></pattern>
 </defs></svg>
 
@@ -345,6 +538,8 @@ main{position:relative;z-index:1;min-height:100vh;display:flex;align-items:cente
    Change REPO to your GitHub repository URL.
    ===================================================================== */
 const REPO = 'https://github.com/maxmila0219-alt/neuromap';
+/* inside the Android app the page runs from file://, so share links must point to the public site */
+const SITE = (window.NMAndroid || location.protocol === 'file:') ? 'https://maxmila0219-alt.github.io/neuromap/' : location.href.split(/[?#]/)[0];
 
 /* ---------------------------- i18n ---------------------------- */
 const LANGS={en:'English',ru:'Русский',es:'Español',pt:'Português',fr:'Français',de:'Deutsch',zh:'中文',ja:'日本語',hi:'हिन्दी',ar:'العربية'};
@@ -504,6 +699,164 @@ ar:{age_q:'كم عمرك؟',age_sub:'تتغير القدرات مع العمر،
  a_logic:'الاستراتيجي',ad_logic:'ترى بنية خفية حيث يرى الآخرون ضجيجًا.',a_numbers:'المحلل',ad_numbers:'تكشف لك الأرقام أنماطها.',a_spatial:'المعماري',ad_spatial:'تدير الأجسام في ذهنك بسهولة.',a_memory:'الحافظ',ad_memory:'يحفظ عقلك التسلسلات كخزنة.',a_attention:'الملّاح',ad_attention:'تبدّل المسار دون أن تفقد الخيط.',a_speed:'المعالج',ad_speed:'تتدفق المعلومات عبرك بسرعة عالية.',a_control:'الرواقي',ad_control:'ترتد المشتتات عن تركيزك.',a_reflex:'الطيار',ad_reflex:'تتحرك يداك قبل أن تكتمل الفكرة.'}
 };
 for(const k in I18N_EXTRA)Object.assign(I18N[k],I18N_EXTRA[k]);
+const I18N_V2={
+en:{nav_today:'Today',nav_games:'Games',nav_progress:'Progress',nav_test:'Test',greet_m:'Good morning',greet_d:'Good afternoon',greet_e:'Good evening',greet_n:'Night owl mode',challenge_no:'Daily #{n}',daily_title:'Daily workout',daily_sub:'3 games · ~5 min · same for everyone today',start_workout:'Start workout',continue_workout:'Continue workout',workout_done:'Workout complete!',come_back:'A new workout unlocks tomorrow',streak:'day streak',best_streak:'best streak',level:'Level',points:'points',new_best:'New best!',next_game:'Next game',finish:'Finish',play_again:'Play again',back:'Back',free_play:'Free play',games_sub:'Any game, any time. Difficulty adapts to you.',plays:'plays',best:'Best',bpi:'Brain index',progress_title:'Your progress',trend:'last 30 days',calendar:'Activity',achievements:'Achievements',workouts:'workouts',games_played:'games played',share_day:'Share',train_cta:'Start daily training',test_cta:'Full brain test · 15 min',empty_progress:'Play a few games to light up your brain',lvl_up:'Level up! Level {n}',train_note:'Training makes you better at these tasks. We never claim it raises IQ — we just help you track your skills honestly.',ach_unlocked:'Achievement unlocked',
+ ach_first:'First steps',ach_workout1:'Morning ritual',ach_streak3:'On fire · 3 days',ach_streak7:'Unstoppable · 7 days',ach_streak30:'Legend · 30 days',ach_fulltest:'Full scan',ach_pts900:'Diamond mind · 900+',ach_allgames:'Explorer · all 8 games',ach_lvl5:'Level 5',ach_bpi120:'Rocket · index 120+',ach_games50:'Gym rat · 50 games'},
+ru:{nav_today:'Сегодня',nav_games:'Игры',nav_progress:'Прогресс',nav_test:'Тест',greet_m:'Доброе утро',greet_d:'Добрый день',greet_e:'Добрый вечер',greet_n:'Режим совы',challenge_no:'Ежедневка #{n}',daily_title:'Тренировка дня',daily_sub:'3 игры · ~5 мин · сегодня одна для всех',start_workout:'Начать тренировку',continue_workout:'Продолжить тренировку',workout_done:'Тренировка выполнена!',come_back:'Новая тренировка откроется завтра',streak:'дней подряд',best_streak:'лучшая серия',level:'Уровень',points:'очков',new_best:'Новый рекорд!',next_game:'Следующая игра',finish:'Завершить',play_again:'Ещё раз',back:'Назад',free_play:'Свободная игра',games_sub:'Любая игра в любое время. Сложность подстраивается под тебя.',plays:'игр',best:'Рекорд',bpi:'Индекс мозга',progress_title:'Твой прогресс',trend:'за 30 дней',calendar:'Активность',achievements:'Достижения',workouts:'тренировок',games_played:'сыграно игр',share_day:'Поделиться',train_cta:'Начать ежедневную тренировку',test_cta:'Полный тест мозга · 15 мин',empty_progress:'Сыграй пару игр, чтобы мозг засветился',lvl_up:'Новый уровень: {n}!',train_note:'Тренировки делают тебя лучше в этих заданиях. Мы не обещаем рост IQ — мы помогаем честно отслеживать твои навыки.',ach_unlocked:'Достижение получено',
+ ach_first:'Первые шаги',ach_workout1:'Утренний ритуал',ach_streak3:'В ударе · 3 дня',ach_streak7:'Неудержимый · 7 дней',ach_streak30:'Легенда · 30 дней',ach_fulltest:'Полное сканирование',ach_pts900:'Бриллиантовый ум · 900+',ach_allgames:'Исследователь · все 8 игр',ach_lvl5:'Уровень 5',ach_bpi120:'Ракета · индекс 120+',ach_games50:'Качок · 50 игр'},
+es:{nav_today:'Hoy',nav_games:'Juegos',nav_progress:'Progreso',nav_test:'Test',greet_m:'Buenos días',greet_d:'Buenas tardes',greet_e:'Buenas noches',greet_n:'Modo búho',challenge_no:'Diario #{n}',daily_title:'Entrenamiento del día',daily_sub:'3 juegos · ~5 min · el mismo para todos hoy',start_workout:'Empezar entrenamiento',continue_workout:'Continuar entrenamiento',workout_done:'¡Entrenamiento completado!',come_back:'Mañana se desbloquea uno nuevo',streak:'días seguidos',best_streak:'mejor racha',level:'Nivel',points:'puntos',new_best:'¡Nuevo récord!',next_game:'Siguiente juego',finish:'Terminar',play_again:'Otra vez',back:'Atrás',free_play:'Juego libre',games_sub:'Cualquier juego, cuando quieras. La dificultad se adapta a ti.',plays:'partidas',best:'Récord',bpi:'Índice cerebral',progress_title:'Tu progreso',trend:'últimos 30 días',calendar:'Actividad',achievements:'Logros',workouts:'entrenamientos',games_played:'partidas jugadas',share_day:'Compartir',train_cta:'Empezar entrenamiento diario',test_cta:'Test cerebral completo · 15 min',empty_progress:'Juega unas partidas para iluminar tu cerebro',lvl_up:'¡Subes al nivel {n}!',train_note:'Entrenar te hace mejor en estas tareas. Nunca afirmamos que aumente el CI: solo te ayudamos a seguir tus habilidades con honestidad.',ach_unlocked:'Logro desbloqueado',
+ ach_first:'Primeros pasos',ach_workout1:'Ritual matutino',ach_streak3:'En racha · 3 días',ach_streak7:'Imparable · 7 días',ach_streak30:'Leyenda · 30 días',ach_fulltest:'Escaneo completo',ach_pts900:'Mente de diamante · 900+',ach_allgames:'Explorador · los 8 juegos',ach_lvl5:'Nivel 5',ach_bpi120:'Cohete · índice 120+',ach_games50:'Atleta mental · 50 juegos'},
+pt:{nav_today:'Hoje',nav_games:'Jogos',nav_progress:'Progresso',nav_test:'Teste',greet_m:'Bom dia',greet_d:'Boa tarde',greet_e:'Boa noite',greet_n:'Modo coruja',challenge_no:'Diário #{n}',daily_title:'Treino do dia',daily_sub:'3 jogos · ~5 min · o mesmo para todos hoje',start_workout:'Começar treino',continue_workout:'Continuar treino',workout_done:'Treino concluído!',come_back:'Um novo treino abre amanhã',streak:'dias seguidos',best_streak:'melhor sequência',level:'Nível',points:'pontos',new_best:'Novo recorde!',next_game:'Próximo jogo',finish:'Concluir',play_again:'De novo',back:'Voltar',free_play:'Jogo livre',games_sub:'Qualquer jogo, a qualquer hora. A dificuldade se adapta a você.',plays:'partidas',best:'Recorde',bpi:'Índice cerebral',progress_title:'Seu progresso',trend:'últimos 30 dias',calendar:'Atividade',achievements:'Conquistas',workouts:'treinos',games_played:'partidas jogadas',share_day:'Compartilhar',train_cta:'Começar treino diário',test_cta:'Teste cerebral completo · 15 min',empty_progress:'Jogue algumas partidas para iluminar seu cérebro',lvl_up:'Subiu para o nível {n}!',train_note:'Treinar melhora seu desempenho nestas tarefas. Nunca dizemos que aumenta o QI — só ajudamos você a acompanhar suas habilidades com honestidade.',ach_unlocked:'Conquista desbloqueada',
+ ach_first:'Primeiros passos',ach_workout1:'Ritual matinal',ach_streak3:'Em chamas · 3 dias',ach_streak7:'Imparável · 7 dias',ach_streak30:'Lenda · 30 dias',ach_fulltest:'Varredura completa',ach_pts900:'Mente de diamante · 900+',ach_allgames:'Explorador · os 8 jogos',ach_lvl5:'Nível 5',ach_bpi120:'Foguete · índice 120+',ach_games50:'Atleta mental · 50 jogos'},
+fr:{nav_today:'Aujourd’hui',nav_games:'Jeux',nav_progress:'Progrès',nav_test:'Test',greet_m:'Bonjour',greet_d:'Bon après-midi',greet_e:'Bonsoir',greet_n:'Mode hibou',challenge_no:'Quotidien #{n}',daily_title:'Entraînement du jour',daily_sub:'3 jeux · ~5 min · le même pour tous aujourd’hui',start_workout:'Commencer',continue_workout:'Continuer l’entraînement',workout_done:'Entraînement terminé !',come_back:'Un nouvel entraînement demain',streak:'jours d’affilée',best_streak:'meilleure série',level:'Niveau',points:'points',new_best:'Nouveau record !',next_game:'Jeu suivant',finish:'Terminer',play_again:'Rejouer',back:'Retour',free_play:'Jeu libre',games_sub:'N’importe quel jeu, à tout moment. La difficulté s’adapte à vous.',plays:'parties',best:'Record',bpi:'Indice cérébral',progress_title:'Votre progression',trend:'30 derniers jours',calendar:'Activité',achievements:'Succès',workouts:'entraînements',games_played:'parties jouées',share_day:'Partager',train_cta:'Commencer l’entraînement quotidien',test_cta:'Test cérébral complet · 15 min',empty_progress:'Jouez quelques parties pour illuminer votre cerveau',lvl_up:'Niveau {n} atteint !',train_note:'S’entraîner vous rend meilleur à ces tâches. Nous ne prétendons jamais augmenter le QI : nous vous aidons simplement à suivre vos compétences honnêtement.',ach_unlocked:'Succès débloqué',
+ ach_first:'Premiers pas',ach_workout1:'Rituel du matin',ach_streak3:'En feu · 3 jours',ach_streak7:'Inarrêtable · 7 jours',ach_streak30:'Légende · 30 jours',ach_fulltest:'Scan complet',ach_pts900:'Esprit diamant · 900+',ach_allgames:'Explorateur · 8 jeux',ach_lvl5:'Niveau 5',ach_bpi120:'Fusée · indice 120+',ach_games50:'Athlète mental · 50 parties'},
+de:{nav_today:'Heute',nav_games:'Spiele',nav_progress:'Fortschritt',nav_test:'Test',greet_m:'Guten Morgen',greet_d:'Guten Tag',greet_e:'Guten Abend',greet_n:'Nachteulen-Modus',challenge_no:'Täglich #{n}',daily_title:'Training des Tages',daily_sub:'3 Spiele · ~5 Min · heute für alle gleich',start_workout:'Training starten',continue_workout:'Training fortsetzen',workout_done:'Training geschafft!',come_back:'Morgen wartet ein neues Training',streak:'Tage in Folge',best_streak:'beste Serie',level:'Level',points:'Punkte',new_best:'Neuer Rekord!',next_game:'Nächstes Spiel',finish:'Abschließen',play_again:'Nochmal',back:'Zurück',free_play:'Freies Spiel',games_sub:'Jedes Spiel, jederzeit. Die Schwierigkeit passt sich dir an.',plays:'Runden',best:'Rekord',bpi:'Gehirnindex',progress_title:'Dein Fortschritt',trend:'letzte 30 Tage',calendar:'Aktivität',achievements:'Erfolge',workouts:'Trainings',games_played:'gespielte Runden',share_day:'Teilen',train_cta:'Tägliches Training starten',test_cta:'Kompletter Gehirntest · 15 Min',empty_progress:'Spiel ein paar Runden, damit dein Gehirn aufleuchtet',lvl_up:'Level {n} erreicht!',train_note:'Training macht dich in diesen Aufgaben besser. Wir behaupten nie, dass es den IQ erhöht — wir helfen dir nur, deine Fähigkeiten ehrlich zu verfolgen.',ach_unlocked:'Erfolg freigeschaltet',
+ ach_first:'Erste Schritte',ach_workout1:'Morgenritual',ach_streak3:'Feuer und Flamme · 3 Tage',ach_streak7:'Unaufhaltsam · 7 Tage',ach_streak30:'Legende · 30 Tage',ach_fulltest:'Vollständiger Scan',ach_pts900:'Diamantgeist · 900+',ach_allgames:'Entdecker · alle 8 Spiele',ach_lvl5:'Level 5',ach_bpi120:'Rakete · Index 120+',ach_games50:'Kopfsportler · 50 Runden'},
+zh:{nav_today:'今日',nav_games:'游戏',nav_progress:'进度',nav_test:'测试',greet_m:'早上好',greet_d:'下午好',greet_e:'晚上好',greet_n:'夜猫子模式',challenge_no:'每日 #{n}',daily_title:'今日训练',daily_sub:'3 个游戏 · 约 5 分钟 · 今天所有人相同',start_workout:'开始训练',continue_workout:'继续训练',workout_done:'训练完成！',come_back:'明天解锁新的训练',streak:'连续天数',best_streak:'最佳连续',level:'等级',points:'分',new_best:'新纪录！',next_game:'下一个游戏',finish:'完成',play_again:'再玩一次',back:'返回',free_play:'自由练习',games_sub:'任何游戏，随时开玩。难度会自动适应你。',plays:'次',best:'最佳',bpi:'大脑指数',progress_title:'你的进度',trend:'最近 30 天',calendar:'活动',achievements:'成就',workouts:'次训练',games_played:'局游戏',share_day:'分享',train_cta:'开始每日训练',test_cta:'完整大脑测试 · 15 分钟',empty_progress:'玩几局游戏，点亮你的大脑',lvl_up:'升级到 {n} 级！',train_note:'训练会让你更擅长这些任务。我们从不声称它能提高智商——只是帮你如实追踪自己的能力。',ach_unlocked:'解锁成就',
+ ach_first:'第一步',ach_workout1:'晨间仪式',ach_streak3:'火力全开 · 3 天',ach_streak7:'势不可挡 · 7 天',ach_streak30:'传奇 · 30 天',ach_fulltest:'完整扫描',ach_pts900:'钻石头脑 · 900+',ach_allgames:'探索者 · 全部 8 个游戏',ach_lvl5:'5 级',ach_bpi120:'火箭 · 指数 120+',ach_games50:'健脑达人 · 50 局'},
+ja:{nav_today:'今日',nav_games:'ゲーム',nav_progress:'進捗',nav_test:'テスト',greet_m:'おはようございます',greet_d:'こんにちは',greet_e:'こんばんは',greet_n:'夜ふかしモード',challenge_no:'デイリー #{n}',daily_title:'今日のトレーニング',daily_sub:'3ゲーム · 約5分 · 今日は全員共通',start_workout:'トレーニング開始',continue_workout:'トレーニングを続ける',workout_done:'トレーニング完了！',come_back:'新しいトレーニングは明日',streak:'日連続',best_streak:'最長連続',level:'レベル',points:'ポイント',new_best:'自己ベスト！',next_game:'次のゲーム',finish:'完了',play_again:'もう一度',back:'戻る',free_play:'フリープレイ',games_sub:'いつでも好きなゲームを。難易度はあなたに合わせて変化します。',plays:'回',best:'ベスト',bpi:'ブレイン指数',progress_title:'あなたの進捗',trend:'過去30日',calendar:'アクティビティ',achievements:'実績',workouts:'回のトレーニング',games_played:'回プレイ',share_day:'シェア',train_cta:'デイリートレーニングを始める',test_cta:'フル脳テスト · 15分',empty_progress:'何回かプレイして脳を光らせよう',lvl_up:'レベル{n}に到達！',train_note:'トレーニングでこれらの課題は上達します。IQが上がるとは決して主張しません。スキルを正直に記録するお手伝いをするだけです。',ach_unlocked:'実績解除',
+ ach_first:'はじめの一歩',ach_workout1:'朝の習慣',ach_streak3:'絶好調 · 3日',ach_streak7:'止まらない · 7日',ach_streak30:'レジェンド · 30日',ach_fulltest:'フルスキャン',ach_pts900:'ダイヤモンド頭脳 · 900+',ach_allgames:'探検家 · 全8ゲーム',ach_lvl5:'レベル5',ach_bpi120:'ロケット · 指数120+',ach_games50:'脳トレマニア · 50回'},
+hi:{nav_today:'आज',nav_games:'गेम्स',nav_progress:'प्रगति',nav_test:'टेस्ट',greet_m:'सुप्रभात',greet_d:'नमस्ते',greet_e:'शुभ संध्या',greet_n:'नाइट आउल मोड',challenge_no:'डेली #{n}',daily_title:'आज की ट्रेनिंग',daily_sub:'3 गेम · ~5 मिनट · आज सबके लिए एक जैसी',start_workout:'ट्रेनिंग शुरू करें',continue_workout:'ट्रेनिंग जारी रखें',workout_done:'ट्रेनिंग पूरी!',come_back:'नई ट्रेनिंग कल खुलेगी',streak:'दिन लगातार',best_streak:'सबसे लंबी लड़ी',level:'लेवल',points:'अंक',new_best:'नया रिकॉर्ड!',next_game:'अगला गेम',finish:'समाप्त',play_again:'फिर से खेलें',back:'वापस',free_play:'फ्री प्ले',games_sub:'कोई भी गेम, कभी भी। कठिनाई आपके अनुसार बदलती है।',plays:'बार',best:'रिकॉर्ड',bpi:'ब्रेन इंडेक्स',progress_title:'आपकी प्रगति',trend:'पिछले 30 दिन',calendar:'गतिविधि',achievements:'उपलब्धियाँ',workouts:'ट्रेनिंग',games_played:'गेम खेले',share_day:'शेयर करें',train_cta:'डेली ट्रेनिंग शुरू करें',test_cta:'पूरा ब्रेन टेस्ट · 15 मिनट',empty_progress:'अपने दिमाग को रोशन करने के लिए कुछ गेम खेलें',lvl_up:'लेवल {n} पर पहुँचे!',train_note:'ट्रेनिंग से आप इन कार्यों में बेहतर होते हैं। हम कभी दावा नहीं करते कि इससे IQ बढ़ता है — हम बस आपके कौशल को ईमानदारी से ट्रैक करने में मदद करते हैं।',ach_unlocked:'उपलब्धि मिली',
+ ach_first:'पहला कदम',ach_workout1:'सुबह की आदत',ach_streak3:'जोश में · 3 दिन',ach_streak7:'अजेय · 7 दिन',ach_streak30:'लीजेंड · 30 दिन',ach_fulltest:'पूरा स्कैन',ach_pts900:'हीरे जैसा दिमाग · 900+',ach_allgames:'खोजी · सभी 8 गेम',ach_lvl5:'लेवल 5',ach_bpi120:'रॉकेट · इंडेक्स 120+',ach_games50:'दिमागी पहलवान · 50 गेम'},
+ar:{nav_today:'اليوم',nav_games:'الألعاب',nav_progress:'التقدم',nav_test:'الاختبار',greet_m:'صباح الخير',greet_d:'نهارك سعيد',greet_e:'مساء الخير',greet_n:'وضع البومة',challenge_no:'اليومي #{n}',daily_title:'تمرين اليوم',daily_sub:'3 ألعاب · ~5 دقائق · نفسه للجميع اليوم',start_workout:'ابدأ التمرين',continue_workout:'تابع التمرين',workout_done:'اكتمل التمرين!',come_back:'تمرين جديد غدًا',streak:'أيام متتالية',best_streak:'أفضل سلسلة',level:'المستوى',points:'نقطة',new_best:'رقم قياسي جديد!',next_game:'اللعبة التالية',finish:'إنهاء',play_again:'العب مجددًا',back:'رجوع',free_play:'لعب حر',games_sub:'أي لعبة في أي وقت. تتكيف الصعوبة معك.',plays:'مرات',best:'الأفضل',bpi:'مؤشر الدماغ',progress_title:'تقدمك',trend:'آخر 30 يومًا',calendar:'النشاط',achievements:'الإنجازات',workouts:'تمارين',games_played:'ألعاب',share_day:'مشاركة',train_cta:'ابدأ التمرين اليومي',test_cta:'اختبار الدماغ الكامل · 15 دقيقة',empty_progress:'العب بضع ألعاب لتضيء دماغك',lvl_up:'وصلت إلى المستوى {n}!',train_note:'التدريب يحسّن أداءك في هذه المهام. لا ندّعي أبدًا أنه يرفع معدل الذكاء — نساعدك فقط على تتبع مهاراتك بصدق.',ach_unlocked:'إنجاز جديد',
+ ach_first:'الخطوات الأولى',ach_workout1:'طقس الصباح',ach_streak3:'متقد · 3 أيام',ach_streak7:'لا يُوقف · 7 أيام',ach_streak30:'أسطورة · 30 يومًا',ach_fulltest:'فحص كامل',ach_pts900:'عقل ماسي · 900+',ach_allgames:'مستكشف · كل الألعاب الثماني',ach_lvl5:'المستوى 5',ach_bpi120:'صاروخ · مؤشر 120+',ach_games50:'رياضي الذهن · 50 لعبة'}
+};
+for(const k in I18N_V2)Object.assign(I18N[k],I18N_V2[k]);
+const I18N_V3={
+en:{g_logic:'Matrices',g_numbers:'Number series',g_spatial:'3D rotation',g_memory:'Corsi blocks',g_attention:'Trail connect',g_speed:'Symbol code',g_control:'Color clash',g_reflex:'Reaction',g_oddone:'Odd one out',g_dots:'Number sense',g_rot2d:'Flip or turn',g_nback:'N-back',g_mot:'Ball tracker',g_search:'Hidden T',g_pcomp:'Pattern match',g_flanker:'Arrow focus',g_gonogo:'Go / No-Go',
+ i_oddone:'Five cards share a hidden rule — the same shape, color, fill or count. Find the one card that breaks it. Difficulty grows as you go.',
+ i_dots:'Two clouds of dots flash for a moment. Pick the color that had MORE dots. Don’t count — trust your gut. Dot sizes are tricky on purpose.',
+ i_rot2d:'Is the right shape the left one turned around, or its mirror image? Answer fast. Keys: ← same, → mirrored.',
+ i_nback:'Squares light up one by one. Tap MATCH whenever the square is in the same place as N steps back. N grows as you improve.',
+ i_mot:'Some balls glow at the start. Then they all move and bounce off each other. Keep your eyes on the glowing ones and pick them out at the end.',
+ i_search:'Find the single letter T hidden among the Ls and tap it as fast as you can. The crowd gets bigger every time.',
+ i_pcomp:'Are the two rows of symbols exactly the same? Answer as many as you can in 45 seconds. Keys: ← same, → different.',
+ i_flanker:'Five arrows appear. Respond only to the one in the CENTER and ignore its neighbours. Keys: ← →.',
+ i_gonogo:'Orbs pop up. Tap fast on GREEN ones (or press Space) — but never tap the RED ones. Speed and self-control together.',
+ nb_hint:'Same place as {n} back? → MATCH',match:'Match!',mot_track:'Remember the glowing balls: {k}',mot_watch:'Keep tracking…',mot_pick:'Tap the targets: {k}',find_t:'Find the T',fl_hint:'Which way does the CENTER arrow point?',gng_hint:'Green — tap · Red — wait',dots_hint:'Which color had more dots?',pc_hint:'Identical rows?',different:'Different',odd_hint:'Which card breaks the rule?',
+ rk1:'Novice',rk2:'Thinker',rk3:'Analyst',rk4:'Expert',rk5:'Mastermind',rival_banner:'{n} scored {s} on Daily #{d}. Beat it!',you_beat:'You beat {n}! 🏆',they_lead:'{n} is ahead by {d}',top_pct:'≈ better than {p}% of people',share_brain:'Share brain card',nick_ph:'Your name',new:'NEW',
+ ach_workouts10:'Regular · 10 workouts',ach_workouts50:'Devotee · 50 workouts',ach_streak14:'Volcano · 14 days',ach_perfect:'Flawless · 975+',ach_lvl10:'Level 10',ach_nback3:'Juggler · 3-back',ach_mot5:'Radar · 5 objects',ach_early:'Early bird',ach_night:'Night owl',ach_share:'Messenger',ach_duel:'Duelist · beat a friend',ach_master:'Master · {d}'},
+ru:{g_logic:'Матрицы',g_numbers:'Числовые ряды',g_spatial:'3D-вращение',g_memory:'Блоки Корси',g_attention:'Соедини путь',g_speed:'Код символов',g_control:'Конфликт цветов',g_reflex:'Реакция',g_oddone:'Лишняя карта',g_dots:'Чувство числа',g_rot2d:'Поворот или зеркало',g_nback:'N-назад',g_mot:'Трекинг шаров',g_search:'Найди T',g_pcomp:'Сравни узоры',g_flanker:'Центральная стрелка',g_gonogo:'Жми / Стоп',
+ i_oddone:'У пяти карт есть общее скрытое правило — одинаковая форма, цвет, заливка или количество. Найди одну карту, которая его нарушает. Сложность растёт.',
+ i_dots:'На мгновение вспыхнут два облака точек. Выбери цвет, которого было БОЛЬШЕ. Не считай — доверься чутью. Размеры точек специально обманчивы.',
+ i_rot2d:'Правая фигура — это левая, только повёрнутая, или её зеркальное отражение? Отвечай быстро. Клавиши: ← одинаковые, → зеркальные.',
+ i_nback:'Квадраты загораются по одному. Жми «СОВПАДЕНИЕ», когда квадрат на том же месте, что N шагов назад. N растёт, когда ты справляешься.',
+ i_mot:'В начале несколько шаров светятся. Потом все начинают двигаться и отскакивать друг от друга. Следи глазами за светящимися и выбери их в конце.',
+ i_search:'Найди единственную букву T среди букв L и нажми на неё как можно быстрее. С каждым разом толпа больше.',
+ i_pcomp:'Два ряда символов абсолютно одинаковые? Ответь на максимум пар за 45 секунд. Клавиши: ← одинаковые, → разные.',
+ i_flanker:'Появится пять стрелок. Реагируй только на ЦЕНТРАЛЬНУЮ и не обращай внимания на соседей. Клавиши: ← →.',
+ i_gonogo:'Появляются шары. Быстро жми на ЗЕЛЁНЫЕ (или Пробел) — и никогда на КРАСНЫЕ. Скорость и самоконтроль одновременно.',
+ nb_hint:'То же место, что {n} назад? → СОВПАДЕНИЕ',match:'Совпадение!',mot_track:'Запомни светящиеся шары: {k}',mot_watch:'Следи…',mot_pick:'Выбери цели: {k}',find_t:'Найди T',fl_hint:'Куда смотрит ЦЕНТРАЛЬНАЯ стрелка?',gng_hint:'Зелёный — жми · Красный — жди',dots_hint:'Какого цвета точек было больше?',pc_hint:'Ряды одинаковые?',different:'Разные',odd_hint:'Какая карта нарушает правило?',
+ rk1:'Новичок',rk2:'Мыслитель',rk3:'Аналитик',rk4:'Эксперт',rk5:'Гроссмейстер',rival_banner:'{n} набрал {s} в Ежедневке #{d}. Обгони!',you_beat:'Ты обогнал {n}! 🏆',they_lead:'{n} впереди на {d}',top_pct:'≈ лучше, чем у {p}% людей',share_brain:'Карта мозга',nick_ph:'Твоё имя',new:'НОВОЕ',
+ ach_workouts10:'Завсегдатай · 10 тренировок',ach_workouts50:'Фанат · 50 тренировок',ach_streak14:'Вулкан · 14 дней',ach_perfect:'Безупречно · 975+',ach_lvl10:'Уровень 10',ach_nback3:'Жонглёр · 3-назад',ach_mot5:'Радар · 5 объектов',ach_early:'Ранняя пташка',ach_night:'Ночная сова',ach_share:'Глашатай',ach_duel:'Дуэлянт · обогнал друга',ach_master:'Мастер · {d}'},
+es:{g_logic:'Matrices',g_numbers:'Series numéricas',g_spatial:'Rotación 3D',g_memory:'Bloques de Corsi',g_attention:'Conecta el camino',g_speed:'Código de símbolos',g_control:'Choque de colores',g_reflex:'Reacción',g_oddone:'El intruso',g_dots:'Sentido numérico',g_rot2d:'¿Giro o espejo?',g_nback:'N-back',g_mot:'Rastreador de bolas',g_search:'La T oculta',g_pcomp:'Compara patrones',g_flanker:'Flecha central',g_gonogo:'Go / No-Go',
+ i_oddone:'Cinco cartas comparten una regla oculta: misma forma, color, relleno o cantidad. Encuentra la carta que la rompe. La dificultad aumenta.',
+ i_dots:'Dos nubes de puntos aparecen un instante. Elige el color que tenía MÁS puntos. No cuentes: confía en tu intuición. Los tamaños engañan a propósito.',
+ i_rot2d:'¿La figura derecha es la izquierda girada o su imagen especular? Responde rápido. Teclas: ← igual, → espejo.',
+ i_nback:'Los cuadros se iluminan uno a uno. Pulsa COINCIDE cuando el cuadro esté en el mismo lugar que N pasos atrás. N sube cuando mejoras.',
+ i_mot:'Al principio algunas bolas brillan. Luego todas se mueven y rebotan entre sí. Sigue con la vista las brillantes y selecciónalas al final.',
+ i_search:'Encuentra la única letra T escondida entre las L y tócala lo más rápido posible. Cada vez hay más letras.',
+ i_pcomp:'¿Las dos filas de símbolos son exactamente iguales? Responde todas las que puedas en 45 segundos. Teclas: ← igual, → distinto.',
+ i_flanker:'Aparecen cinco flechas. Responde solo a la del CENTRO e ignora a sus vecinas. Teclas: ← →.',
+ i_gonogo:'Aparecen esferas. Toca rápido las VERDES (o pulsa Espacio), pero nunca las ROJAS. Velocidad y autocontrol a la vez.',
+ nb_hint:'¿Mismo lugar que hace {n}? → COINCIDE',match:'¡Coincide!',mot_track:'Recuerda las bolas brillantes: {k}',mot_watch:'Sigue mirando…',mot_pick:'Toca los objetivos: {k}',find_t:'Encuentra la T',fl_hint:'¿Hacia dónde apunta la flecha CENTRAL?',gng_hint:'Verde: toca · Rojo: espera',dots_hint:'¿De qué color había más puntos?',pc_hint:'¿Filas idénticas?',different:'Distinto',odd_hint:'¿Qué carta rompe la regla?',
+ rk1:'Novato',rk2:'Pensador',rk3:'Analista',rk4:'Experto',rk5:'Cerebro maestro',rival_banner:'{n} hizo {s} en el Diario #{d}. ¡Supéralo!',you_beat:'¡Superaste a {n}! 🏆',they_lead:'{n} va {d} por delante',top_pct:'≈ mejor que el {p}% de las personas',share_brain:'Mapa cerebral',nick_ph:'Tu nombre',new:'NUEVO',
+ ach_workouts10:'Habitual · 10 entrenos',ach_workouts50:'Devoto · 50 entrenos',ach_streak14:'Volcán · 14 días',ach_perfect:'Impecable · 975+',ach_lvl10:'Nivel 10',ach_nback3:'Malabarista · 3-back',ach_mot5:'Radar · 5 objetos',ach_early:'Madrugador',ach_night:'Búho nocturno',ach_share:'Mensajero',ach_duel:'Duelista · vence a un amigo',ach_master:'Maestro · {d}'},
+pt:{g_logic:'Matrizes',g_numbers:'Sequências numéricas',g_spatial:'Rotação 3D',g_memory:'Blocos de Corsi',g_attention:'Ligue o caminho',g_speed:'Código de símbolos',g_control:'Choque de cores',g_reflex:'Reação',g_oddone:'O intruso',g_dots:'Senso numérico',g_rot2d:'Girar ou espelhar?',g_nback:'N-back',g_mot:'Rastreador de bolas',g_search:'O T escondido',g_pcomp:'Compare padrões',g_flanker:'Seta central',g_gonogo:'Vai / Não vai',
+ i_oddone:'Cinco cartas compartilham uma regra oculta: mesma forma, cor, preenchimento ou quantidade. Encontre a carta que a quebra. A dificuldade aumenta.',
+ i_dots:'Duas nuvens de pontos aparecem por um instante. Escolha a cor que tinha MAIS pontos. Não conte — confie na intuição. Os tamanhos enganam de propósito.',
+ i_rot2d:'A figura da direita é a da esquerda girada ou o seu espelho? Responda rápido. Teclas: ← igual, → espelhado.',
+ i_nback:'Os quadrados acendem um a um. Toque em COMBINA quando o quadrado estiver no mesmo lugar de N passos atrás. N aumenta conforme você melhora.',
+ i_mot:'No início algumas bolas brilham. Depois todas se movem e quicam umas nas outras. Acompanhe as brilhantes com os olhos e escolha-as no final.',
+ i_search:'Encontre a única letra T escondida entre os Ls e toque nela o mais rápido possível. A multidão cresce a cada vez.',
+ i_pcomp:'As duas fileiras de símbolos são exatamente iguais? Responda o máximo que puder em 45 segundos. Teclas: ← igual, → diferente.',
+ i_flanker:'Cinco setas aparecem. Responda só à do CENTRO e ignore as vizinhas. Teclas: ← →.',
+ i_gonogo:'Esferas aparecem. Toque rápido nas VERDES (ou Espaço), mas nunca nas VERMELHAS. Velocidade e autocontrole juntos.',
+ nb_hint:'Mesmo lugar que {n} atrás? → COMBINA',match:'Combina!',mot_track:'Memorize as bolas brilhantes: {k}',mot_watch:'Continue acompanhando…',mot_pick:'Toque nos alvos: {k}',find_t:'Encontre o T',fl_hint:'Para onde aponta a seta CENTRAL?',gng_hint:'Verde — toque · Vermelho — espere',dots_hint:'Qual cor tinha mais pontos?',pc_hint:'Fileiras idênticas?',different:'Diferente',odd_hint:'Qual carta quebra a regra?',
+ rk1:'Novato',rk2:'Pensador',rk3:'Analista',rk4:'Especialista',rk5:'Mente mestra',rival_banner:'{n} fez {s} no Diário #{d}. Supere!',you_beat:'Você superou {n}! 🏆',they_lead:'{n} está {d} à frente',top_pct:'≈ melhor que {p}% das pessoas',share_brain:'Mapa cerebral',nick_ph:'Seu nome',new:'NOVO',
+ ach_workouts10:'Assíduo · 10 treinos',ach_workouts50:'Devoto · 50 treinos',ach_streak14:'Vulcão · 14 dias',ach_perfect:'Impecável · 975+',ach_lvl10:'Nível 10',ach_nback3:'Malabarista · 3-back',ach_mot5:'Radar · 5 objetos',ach_early:'Madrugador',ach_night:'Coruja',ach_share:'Mensageiro',ach_duel:'Duelista · vença um amigo',ach_master:'Mestre · {d}'},
+fr:{g_logic:'Matrices',g_numbers:'Suites numériques',g_spatial:'Rotation 3D',g_memory:'Blocs de Corsi',g_attention:'Relie le chemin',g_speed:'Code de symboles',g_control:'Choc des couleurs',g_reflex:'Réaction',g_oddone:'L’intrus',g_dots:'Sens du nombre',g_rot2d:'Tourné ou miroir ?',g_nback:'N-back',g_mot:'Suivi de billes',g_search:'Le T caché',g_pcomp:'Compare les motifs',g_flanker:'Flèche centrale',g_gonogo:'Go / No-Go',
+ i_oddone:'Cinq cartes partagent une règle cachée : même forme, couleur, remplissage ou nombre. Trouvez la carte qui l’enfreint. La difficulté augmente.',
+ i_dots:'Deux nuages de points apparaissent un instant. Choisissez la couleur qui avait le PLUS de points. Ne comptez pas — fiez-vous à votre instinct. Les tailles sont trompeuses exprès.',
+ i_rot2d:'La forme de droite est-elle celle de gauche tournée, ou son reflet ? Répondez vite. Touches : ← identique, → miroir.',
+ i_nback:'Des cases s’allument une à une. Appuyez sur IDENTIQUE quand la case est au même endroit que N étapes avant. N augmente quand vous progressez.',
+ i_mot:'Au départ, quelques billes brillent. Puis toutes bougent et rebondissent les unes sur les autres. Suivez des yeux celles qui brillaient et désignez-les à la fin.',
+ i_search:'Trouvez l’unique lettre T cachée parmi les L et touchez-la le plus vite possible. La foule grandit à chaque fois.',
+ i_pcomp:'Les deux rangées de symboles sont-elles exactement identiques ? Répondez au maximum en 45 secondes. Touches : ← identique, → différent.',
+ i_flanker:'Cinq flèches apparaissent. Ne répondez qu’à celle du CENTRE et ignorez ses voisines. Touches : ← →.',
+ i_gonogo:'Des sphères apparaissent. Touchez vite les VERTES (ou Espace), jamais les ROUGES. Vitesse et contrôle de soi à la fois.',
+ nb_hint:'Même place qu’il y a {n} ? → IDENTIQUE',match:'Identique !',mot_track:'Retenez les billes lumineuses : {k}',mot_watch:'Suivez-les…',mot_pick:'Touchez les cibles : {k}',find_t:'Trouvez le T',fl_hint:'Où pointe la flèche CENTRALE ?',gng_hint:'Vert : touchez · Rouge : attendez',dots_hint:'Quelle couleur avait le plus de points ?',pc_hint:'Rangées identiques ?',different:'Différent',odd_hint:'Quelle carte enfreint la règle ?',
+ rk1:'Novice',rk2:'Penseur',rk3:'Analyste',rk4:'Expert',rk5:'Cerveau d’élite',rival_banner:'{n} a fait {s} au Quotidien #{d}. Battez ce score !',you_beat:'Vous avez battu {n} ! 🏆',they_lead:'{n} mène de {d}',top_pct:'≈ mieux que {p} % des gens',share_brain:'Carte cérébrale',nick_ph:'Votre nom',new:'NOUVEAU',
+ ach_workouts10:'Habitué · 10 entraînements',ach_workouts50:'Passionné · 50 entraînements',ach_streak14:'Volcan · 14 jours',ach_perfect:'Sans faute · 975+',ach_lvl10:'Niveau 10',ach_nback3:'Jongleur · 3-back',ach_mot5:'Radar · 5 objets',ach_early:'Lève-tôt',ach_night:'Oiseau de nuit',ach_share:'Messager',ach_duel:'Duelliste · battre un ami',ach_master:'Maître · {d}'},
+de:{g_logic:'Matrizen',g_numbers:'Zahlenreihen',g_spatial:'3D-Rotation',g_memory:'Corsi-Blöcke',g_attention:'Pfad verbinden',g_speed:'Symbolcode',g_control:'Farbkonflikt',g_reflex:'Reaktion',g_oddone:'Was passt nicht?',g_dots:'Zahlensinn',g_rot2d:'Gedreht oder gespiegelt?',g_nback:'N-Back',g_mot:'Kugel-Tracker',g_search:'Das versteckte T',g_pcomp:'Muster vergleichen',g_flanker:'Mittelpfeil',g_gonogo:'Go / No-Go',
+ i_oddone:'Fünf Karten teilen eine versteckte Regel – gleiche Form, Farbe, Füllung oder Anzahl. Finde die Karte, die sie bricht. Es wird immer schwerer.',
+ i_dots:'Zwei Punktwolken blitzen kurz auf. Wähle die Farbe mit MEHR Punkten. Nicht zählen – vertrau deinem Gefühl. Die Größen täuschen absichtlich.',
+ i_rot2d:'Ist die rechte Form die linke, nur gedreht – oder ihr Spiegelbild? Antworte schnell. Tasten: ← gleich, → gespiegelt.',
+ i_nback:'Felder leuchten nacheinander auf. Tippe auf TREFFER, wenn das Feld an derselben Stelle ist wie vor N Schritten. N steigt, wenn du besser wirst.',
+ i_mot:'Am Anfang leuchten einige Kugeln. Dann bewegen sich alle und prallen voneinander ab. Verfolge die leuchtenden mit den Augen und wähle sie am Ende aus.',
+ i_search:'Finde das einzige T zwischen den Ls und tippe es so schnell wie möglich an. Die Menge wird jedes Mal größer.',
+ i_pcomp:'Sind die beiden Symbolreihen exakt gleich? Beantworte so viele wie möglich in 45 Sekunden. Tasten: ← gleich, → verschieden.',
+ i_flanker:'Fünf Pfeile erscheinen. Reagiere nur auf den MITTLEREN und ignoriere die Nachbarn. Tasten: ← →.',
+ i_gonogo:'Kugeln tauchen auf. Tippe schnell auf GRÜNE (oder Leertaste) – aber nie auf ROTE. Tempo und Selbstkontrolle zugleich.',
+ nb_hint:'Gleiche Stelle wie vor {n}? → TREFFER',match:'Treffer!',mot_track:'Merk dir die leuchtenden Kugeln: {k}',mot_watch:'Weiter verfolgen…',mot_pick:'Tippe die Ziele an: {k}',find_t:'Finde das T',fl_hint:'Wohin zeigt der MITTLERE Pfeil?',gng_hint:'Grün – tippen · Rot – warten',dots_hint:'Welche Farbe hatte mehr Punkte?',pc_hint:'Reihen identisch?',different:'Verschieden',odd_hint:'Welche Karte bricht die Regel?',
+ rk1:'Neuling',rk2:'Denker',rk3:'Analytiker',rk4:'Experte',rk5:'Superhirn',rival_banner:'{n} hat {s} bei Täglich #{d} erreicht. Schlag das!',you_beat:'Du hast {n} geschlagen! 🏆',they_lead:'{n} führt mit {d}',top_pct:'≈ besser als {p} % der Menschen',share_brain:'Gehirnkarte',nick_ph:'Dein Name',new:'NEU',
+ ach_workouts10:'Stammgast · 10 Trainings',ach_workouts50:'Fan · 50 Trainings',ach_streak14:'Vulkan · 14 Tage',ach_perfect:'Makellos · 975+',ach_lvl10:'Level 10',ach_nback3:'Jongleur · 3-Back',ach_mot5:'Radar · 5 Objekte',ach_early:'Frühaufsteher',ach_night:'Nachteule',ach_share:'Bote',ach_duel:'Duellant · Freund geschlagen',ach_master:'Meister · {d}'},
+zh:{g_logic:'矩阵推理',g_numbers:'数列',g_spatial:'3D 旋转',g_memory:'Corsi 方块',g_attention:'连线路径',g_speed:'符号编码',g_control:'颜色冲突',g_reflex:'反应速度',g_oddone:'找不同',g_dots:'数感',g_rot2d:'旋转还是镜像',g_nback:'N-back',g_mot:'小球追踪',g_search:'隐藏的 T',g_pcomp:'图案比较',g_flanker:'中央箭头',g_gonogo:'按 / 不按',
+ i_oddone:'五张卡片遵循同一个隐藏规则——相同的形状、颜色、填充或数量。找出违反规则的那一张。难度会逐渐增加。',
+ i_dots:'两团点会闪现片刻。选出点数更多的颜色。不要数——相信直觉。点的大小故意具有迷惑性。',
+ i_rot2d:'右边的图形是左边图形旋转后的样子，还是它的镜像？快速作答。按键：← 相同，→ 镜像。',
+ i_nback:'方块会逐个亮起。当方块的位置与 N 步之前相同时，点击“匹配”。表现越好，N 越大。',
+ i_mot:'开始时有几个球会发光。随后所有球开始移动并相互弹开。用眼睛紧盯发光的球，最后把它们找出来。',
+ i_search:'在一堆 L 中找到唯一的字母 T，并尽快点击它。每次数量都会增加。',
+ i_pcomp:'两行符号是否完全相同？在 45 秒内尽可能多地作答。按键：← 相同，→ 不同。',
+ i_flanker:'会出现五个箭头。只对中间的箭头作出反应，忽略两边的箭头。按键：← →。',
+ i_gonogo:'会弹出小球。快速点击绿色的（或按空格）——但绝不要点红色的。速度与自控兼顾。',
+ nb_hint:'与 {n} 步前位置相同？→ 匹配',match:'匹配！',mot_track:'记住发光的球：{k} 个',mot_watch:'继续追踪…',mot_pick:'点击目标：{k} 个',find_t:'找到 T',fl_hint:'中间的箭头指向哪边？',gng_hint:'绿色——点击 · 红色——等待',dots_hint:'哪种颜色的点更多？',pc_hint:'两行相同吗？',different:'不同',odd_hint:'哪张卡片违反了规则？',
+ rk1:'新手',rk2:'思考者',rk3:'分析师',rk4:'专家',rk5:'最强大脑',rival_banner:'{n} 在每日 #{d} 中得了 {s} 分。超过他！',you_beat:'你超过了 {n}！🏆',they_lead:'{n} 领先 {d} 分',top_pct:'≈ 优于 {p}% 的人',share_brain:'大脑卡片',nick_ph:'你的名字',new:'新',
+ ach_workouts10:'常客 · 10 次训练',ach_workouts50:'忠实粉丝 · 50 次训练',ach_streak14:'火山 · 14 天',ach_perfect:'完美 · 975+',ach_lvl10:'10 级',ach_nback3:'杂耍大师 · 3-back',ach_mot5:'雷达 · 5 个目标',ach_early:'早起鸟',ach_night:'夜猫子',ach_share:'传播者',ach_duel:'决斗者 · 战胜朋友',ach_master:'大师 · {d}'},
+ja:{g_logic:'マトリックス',g_numbers:'数列',g_spatial:'3D回転',g_memory:'コルシブロック',g_attention:'パスをつなげ',g_speed:'記号コード',g_control:'カラー衝突',g_reflex:'反応',g_oddone:'仲間はずれ',g_dots:'数の感覚',g_rot2d:'回転か鏡像か',g_nback:'Nバック',g_mot:'ボール追跡',g_search:'隠れたT',g_pcomp:'パターン比較',g_flanker:'中央の矢印',g_gonogo:'ゴー／ノーゴー',
+ i_oddone:'5枚のカードには隠れたルールがあります——同じ形、色、塗り、または個数。ルールを破っている1枚を見つけてください。だんだん難しくなります。',
+ i_dots:'2つの点の集まりが一瞬表示されます。点が多かった色を選んでください。数えずに直感で。点の大きさはわざと紛らわしくしています。',
+ i_rot2d:'右の図形は左の図形を回転させたものですか、それとも鏡像ですか？素早く答えてください。キー：← 同じ、→ 鏡像。',
+ i_nback:'マスが1つずつ光ります。Nステップ前と同じ位置なら「一致」をタップ。上達するとNが増えます。',
+ i_mot:'最初にいくつかのボールが光ります。その後すべてが動き、互いに跳ね返ります。光っていたボールを目で追い、最後に選んでください。',
+ i_search:'Lの中に1つだけ隠れたTを見つけて、できるだけ速くタップしてください。毎回数が増えます。',
+ i_pcomp:'2列の記号はまったく同じですか？45秒でできるだけ多く答えてください。キー：← 同じ、→ 違う。',
+ i_flanker:'5本の矢印が現れます。中央の矢印にだけ反応し、両隣は無視してください。キー：← →。',
+ i_gonogo:'玉が現れます。緑はすばやくタップ（またはスペース）、赤は絶対にタップしないでください。スピードと自制心を同時に。',
+ nb_hint:'{n}つ前と同じ位置？→ 一致',match:'一致！',mot_track:'光るボールを覚えて：{k}個',mot_watch:'追い続けて…',mot_pick:'ターゲットをタップ：{k}個',find_t:'Tを探せ',fl_hint:'中央の矢印はどちら向き？',gng_hint:'緑はタップ · 赤は待つ',dots_hint:'どちらの色の点が多かった？',pc_hint:'2列は同じ？',different:'違う',odd_hint:'ルールを破っているのはどれ？',
+ rk1:'ビギナー',rk2:'シンカー',rk3:'アナリスト',rk4:'エキスパート',rk5:'マスターマインド',rival_banner:'{n}さんはデイリー #{d} で {s} 点。超えよう！',you_beat:'{n}さんに勝った！🏆',they_lead:'{n}さんが {d} 点リード',top_pct:'≈ {p}% の人より上',share_brain:'脳カード',nick_ph:'あなたの名前',new:'NEW',
+ ach_workouts10:'常連 · 10回',ach_workouts50:'熱心 · 50回',ach_streak14:'火山 · 14日',ach_perfect:'完璧 · 975+',ach_lvl10:'レベル10',ach_nback3:'ジャグラー · 3バック',ach_mot5:'レーダー · 5個',ach_early:'早起き鳥',ach_night:'夜ふかし',ach_share:'メッセンジャー',ach_duel:'決闘者 · 友達に勝つ',ach_master:'マスター · {d}'},
+hi:{g_logic:'मैट्रिक्स',g_numbers:'संख्या श्रृंखला',g_spatial:'3D घुमाव',g_memory:'कोर्सी ब्लॉक',g_attention:'रास्ता जोड़ें',g_speed:'प्रतीक कोड',g_control:'रंगों का टकराव',g_reflex:'प्रतिक्रिया',g_oddone:'अलग कौन?',g_dots:'संख्या बोध',g_rot2d:'घुमाव या दर्पण?',g_nback:'N-बैक',g_mot:'गेंद ट्रैकर',g_search:'छिपा T',g_pcomp:'पैटर्न मिलान',g_flanker:'बीच का तीर',g_gonogo:'गो / नो-गो',
+ i_oddone:'पाँच कार्ड एक छिपा नियम साझा करते हैं — एक जैसी आकृति, रंग, भराव या संख्या। वह कार्ड खोजें जो नियम तोड़ता है। कठिनाई बढ़ती जाती है।',
+ i_dots:'बिंदुओं के दो बादल पल भर के लिए दिखेंगे। वह रंग चुनें जिसमें ज़्यादा बिंदु थे। गिनें नहीं — अपने अंदाज़े पर भरोसा करें। बिंदुओं के आकार जानबूझकर भ्रमित करते हैं।',
+ i_rot2d:'क्या दाईं आकृति बाईं वाली ही है, बस घुमाई हुई — या उसकी दर्पण छवि? जल्दी जवाब दें। कुंजियाँ: ← समान, → दर्पण।',
+ i_nback:'वर्ग एक-एक करके चमकते हैं। जब वर्ग उसी जगह हो जहाँ N कदम पहले था, तब "मैच" दबाएँ। आपके सुधरने पर N बढ़ता है।',
+ i_mot:'शुरुआत में कुछ गेंदें चमकती हैं। फिर सभी चलने और एक-दूसरे से टकराकर उछलने लगती हैं। चमकने वाली गेंदों पर नज़र रखें और अंत में उन्हें चुनें।',
+ i_search:'L के बीच छिपे इकलौते T को खोजें और जितनी जल्दी हो सके उस पर टैप करें। हर बार भीड़ बढ़ती है।',
+ i_pcomp:'क्या प्रतीकों की दोनों पंक्तियाँ बिल्कुल समान हैं? 45 सेकंड में जितने हो सकें, जवाब दें। कुंजियाँ: ← समान, → अलग।',
+ i_flanker:'पाँच तीर दिखेंगे। केवल बीच वाले तीर पर प्रतिक्रिया दें और आसपास वालों को अनदेखा करें। कुंजियाँ: ← →।',
+ i_gonogo:'गोले उभरते हैं। हरे गोलों पर तेज़ी से टैप करें (या स्पेस) — पर लाल पर कभी नहीं। गति और आत्म-नियंत्रण एक साथ।',
+ nb_hint:'{n} कदम पहले वाली जगह? → मैच',match:'मैच!',mot_track:'चमकती गेंदें याद रखें: {k}',mot_watch:'नज़र रखें…',mot_pick:'लक्ष्यों पर टैप करें: {k}',find_t:'T खोजें',fl_hint:'बीच का तीर किस ओर है?',gng_hint:'हरा — टैप · लाल — रुकें',dots_hint:'किस रंग के बिंदु ज़्यादा थे?',pc_hint:'पंक्तियाँ समान?',different:'अलग',odd_hint:'कौन सा कार्ड नियम तोड़ता है?',
+ rk1:'नौसिखिया',rk2:'विचारक',rk3:'विश्लेषक',rk4:'विशेषज्ञ',rk5:'महामस्तिष्क',rival_banner:'{n} ने डेली #{d} में {s} स्कोर किया। आगे निकलें!',you_beat:'आपने {n} को हरा दिया! 🏆',they_lead:'{n} {d} से आगे है',top_pct:'≈ {p}% लोगों से बेहतर',share_brain:'ब्रेन कार्ड',nick_ph:'आपका नाम',new:'नया',
+ ach_workouts10:'नियमित · 10 ट्रेनिंग',ach_workouts50:'समर्पित · 50 ट्रेनिंग',ach_streak14:'ज्वालामुखी · 14 दिन',ach_perfect:'बेदाग · 975+',ach_lvl10:'लेवल 10',ach_nback3:'बाज़ीगर · 3-बैक',ach_mot5:'रडार · 5 वस्तुएँ',ach_early:'सुबह का पंछी',ach_night:'रात का उल्लू',ach_share:'संदेशवाहक',ach_duel:'द्वंद्वयोद्धा · दोस्त को हराया',ach_master:'मास्टर · {d}'},
+ar:{g_logic:'المصفوفات',g_numbers:'المتتاليات العددية',g_spatial:'التدوير ثلاثي الأبعاد',g_memory:'مكعبات كورسي',g_attention:'صِل المسار',g_speed:'شفرة الرموز',g_control:'صراع الألوان',g_reflex:'رد الفعل',g_oddone:'الدخيل',g_dots:'حسّ الأعداد',g_rot2d:'تدوير أم مرآة؟',g_nback:'إن-باك',g_mot:'تتبّع الكرات',g_search:'حرف T المخفي',g_pcomp:'قارن الأنماط',g_flanker:'السهم الأوسط',g_gonogo:'انطلق / توقف',
+ i_oddone:'خمس بطاقات تشترك في قاعدة خفية — الشكل أو اللون أو التعبئة أو العدد نفسه. ابحث عن البطاقة التي تخالفها. تزداد الصعوبة تدريجيًا.',
+ i_dots:'تظهر سحابتا نقاط للحظة. اختر اللون الذي كان فيه نقاط أكثر. لا تعدّ — ثق بحدسك. أحجام النقاط مضلِّلة عمدًا.',
+ i_rot2d:'هل الشكل الأيمن هو الأيسر بعد تدويره، أم صورته في المرآة؟ أجب بسرعة. المفاتيح: ← متطابق، → مرآة.',
+ i_nback:'تضيء المربعات واحدًا تلو الآخر. اضغط «تطابق» عندما يكون المربع في المكان نفسه قبل N خطوات. يزداد N كلما تحسّنت.',
+ i_mot:'في البداية تتوهج بعض الكرات. ثم تتحرك جميعها وترتد عن بعضها. تابع الكرات المتوهجة بعينيك واخترها في النهاية.',
+ i_search:'ابحث عن الحرف T الوحيد المخفي بين حروف L واضغط عليه بأسرع ما يمكن. يزداد العدد في كل مرة.',
+ i_pcomp:'هل صفّا الرموز متطابقان تمامًا؟ أجب عن أكبر عدد ممكن في 45 ثانية. المفاتيح: ← متطابق، → مختلف.',
+ i_flanker:'تظهر خمسة أسهم. استجب فقط للسهم الأوسط وتجاهل جيرانه. المفاتيح: ← →.',
+ i_gonogo:'تظهر كرات. اضغط بسرعة على الخضراء (أو المسافة) — ولا تضغط أبدًا على الحمراء. سرعة وضبط نفس معًا.',
+ nb_hint:'المكان نفسه قبل {n}؟ ← تطابق',match:'تطابق!',mot_track:'تذكّر الكرات المتوهجة: {k}',mot_watch:'واصل التتبع…',mot_pick:'اضغط على الأهداف: {k}',find_t:'ابحث عن T',fl_hint:'إلى أين يشير السهم الأوسط؟',gng_hint:'أخضر — اضغط · أحمر — انتظر',dots_hint:'أي لون كانت نقاطه أكثر؟',pc_hint:'هل الصفان متطابقان؟',different:'مختلف',odd_hint:'أي بطاقة تخالف القاعدة؟',
+ rk1:'مبتدئ',rk2:'مفكّر',rk3:'محلّل',rk4:'خبير',rk5:'العقل المدبّر',rival_banner:'حصل {n} على {s} في اليومي #{d}. تفوّق عليه!',you_beat:'تفوّقت على {n}! 🏆',they_lead:'{n} متقدم بفارق {d}',top_pct:'≈ أفضل من {p}% من الناس',share_brain:'بطاقة الدماغ',nick_ph:'اسمك',new:'جديد',
+ ach_workouts10:'منتظم · 10 تمارين',ach_workouts50:'مخلص · 50 تمرينًا',ach_streak14:'بركان · 14 يومًا',ach_perfect:'بلا أخطاء · 975+',ach_lvl10:'المستوى 10',ach_nback3:'بهلوان · 3-باك',ach_mot5:'رادار · 5 أجسام',ach_early:'الطائر المبكر',ach_night:'بومة الليل',ach_share:'الرسول',ach_duel:'مبارز · تغلّب على صديق',ach_master:'أستاذ · {d}'}
+};
+for(const k in I18N_V3)Object.assign(I18N[k],I18N_V3[k]);
+
+
 let L='en';
 function t(k,v){let s=(I18N[L]&&I18N[L][k])??I18N.en[k]??k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s}
 
@@ -684,7 +1037,7 @@ const Brain=(()=>{
         const c=G.cen[id];if(!c)continue;const[sx,sy2,z]=proj(c[0]*1.18,c[1]*1.18,c[2]*1.12);
         if(o.focus!==id)continue;const al=1;
         x.globalAlpha=al;x.fillStyle=DCOL[id];x.beginPath();x.arc(sx,sy2,3,0,6.283);x.fill();
-        x.textAlign=sx<ox?'right':'left';const tx=sx+(sx<ox?-8:8);
+        const tw=x.measureText(o.labels[id]).width;let left=sx<ox;if(left&&sx-8-tw<4)left=false;if(!left&&sx+8+tw>W-4)left=true;x.textAlign=left?'right':'left';const tx=sx+(left?-8:8);
         x.lineWidth=3;x.strokeStyle='rgba(4,5,11,.85)';x.strokeText(o.labels[id],tx,sy2);x.fillStyle='#fff';x.fillText(o.labels[id],tx,sy2);
       }
       x.globalAlpha=1;
@@ -751,14 +1104,14 @@ TESTS.reflex=(S,done)=>{
 };
 
 /* 2. Corsi block-tapping (visuospatial working memory) — Kessels et al. 2000 procedure */
-TESTS.memory=(S,done)=>{
+TESTS.memory=(S,done,x={})=>{
   const P=[[.10,.12],[.58,.05],[.36,.28],[.76,.26],[.06,.52],[.50,.52],[.78,.64],[.26,.78],[.58,.80]];
   const NOTE=[262,294,330,392,440,523,587,659,784];
   S.innerHTML=`<div class="hud mono"><span id="st">…</span><span>${t('span')} <b id="lv">3</b></span></div>
     <div class="corsi lock" id="bd">${P.map((p,i)=>`<button class="blk" data-i="${i}" style="left:${p[0]*100}%;top:${p[1]*100}%" aria-label="${i+1}"></button>`).join('')}</div>
     <div class="dots" id="dots"></div>`;
   const bd=S.querySelector('#bd'),B=[...bd.querySelectorAll('.blk')],st=S.querySelector('#st'),lv=S.querySelector('#lv'),dots=S.querySelector('#dots');
-  let len=3,fails=0,best=2,okTrials=0,seq=[],inp=[],acc=false;
+  let len=clamp(x.start||3,2,8),fails=0,best=len-1,okTrials=0,seq=[],inp=[],acc=false;
   function ring(i,col){const r=document.createElement('i');r.className='cring';r.style.cssText=`left:${P[i][0]*100}%;top:${P[i][1]*100}%;border-color:${col}`;bd.appendChild(r);setTimeout(()=>r.remove(),700)}
   function lit(i,c){B[i].classList.add(c);ring(i,c==='show'?'#5ef2ff':'#9b6bff');sfx.tone(NOTE[i],.28,'sine',.06);later(()=>B[i].classList.remove(c),c==='show'?700:240)}
   function round(){seq=shuffle([0,1,2,3,4,5,6,7,8]).slice(0,len);inp=[];acc=false;bd.classList.add('lock');st.textContent=t('watch');lv.textContent=len;
@@ -871,7 +1224,7 @@ function adaptive(S,done,o){
   function next(){
     const est=eap(resp,o.c);
     if(k>=o.n)return done({z:est.theta,raw:`${correct}/${o.n} · θ ${est.theta>=0?'+':''}${est.theta.toFixed(2)} ± ${est.se.toFixed(2)}`});
-    const target=k===0?-1.2:est.theta+(R()-.5)*.5,lvl=clamp(Math.round((target+2.45)/.7)+1,1,8),b=-2.45+.7*(lvl-1),it=o.gen(lvl);
+    const target=k===0?(o.start??-1.2):est.theta+(R()-.5)*.5,lvl=clamp(Math.round((target+2.45)/.7)+1,1,8),b=-2.45+.7*(lvl-1),it=o.gen(lvl);
     S.innerHTML=`<div class="hud mono"><span>${k+1} / ${o.n}</span><span class="lvl" title="difficulty">${'▮'.repeat(lvl)}<i>${'▮'.repeat(8-lvl)}</i></span></div>
       <div class="tbar"><i style="animation-duration:${o.time}s"></i></div><p class="q">${t(o.q)}</p>${o.render(it)}`;
     const btns=[...S.querySelectorAll('.opt')];let tm=0;
@@ -885,13 +1238,13 @@ function adaptive(S,done,o){
   }
   next();
 }
-TESTS.logic=(S,done)=>adaptive(S,done,{n:10,c:1/6,time:50,q:'q_matrix',keys:6,gen:genMatrix,render:renderMatrix,reveal:revealMatrix});
-TESTS.numbers=(S,done)=>adaptive(S,done,{n:8,c:1/5,time:50,q:'q_series',keys:5,gen:genSeries,render:renderSeries,reveal:revealSeries});
+TESTS.logic=(S,done,x={})=>adaptive(S,done,{start:x.start,n:x.n||10,c:1/6,time:50,q:'q_matrix',keys:6,gen:genMatrix,render:renderMatrix,reveal:revealMatrix});
+TESTS.numbers=(S,done,x={})=>adaptive(S,done,{start:x.start,n:x.n||8,c:1/5,time:50,q:'q_series',keys:5,gen:genSeries,render:renderSeries,reveal:revealSeries});
 
 
 /* 4. Stroop (inhibitory control) with practice trials ------------------ */
-TESTS.control=(S,done)=>{
-  const C=[['red','#ff4d5e'],['blue','#4d8dff'],['green','#34d67b'],['yellow','#ffd23f']],N=24,NP=4;
+TESTS.control=(S,done,x={})=>{
+  const C=[['red','#ff4d5e'],['blue','#4d8dff'],['green','#34d67b'],['yellow','#ffd23f']],N=x.n||24,NP=x.noPractice?0:4;
   const prac=Array.from({length:NP},(_,i)=>{const w=ri(4);let c=w;if(i%2){do{c=ri(4)}while(c===w)}return{w,c,p:1}});
   const main=shuffle(Array.from({length:N},(_,i)=>{const w=ri(4);if(i<8)return{w,c:w};let c;do{c=ri(4)}while(c===w);return{w,c}}));
   const trials=[...prac,...main];
@@ -904,7 +1257,7 @@ TESTS.control=(S,done)=>{
   function label(){const tr=trials[k];Nn.innerHTML=tr.p?`<span class="pbadge">${t('practice')}</span>`:`<b>${k-NP+1}</b> / ${N}`}
   function step(){
     if(k>=trials.length)return end();
-    if(k===NP&&!announced){announced=true;on=false;W.textContent=t('go_real');W.style.color='';W.className='sw msg';sfx.win();later(step,1400);return}
+    if(NP&&k===NP&&!announced){announced=true;on=false;W.textContent=t('go_real');W.style.color='';W.className='sw msg';sfx.win();later(step,1400);return}
     on=false;W.textContent='+';W.style.color='';W.className='sw fix';label();
     later(()=>{const tr=trials[k];W.textContent=t(C[tr.w][0]);W.style.color=C[tr.c][1];W.className='sw';on=true;t0=performance.now();requestAnimationFrame(()=>{t0=performance.now()});tm=later(()=>resp(-1,performance.now()),3000)},380+R()*260)}
   function resp(i,ts){if(!on)return;on=false;clearTimeout(tm);const tr=trials[k],ok=i===tr.c;
@@ -989,10 +1342,10 @@ function drawPoly(x,W,sh,M,wob){
     x.beginPath();poly(f.vs.map(v=>[mx+(v[0]-mx)*.78,my+(v[1]-my)*.78]));x.strokeStyle=`rgba(255,255,255,${(.05+.17*f.I).toFixed(3)})`;x.lineWidth=1;x.stroke();
   }
 }
-TESTS.spatial=(S,done)=>{
+TESTS.spatial=(S,done,x={})=>{
   const ANG=[40,80,120,160],plan=[];
-  for(const a of ANG)for(const m of[0,1])for(let r=0;r<2;r++)plan.push({a,m});
-  const trials=[{a:40,m:0,p:1},{a:60,m:1,p:1},...shuffle(plan)],N=plan.length,NP=2,TL=15;
+  const reps=x.n?Math.max(1,Math.round(x.n/8)):2;for(const a of ANG)for(const m of[0,1])for(let r=0;r<reps;r++)plan.push({a,m});
+  const trials=x.noPractice?shuffle(plan):[{a:40,m:0,p:1},{a:60,m:1,p:1},...shuffle(plan)],N=plan.length,NP=x.noPractice?0:2,TL=15;
   let k=0,ok=0,cur=null,announced=false;const rec=[];
   onKey(e=>{if(!cur)return;const kk=e.key.toLowerCase();if(e.key==='ArrowLeft'||kk==='1'||kk==='s')cur(0);else if(e.key==='ArrowRight'||kk==='2'||kk==='m')cur(1)});
   function stim(tr){
@@ -1007,7 +1360,7 @@ TESTS.spatial=(S,done)=>{
   function step(){
     if(k>=trials.length)return finish();
     const tr=trials[k],prac=!!tr.p;
-    if(!prac&&!announced){announced=true;S.innerHTML=`<div class="stroop"><div class="sw msg">${t('go_real')}</div></div>`;sfx.win();later(step,1300);return}
+    if(!prac&&!announced&&NP){announced=true;S.innerHTML=`<div class="stroop"><div class="sw msg">${t('go_real')}</div></div>`;sfx.win();later(step,1300);return}
     const s=stim(tr);
     S.innerHTML=`<div class="hud mono"><span>${prac?`<span class="pbadge">${t('practice')}</span>`:`<b>${k-NP+1}</b> / ${N}`}</span><span>✓ <b>${ok}</b></span></div>
       <div class="tbar${prac?' off':''}"><i style="animation-duration:${TL}s"></i></div>
@@ -1094,7 +1447,7 @@ function loadRun(){try{const r=JSON.parse(store.get('nm_run')||'null');if(r&&r.i
 const clearRun=()=>store.set('nm_run','');
 
 function intro(){
-  setTesting(false);current=intro;
+  setTesting(false);current=intro;setNav('test');amb(null);
   let last=null;try{last=JSON.parse(store.get('nm_last')||'null')}catch(e){}
   const run=loadRun();
   const el=show(`<div class="hero">
@@ -1102,7 +1455,7 @@ function intro(){
       <div class="badge mono"><span class="pulse"></span>${VS?`⚔ ${t('vs_intro',{s:calc(VS).iq})}`:CHALLENGE?`⚔ ${t('challenge')} · ${SEED}`:t('meta')}</div>
       <h1 class="title">Neuro<span>Map</span></h1>
       <p class="tag">${t('tagline')}</p>
-      <div class="cta"><button class="btn primary big" id="st">${t('start')} <span>→</span></button>
+      <div class="cta"><button class="btn primary big" id="st">${t('train_cta')} <span>→</span></button><button class="btn ghost big" id="st2">${t('test_cta')}</button>
         ${run?`<button class="btn ghost" id="cont">↻ ${t('cont',{n:run.i+1,t:ORDER.length})}</button>`:''}</div>
       ${last&&last.scores?`<div class="last">${t('last')}: <button id="lastb">${calc(last.scores).iq} · ${t('a_'+topOf(last.scores))} →</button></div>`:''}
     </div>
@@ -1110,21 +1463,21 @@ function intro(){
     <div class="cards">${RADAR.map((id,i)=>`<div class="card" data-id="${id}" style="--d:${120+i*60}ms;--dc:${DCOL[id]}"><div class="cico">${icon(id)}</div><div><b>${t('d_'+id)}</b><span class="mono">${METHOD[id]}</span></div></div>`).join('')}</div>
     <p class="fine">🔒 ${t('privacy')}<br>${t('disclaimer')}</p></div>`);
   const br=Brain.mount(el.querySelector('#brain'),{mode:'hero'});
-  const stb=el.querySelector('#st');stb.onclick=start;magnet(stb);
+  const stb=el.querySelector('#st');stb.onclick=today;magnet(stb);el.querySelector('#st2').onclick=start;
   const cb=el.querySelector('#cont');if(cb)cb.onclick=()=>{state={i:run.i,res:run.res,age:run.age,flags:run.flags||{}};SEED=run.seed;if(run.vs)VS=run.vs;setTesting(true);taskIntro()};
   const lb=el.querySelector('#lastb');if(lb)lb.onclick=()=>results(last.scores,last.raws,{fromLast:true,meta:last.meta||{}});
   el.querySelectorAll('.card').forEach(c=>{tilt(c,10);c.addEventListener('pointerenter',()=>br.focus=c.dataset.id);c.addEventListener('pointerleave',()=>br.focus=null)});
-  onKey(e=>{if(e.key==='Enter'){e.preventDefault();start()}});
+  onKey(e=>{if(e.key==='Enter'){e.preventDefault();today()}});
 }
-function start(){state={i:0,res:{},age:null,flags:{}};setTesting(true);ageScreen()}
-function ageScreen(){
+function start(){state={i:0,res:{},age:null,flags:{}};setTesting(true);if(P.ageAsked){state.age=P.age;taskIntro()}else ageScreen()}
+function ageScreen(next){
   current=null;
   const el=show(`<div class="panel ti"><div class="orb" style="--dc:#9b6bff">${icon('age')}</div>
     <h2>${t('age_q')}</h2><p class="lead">${t('age_sub')}</p>
     <div class="ages">${AGES.map((a,i)=>`<button class="opt" data-i="${i}"><em>${i+1}</em>${a[0]}</button>`).join('')}</div>
     <button class="btn ghost" id="skip" style="margin-top:16px">${t('age_skip')}</button>
     <p class="privacy">${t('privacy2')}</p></div>`);
-  const go=i=>{state.age=i;taskIntro()};
+  setTesting(true);const go=i=>{state.age=i;P.age=i;P.ageAsked=true;saveP();(next||taskIntro)()};
   el.querySelectorAll('.ages .opt').forEach(b=>b.onclick=()=>go(+b.dataset.i));
   el.querySelector('#skip').onclick=()=>go(null);
   onKey(e=>{const n=parseInt(e.key,10);if(n>=1&&n<=AGES.length)go(n-1)});
@@ -1154,7 +1507,7 @@ function finish(){
   const scores={},raws={};
   ORDER.forEach(id=>{const z=clamp(ageAdj(id,state.res[id].z,state.age),-3.3,3.3);scores[id]=Math.round(100+15*z);raws[id]=state.res[id].raw});
   const meta={age:state.age,flags:Object.keys(state.flags||{}),seed:SEED};
-  store.set('nm_last',JSON.stringify({scores,raws,meta,at:Date.now()}));clearRun();
+  store.set('nm_last',JSON.stringify({scores,raws,meta,at:Date.now()}));clearRun();const nach=recordTest(state);achToasts(nach,2600);
   results(scores,raws,{meta,vs:VS,fresh:true});
 }
 const topOf=sc=>[...RADAR].sort((a,b)=>sc[b]-sc[a])[0];
@@ -1195,7 +1548,7 @@ function radarSVG(sc,vs){
   return s+'</svg>';
 }
 function results(scores,raws,o){
-  o=o||{};setTesting(false);current=()=>results(scores,raws,o);
+  o=o||{};setTesting(false);current=()=>results(scores,raws,o);setNav('test');amb(null);
   const c=calc(scores),C=2*Math.PI*86,sorted=[...RADAR].sort((a,b)=>scores[b]-scores[a]),top=sorted[0],meta=o.meta||{};
   const vc=o.vs?calc(o.vs):null,diff=vc?c.iq-vc.iq:0;
   const chips=[];
@@ -1232,7 +1585,7 @@ function results(scores,raws,o){
       <button class="btn primary" id="dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>${t('download')}</button>
       <button class="btn ghost" id="sh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>${t('share')}</button>
       <button class="btn ghost" id="ch">⚔ ${t('challenge')}</button>
-      <button class="btn ghost" id="rt">↺ ${t('retake')}</button></div>`}
+      <button class="btn ghost" id="rt">↺ ${t('retake')}</button><button class="btn ghost" id="tr">🏋 ${t('train_cta')}</button></div>`}
     <p class="meta-l mono">${t('brain_note')}<br>${o.shared?'':`${t('testId')}: ${meta.seed||'—'} · `}${t('disclaimer')}</p></div>`);
   const labels={};for(const id in DCOL)labels[id]=`${t('d_'+id)} ${scores[id]}`;
   const br=Brain.mount(el.querySelector('#brain'),{mode:'result',lv:levels(scores),labels});
@@ -1245,13 +1598,14 @@ function results(scores,raws,o){
   const base=location.href.split(/[?#]/)[0],packed=ORDER.map(id=>scores[id]).join('.');
   if(o.shared){el.querySelector('#try').onclick=()=>{VS=scores;SEED=newSeed();CHALLENGE=false;history.replaceState(null,'',base);intro()};return}
   el.querySelector('#dl').onclick=()=>downloadCard(c,scores,top,meta.seed);
-  el.querySelector('#sh').onclick=()=>shareLink(base+'#r='+packed,c,top);
-  el.querySelector('#ch').onclick=()=>shareLink(base+'?seed='+(meta.seed||SEED)+'&vs='+packed,c,top);
+  el.querySelector('#sh').onclick=()=>shareLink(SITE+'#r='+packed,c,top);
+  el.querySelector('#ch').onclick=()=>shareLink(SITE+'?seed='+(meta.seed||SEED)+'&vs='+packed,c,top);
   el.querySelector('#rt').onclick=()=>{SEED=newSeed();CHALLENGE=false;VS=null;history.replaceState(null,'',base);start()};
-  magnet(el.querySelector('#dl'));
+  magnet(el.querySelector('#dl'));const trb=el.querySelector('#tr');if(trb)trb.onclick=today;
 }
 async function shareLink(url,c,top){
   const text=`NeuroMap: ${c.iq} — ${t('a_'+top)}`;
+  if(window.NMAndroid){NMAndroid.share(text+'\n'+url);return}
   if(navigator.share&&matchMedia('(pointer:coarse)').matches){try{await navigator.share({title:'NeuroMap',text,url});return}catch(e){if(e&&e.name==='AbortError')return}}
   try{await navigator.clipboard.writeText(url);toast(t('copied'))}catch(e){window.prompt('URL',url)}
 }
@@ -1278,6 +1632,7 @@ async function downloadCard(c,sc,top,seed){
     x.textAlign='right';x.fillStyle=DCOL[id];x.font=`600 19px ${M}`;x.fillText(sc[id],bx+w,by);
     x.fillStyle='rgba(255,255,255,.08)';x.fillRect(bx+150,by-8,w-200,6);x.fillStyle=DCOL[id];x.fillRect(bx+150,by-8,(w-200)*clamp((sc[id]-55)/90,.02,1),6)});
   x.textAlign='center';x.fillStyle='#8790b5';x.font=`500 20px ${M}`;x.fillText(REPO.replace(/^https?:\/\//,''),540,1328);
+  if(window.NMAndroid){NMAndroid.shareImage(cv.toDataURL('image/png'));return}
   cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`neuromap-${c.iq}.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},'image/png');
 }
 
@@ -1313,9 +1668,569 @@ async function downloadCard(c,sc,top,seed){
 })();
 
 /* =====================================================================
+   v3 GAMES — nine extra training games, each tied to one brain domain.
+   Each: (stage, done, opts) → done({z, raw, lvl})  — lvl persists per game.
+   ===================================================================== */
+const GDOM={logic:'logic',numbers:'numbers',spatial:'spatial',memory:'memory',attention:'attention',speed:'speed',control:'control',reflex:'reflex',
+  oddone:'logic',dots:'numbers',rot2d:'spatial',nback:'memory',mot:'attention',search:'attention',pcomp:'speed',flanker:'control',gonogo:'reflex'};
+const ALLG=Object.keys(GDOM);
+const NEWG=['oddone','dots','rot2d','nback','mot','search','pcomp','flanker','gonogo'];
+const CITE={logic:'Raven, 1938 · Carpenter et al., 1990',numbers:'Thurstone, 1938',spatial:'Shepard & Metzler, 1971',memory:'Corsi, 1972 · Kessels et al., 2000',
+  attention:'Reitan, 1958',speed:'Wechsler, WAIS',control:'Stroop, 1935',reflex:'Donders, 1868',oddone:'Classification reasoning · Thurstone, 1938',
+  dots:'Halberda, Mazzocco & Feigenson, 2008',rot2d:'Cooper & Shepard, 1973',nback:'Kirchner, 1958 · Jaeggi et al., 2008',mot:'Pylyshyn & Storm, 1988',
+  search:'Treisman & Gelade, 1980',pcomp:'Salthouse & Babcock, 1991',flanker:'Eriksen & Eriksen, 1974',gonogo:'Go/No-Go paradigm · Donders, 1868'};
+Object.assign(ICON,{oddone:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM17 14a3 3 0 1 0 .01 0',dots:'M6 7h.01M9 12h.01M5 16h.01M16 6h.01M19 10h.01M15 13h.01M18 17h.01M14 19h.01M12 3v18',
+  rot2d:'M4 12a8 8 0 0 1 14-5.3M20 4v5h-5M20 12a8 8 0 0 1-14 5.3M4 20v-5h5',nback:'M3 3h5v5H3zM10 3h4v5h-4zM16 3h5v5h-5zM3 10h5v4H3zM16 10h5v4h-5zM10 16h4v5h-4z',
+  mot:'M7 7a2.5 2.5 0 1 0 .01 0M17 9a2.5 2.5 0 1 0 .01 0M10 17a2.5 2.5 0 1 0 .01 0M9.5 7.8l5 .8M8.5 14.6l.8.6',search:'M10 4a6 6 0 1 0 .01 0M14.5 14.5L20 20M7.5 8h5M10 8v5',
+  pcomp:'M3 7h7M3 12h7M3 17h7M14 7h7M14 12h7M14 17h7',flanker:'M5 9l-3 3 3 3M19 9l3 3-3 3M10 8l-4 4 4 4M14 8l4 4-4 4',gonogo:'M7 12a4 4 0 1 0 .01 0M17 7a3 3 0 1 0 .01 0M15 15l4 4M19 15l-4 4'});
+function shadeHex(h,k){const n=parseInt(h.slice(1),16);return`rgb(${(n>>16&255)*k|0},${(n>>8&255)*k|0},${(n&255)*k|0})`}
+
+/* ---------- N-back (updating working memory) ---------- */
+TESTS.nback=(S,done,x={})=>{
+  const N=clamp(x.lvl||1,1,6),T=20+N,seq=[];
+  for(let i=0;i<T;i++){let p;if(i>=N&&R()<.3)p=seq[i-N];else{do p=ri(9);while(i>=N&&p===seq[i-N])}seq.push(p)}
+  S.innerHTML=`<div class="hud mono"><span><b>${N}</b>-back</span><span id="nbi">0 / ${T}</span></div>
+    <p class="fb mono">${t('nb_hint',{n:N})}</p><div class="nbgrid" id="g">${'<i></i>'.repeat(9)}</div>
+    <button class="btn primary big nbbtn" id="m">${t('match')} <span class="kbd">␣</span></button>`;
+  const cells=[...S.querySelectorAll('#g i')],btn=S.querySelector('#m'),cnt=S.querySelector('#nbi');
+  let k=-1,pressed=false,hits=0,miss=0,fa=0,cr=0;
+  const isT=i=>i>=N&&seq[i]===seq[i-N];
+  function press(){if(k<N||pressed||k>=T)return;pressed=true;
+    if(isT(k)){hits++;btn.classList.add('ok');sfx.ok();burstEl(cells[seq[k]],'#3ddc97')}else{fa++;btn.classList.add('no');sfx.bad();buzz()}
+    later(()=>btn.classList.remove('ok','no'),320)}
+  function step(){
+    if(k>=N&&!pressed){if(isT(k))miss++;else cr++}
+    k++;pressed=false;if(k>=T)return fin();
+    cnt.textContent=`${k+1} / ${T}`;const c=cells[seq[k]];c.classList.add('on');sfx.tone(330+seq[k]*44,.2,'sine',.05);
+    later(()=>c.classList.remove('on'),600);later(step,2400)}
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();press()});
+  onKey(e=>{if(e.code==='Space'||e.key.toLowerCase()==='m'){e.preventDefault();press()}});
+  function fin(){const tg=hits+miss,nt=fa+cr,hr=tg?hits/tg:0,far=nt?fa/nt:0,err=miss+fa;
+    const nl=err<3?Math.min(6,N+1):err>5?Math.max(1,N-1):N; /* Jaeggi et al. 2008 staircase */
+    const ne=N+clamp((hr-far-.6)/.4,-1,.5);
+    done({z:(ne-2.2)/.9,raw:`${N}-back · ✓ ${hits}/${tg} · ✕ ${fa}`,lvl:nl})}
+  later(step,900);
+};
+
+/* ---------- Multiple Object Tracking with rigid-body physics ---------- */
+TESTS.mot=(S,done,x={})=>{
+  let K=clamp(x.lvl||3,2,6);const ROUNDS=5,res=[];let r=0;
+  S.innerHTML=`<div class="hud mono"><span id="mr">1 / ${ROUNDS}</span><span id="mk"></span></div>
+    <div class="arena" id="ar"><canvas></canvas></div><p class="fb" id="mf"></p>`;
+  const ar=S.querySelector('#ar'),cv=ar.querySelector('canvas'),ctx=cv.getContext('2d'),mf=S.querySelector('#mf');
+  ar._dbg=()=>({balls,phase});
+  let W=0,H=0,dpr=1,balls=[],phase='',picks=new Set(),sparks=[];
+  function size(){dpr=Math.min(devicePixelRatio||1,2);W=ar.clientWidth;H=ar.clientHeight;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr)}
+  function setup(){size();const n=K+5+Math.min(3,K-2),rad=clamp(Math.min(W,H)*.045,12,24),sp=Math.min(W,H)*(.24+.035*K);balls=[];
+    for(let i=0;i<n;i++){let b,tr=0;do b={x:rad+R()*(W-2*rad),y:rad+R()*(H-2*rad)};while(tr++<300&&balls.some(o=>Math.hypot(o.x-b.x,o.y-b.y)<rad*2.8));
+      const a=R()*6.283,v=sp*(.85+R()*.3),rr=rad*(.88+R()*.24);Object.assign(b,{vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:rr,m:rr*rr,t:i<K,trail:[]});balls.push(b)}}
+  /* semi-implicit Euler with sub-steps; wall reflection; perfectly elastic ball–ball impulses (momentum and energy conserved) */
+  function physics(dt){const sub=4,h=dt/sub;for(let s=0;s<sub;s++){
+    for(const b of balls){b.x+=b.vx*h;b.y+=b.vy*h;
+      if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx)}else if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx)}
+      if(b.y<b.r){b.y=b.r;b.vy=Math.abs(b.vy)}else if(b.y>H-b.r){b.y=H-b.r;b.vy=-Math.abs(b.vy)}}
+    for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++){const a=balls[i],c=balls[j],dx=c.x-a.x,dy=c.y-a.y,d=Math.hypot(dx,dy),md=a.r+c.r;
+      if(d>0&&d<md){const nx=dx/d,ny=dy/d,ov=(md-d),wa=c.m/(a.m+c.m),wc=a.m/(a.m+c.m);a.x-=nx*ov*wa;a.y-=ny*ov*wa;c.x+=nx*ov*wc;c.y+=ny*ov*wc;
+        const rv=(c.vx-a.vx)*nx+(c.vy-a.vy)*ny;if(rv<0){const J=-2*rv/(1/a.m+1/c.m);a.vx-=J*nx/a.m;a.vy-=J*ny/a.m;c.vx+=J*nx/c.m;c.vy+=J*ny/c.m;
+          if(Math.abs(rv)>40&&sparks.length<40)sparks.push({x:a.x+nx*a.r,y:a.y+ny*a.r,l:1})}}}}}
+  function draw(now){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='rgba(150,175,255,.05)';ctx.lineWidth=1;for(let gx=0;gx<W;gx+=36){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke()}for(let gy=0;gy<H;gy+=36){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke()}
+    for(const b of balls){if(phase==='move'){b.trail.push([b.x,b.y]);if(b.trail.length>12)b.trail.shift()}else b.trail.length=0;
+      for(let i=0;i<b.trail.length;i++){const p=b.trail[i],k=i/b.trail.length;ctx.globalAlpha=k*.14;ctx.fillStyle='#7fa8ff';ctx.beginPath();ctx.arc(p[0],p[1],b.r*k,0,6.283);ctx.fill()}}
+    ctx.globalAlpha=1;
+    for(const s of sparks){s.l-=.06;ctx.globalAlpha=Math.max(0,s.l)*.8;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s.x,s.y,2.2*s.l+.5,0,6.283);ctx.fill()}
+    sparks=sparks.filter(s=>s.l>0);ctx.globalAlpha=1;
+    for(const b of balls){const cue=phase==='cue'&&b.t,sel=picks.has(b),rev=phase==='reveal';
+      let col='#5b8cff';if(cue)col=Math.sin(now/110)>-.2?'#ffc65c':'#5b8cff';else if(rev&&b.t)col=sel?'#3ddc97':'#ffc65c';else if(sel)col='#b38bff';
+      const g=ctx.createRadialGradient(b.x-b.r*.38,b.y-b.r*.42,b.r*.08,b.x,b.y,b.r);g.addColorStop(0,'#ffffff');g.addColorStop(.28,col);g.addColorStop(1,shadeHex(col,.32));
+      ctx.shadowColor=col;ctx.shadowBlur=cue||sel||(rev&&b.t)?26:12;ctx.fillStyle=g;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();ctx.shadowBlur=0;
+      if(rev&&sel&&!b.t){ctx.strokeStyle='#ff5470';ctx.lineWidth=3;ctx.beginPath();ctx.arc(b.x,b.y,b.r+5,0,6.283);ctx.stroke()}
+      if(sel&&!rev){ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(b.x,b.y,b.r+4,0,6.283);ctx.stroke()}}}
+  function round(){if(r>=ROUNDS)return fin();S.querySelector('#mr').textContent=`${r+1} / ${ROUNDS}`;S.querySelector('#mk').textContent=`◎ ${K}`;
+    picks=new Set();setup();phase='cue';mf.textContent=t('mot_track',{k:K});
+    later(()=>{phase='move';mf.textContent=t('mot_watch')},2300);
+    later(()=>{phase='pick';mf.textContent=t('mot_pick',{k:K});ar.classList.add('pick')},2300+6000+K*500)}
+  loop((now,dt)=>{if(!W||W!==ar.clientWidth)size();if(phase==='move')physics(dt);draw(now)});
+  ar.addEventListener('pointerdown',e=>{if(phase!=='pick')return;e.preventDefault();const rc=cv.getBoundingClientRect(),px=e.clientX-rc.left,py=e.clientY-rc.top;
+    let best=null,bd=1e9;for(const b of balls){const d=Math.hypot(b.x-px,b.y-py);if(d<bd){bd=d;best=b}}
+    if(!best||bd>best.r*1.9)return;if(picks.has(best)){picks.delete(best);sfx.tick();return}picks.add(best);sfx.tick();
+    if(picks.size===K){phase='reveal';ar.classList.remove('pick');const c=[...picks].filter(b=>b.t).length;res.push({K,c});mf.textContent=`${c} / ${K}`;
+      if(c===K){sfx.ok();burst(e.clientX,e.clientY,'#3ddc97')}else{sfx.bad();buzz()}
+      const nk=c===K?Math.min(6,K+1):c<=K-2?Math.max(2,K-1):K;later(()=>{K=nk;r++;round()},1700)}});
+  function fin(){const cap=res.reduce((s,o)=>s+o.c,0)/res.length+.5*res.filter(o=>o.c===o.K).length/res.length;
+    done({z:(cap-3.1)/1.0,raw:`≈ ${cap.toFixed(1)} objects · ${res.map(o=>o.c+'/'+o.K).join(' ')}`,lvl:K})}
+  later(round,300);
+};
+
+/* ---------- Visual search: T among Ls (serial conjunction search) ---------- */
+TESTS.search=(S,done,x={})=>{
+  let n=clamp(x.lvl||12,8,44);const N=10,rec=[];let k=0,errs=0;
+  S.innerHTML=`<div class="hud mono"><span id="si">1 / ${N}</span><span>${t('find_t')} · <b id="sn">${n}</b></span></div><div class="field" id="fd"></div>`;
+  const fd=S.querySelector('#fd'),COLS=['#5ef2ff','#ffc65c','#ff5fd2','#a77bff','#3ddc97','#5b8cff'];
+  function trial(){if(k>=N)return fin();S.querySelector('#si').textContent=`${k+1} / ${N}`;S.querySelector('#sn').textContent=n;
+    const ar=fd.clientWidth/Math.max(1,fd.clientHeight),cols=Math.max(4,Math.round(Math.sqrt(n*1.5*ar))),rows=Math.ceil(n*1.5/cols),cells=shuffle(Array.from({length:cols*rows},(_,i)=>i)).slice(0,n),tg=ri(n);
+    fd.innerHTML=cells.map((c,i)=>{const cx=((c%cols)+.5+(R()-.5)*.45)/cols*100,cy=(Math.floor(c/cols)+.5+(R()-.5)*.45)/rows*100;
+      return`<button class="si" data-t="${i===tg?1:0}" style="left:${cx.toFixed(2)}%;top:${cy.toFixed(2)}%;--c:${pick(COLS)};--r:${ri(4)*90}deg"><svg viewBox="0 0 24 24"><path d="${i===tg?'M5 5h14M12 5v14':'M6 5v14h12'}"/></svg></button>`}).join('');
+    fd.classList.remove('in');void fd.offsetWidth;fd.classList.add('in');
+    const t0=performance.now(),to=later(()=>{rec.push({n,rt:15000,ok:0});k++;sfx.bad();trial()},15000);
+    fd.onpointerdown=e=>{const b=e.target.closest('.si');if(!b)return;e.preventDefault();
+      if(b.dataset.t==='1'){clearTimeout(to);rec.push({n,rt:performance.now()-t0,ok:1});b.classList.add('hit');burstEl(b,'#5ef2ff');sfx.ok();n=Math.min(44,n+3);k++;fd.onpointerdown=null;later(trial,420)}
+      else{errs++;b.classList.add('miss');sfx.bad();buzz()}}}
+  function fin(){const ok=rec.filter(r=>r.ok);const sc=ok.length?ok.reduce((s,r)=>{const ex=550+38*r.n;return s+(ex-r.rt)/(.42*ex)},0)/ok.length:-2;
+    const mpi=ok.length?ok.reduce((s,r)=>s+r.rt/r.n,0)/ok.length:0;
+    done({z:sc-(N-ok.length)*.25-errs*.05,raw:`${Math.round(mpi)} ms/item · ✓ ${ok.length}/${N}`,lvl:Math.max(8,n-9)})}
+  later(trial,200);
+};
+
+/* ---------- Eriksen flanker ---------- */
+TESTS.flanker=(S,done,x={})=>{
+  const N=32,trials=shuffle(Array.from({length:N},(_,i)=>({d:i%2,con:(i>>1)%2===0})));
+  S.innerHTML=`<div class="hud mono"><span id="fi">1 / ${N}</span><span class="combo" id="cb"></span></div>
+    <div class="fl" id="fl"><span class="fix">+</span></div>
+    <div class="opts two" dir="ltr"><button class="opt flb"><em>←</em><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="opt flb"><em>→</em><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
+    <p class="fb">${t('fl_hint')}</p>`;
+  const fl=S.querySelector('#fl'),btns=[...S.querySelectorAll('.flb')],cb=S.querySelector('#cb'),COLS=['#5ef2ff','#ff7a6b','#ffc65c','#a77bff','#3ddc97'];
+  let k=0,on=false,t0=0,tm=0,streak=0;const rec=[];
+  const arrow=(d,c)=>`<svg viewBox="0 0 24 24" style="stroke:${c};filter:drop-shadow(0 0 6px ${c})"><path d="${d?'M9 5l7 7-7 7':'M15 5l-7 7 7 7'}"/></svg>`;
+  function step(){if(k>=N)return fin();on=false;fl.innerHTML='<span class="fix">+</span>';S.querySelector('#fi').textContent=`${k+1} / ${N}`;
+    later(()=>{const tr=trials[k],c=pick(COLS),fd=tr.con?tr.d:1-tr.d,off=(ri(3)-1)*18;
+      fl.innerHTML=`<div class="row" style="transform:translateY(${off}%)">${arrow(fd,c)+arrow(fd,c)+arrow(tr.d,c)+arrow(fd,c)+arrow(fd,c)}</div>`;
+      on=true;t0=performance.now();requestAnimationFrame(()=>{t0=performance.now()});tm=later(()=>resp(-1,performance.now()),2000)},400+R()*350)}
+  function resp(i,ts){if(!on)return;on=false;clearTimeout(tm);const tr=trials[k],ok=i===tr.d;rec.push({con:tr.con,ok,rt:ts-t0});
+    streak=ok?streak+1:0;cb.textContent=streak>=4?'×'+streak:'';cb.classList.toggle('hot',streak>=8);
+    if(i>=0){btns[i].classList.add(ok?'right':'wrong');later(()=>btns[i].classList.remove('right','wrong'),220)}
+    ok?(streak>=4?sfx.combo(streak):sfx.tick()):(sfx.bad(),buzz());k++;later(step,120)}
+  btns.forEach((b,i)=>b.addEventListener('pointerdown',e=>{e.preventDefault();resp(i,evTime(e))}));
+  onKey(e=>{if(e.key==='ArrowLeft')resp(0,evTime(e));else if(e.key==='ArrowRight')resp(1,evTime(e))});
+  function fin(){const m=a=>a.length?a.reduce((s,r)=>s+r.rt,0)/a.length:2000;const inc=rec.filter(r=>!r.con),con=rec.filter(r=>r.con),ic=inc.filter(r=>r.ok),cc=con.filter(r=>r.ok);
+    const acc=ic.length/Math.max(1,inc.length),ies=m(ic)/Math.max(acc,.25);
+    done({z:(640-ies)/140,raw:`Δ ${Math.round(m(ic)-m(cc))} ms · ${Math.round(rec.filter(r=>r.ok).length/N*100)}%`})}
+  later(step,300);
+};
+
+/* ---------- Go / No-Go ---------- */
+TESTS.gonogo=(S,done,x={})=>{
+  const N=40,seq=shuffle(Array.from({length:N},(_,i)=>i<30));
+  S.innerHTML=`<div class="hud mono"><span id="gi">0 / ${N}</span><span>${t('gng_hint')}</span></div><div class="gng" id="ga"></div>`;
+  const ga=S.querySelector('#ga');let k=-1,cur=null,t0=0,resp=false;const rts=[];let comm=0,om=0;
+  function next(){if(cur){if(cur.go&&!resp)om++;cur.el.classList.add('out');const old=cur.el;setTimeout(()=>old.remove(),260);cur=null}
+    k++;if(k>=N)return later(fin,300);S.querySelector('#gi').textContent=`${k+1} / ${N}`;
+    later(()=>{const go=seq[k],el=document.createElement('i');el.className='gorb '+(go?'go':'no');el.style.left=(14+R()*72)+'%';el.style.top=(16+R()*68)+'%';ga.appendChild(el);
+      cur={go,el};resp=false;t0=performance.now();requestAnimationFrame(()=>{t0=performance.now()});later(next,go?800:900)},380+R()*420)}
+  function hit(ts){if(!cur||resp)return;resp=true;const rt=ts-t0;
+    if(cur.go){rts.push(rt);burstEl(cur.el,'#3ddc97');cur.el.classList.add('out');sfx.ok()}
+    else{comm++;ga.classList.remove('shake');void ga.offsetWidth;ga.classList.add('shake');burstEl(cur.el,'#ff5470');sfx.bad();buzz()}}
+  ga.addEventListener('pointerdown',e=>{e.preventDefault();hit(evTime(e))});onKey(e=>{if(e.code==='Space'){e.preventDefault();hit(evTime(e))}});
+  function fin(){const s=[...rts].sort((a,b)=>a-b),med=s.length?s[s.length>>1]:800;
+    done({z:(430-med)/60-comm*.14-om*.08,raw:`median ${Math.round(med)} ms · ✕ ${comm} · ⌀ ${om}`})}
+  later(next,500);
+};
+
+/* ---------- Approximate number system: dot comparison ---------- */
+TESTS.dots=(S,done,x={})=>{
+  let ratio=clamp(x.lvl||1.6,1.08,2.4);const N=24,rr=[];let k=0,cs=0,cur=null,canAns=false;
+  S.innerHTML=`<div class="hud mono"><span id="di">1 / ${N}</span><span id="dr"></span></div>
+    <div class="dotf" id="df"><canvas></canvas></div>
+    <div class="opts two" dir="ltr"><button class="opt db" style="--c:#5b8cff"><em>←</em><i></i></button><button class="opt db" style="--c:#ffc65c"><em>→</em><i></i></button></div><p class="fb">${t('dots_hint')}</p>`;
+  const df=S.querySelector('#df'),cv=df.querySelector('canvas'),ctx=cv.getContext('2d'),btns=[...S.querySelectorAll('.db')];
+  function drawSet(x0,w,h,n,rad,col){const pts=[];let tries=0;while(pts.length<n&&tries++<4000){const p=[x0+rad+R()*(w-2*rad),rad+R()*(h-2*rad)];if(pts.every(q=>Math.hypot(q[0]-p[0],q[1]-p[1])>rad*2.3))pts.push(p)}
+    for(const p of pts){const g=ctx.createRadialGradient(p[0]-rad*.3,p[1]-rad*.3,rad*.1,p[0],p[1],rad);g.addColorStop(0,'#fff');g.addColorStop(.35,col);g.addColorStop(1,shadeHex(col,.5));ctx.fillStyle=g;ctx.beginPath();ctx.arc(p[0],p[1],rad,0,6.283);ctx.fill()}}
+  function trial(){if(k>=N)return fin();S.querySelector('#di').textContent=`${k+1} / ${N}`;S.querySelector('#dr').textContent=`${ratio.toFixed(2)} : 1`;
+    const dpr=Math.min(devicePixelRatio||1,2),W=df.clientWidth,H=df.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    const small=9+ri(8),big=Math.max(small+1,Math.round(small*ratio)),bigLeft=R()<.5,eqArea=R()<.5,base=clamp(Math.min(W,H)*.028,6,12);
+    const rs=base,rb=eqArea?base*Math.sqrt(small/big):base; /* half the trials equate total area so size can't give the answer */
+    const half=W/2-10;drawSet(0,half,H,bigLeft?big:small,bigLeft?rb:rs,'#5b8cff');drawSet(W/2+10,half,H,bigLeft?small:big,bigLeft?rs:rb,'#ffc65c');
+    ctx.fillStyle='rgba(150,175,255,.15)';ctx.fillRect(W/2-1,10,2,H-20);
+    cur={ans:bigLeft?0:1,ratio};canAns=true;
+    later(()=>{ctx.clearRect(0,0,W,H);for(let i=0;i<260;i++){ctx.fillStyle=`rgba(${120+ri(120)},${120+ri(120)},255,${.05+R()*.12})`;ctx.fillRect(R()*W,R()*H,3+R()*10,3+R()*10)}},750)}
+  function ans(i){if(!canAns)return;canAns=false;const ok=i===cur.ans;rr.push({r:cur.ratio,ok});
+    btns[i].classList.add(ok?'right':'wrong');later(()=>btns[i].classList.remove('right','wrong'),260);
+    if(ok){sfx.ok();if(++cs>=2){ratio=Math.max(1.08,1+(ratio-1)*.8);cs=0}}else{sfx.bad();buzz();ratio=Math.min(2.4,1+(ratio-1)*1.3);cs=0} /* 2-down/1-up → ~71% threshold */
+    k++;later(trial,380)}
+  btns.forEach((b,i)=>b.addEventListener('pointerdown',e=>{e.preventDefault();ans(i)}));
+  onKey(e=>{if(e.key==='ArrowLeft')ans(0);else if(e.key==='ArrowRight')ans(1)});
+  function fin(){const tail=rr.slice(-12),rm=tail.reduce((s,o)=>s+o.r,0)/tail.length;
+    const w=(rm-1)/(.545*Math.sqrt(1+rm*rm)); /* Weber fraction from P(correct)=Φ((r−1)/(w·√(1+r²))) at 70.7% */
+    done({z:(.22-w)/.075,raw:`Weber w ≈ ${w.toFixed(2)} · ${Math.round(rr.filter(o=>o.ok).length/N*100)}%`,lvl:+Math.min(2.4,rm+.15).toFixed(2)})}
+  later(trial,300);
+};
+
+/* ---------- Pattern comparison (processing speed) ---------- */
+TESTS.pcomp=(S,done,x={})=>{
+  const len=clamp(x.lvl||3,3,7),T=45,end=performance.now()+T*1000;let cnt=0,err=0,cur=null,fin=false,streak=0;
+  const g=i=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${GLY[i]}"/></svg>`;
+  S.innerHTML=`<div class="hud mono"><span>✓ <b id="ok">0</b> · ✕ <b id="er">0</b> <span class="combo" id="cb"></span></span><span class="big-t mono" id="tl">${T}</span></div>
+    <div class="tbar"><i style="animation-duration:${T}s"></i></div><p class="q">${t('pc_hint')}</p>
+    <div class="pc" id="pc" dir="ltr"><div id="pa"></div><div id="pb"></div></div>
+    <div class="opts two" dir="ltr"><button class="opt"><em>←</em>${t('same')}</button><button class="opt"><em>→</em>${t('different')}</button></div>`;
+  const pc=S.querySelector('#pc'),btns=[...S.querySelectorAll('.opts .opt')];
+  function next(){const a=Array.from({length:len},()=>ri(9)),b=[...a],same=R()<.5;
+    if(!same){if(R()<.35&&len>2){const i=ri(len-1);if(b[i]!==b[i+1]){[b[i],b[i+1]]=[b[i+1],b[i]]}else{let v;do v=ri(9);while(v===b[i]);b[i]=v}}else{const i=ri(len);let v;do v=ri(9);while(v===b[i]);b[i]=v}}
+    cur={same:JSON.stringify(a)===JSON.stringify(b)};S.querySelector('#pa').innerHTML=a.map(g).join('');S.querySelector('#pb').innerHTML=b.map(g).join('');
+    pc.classList.remove('pop');void pc.offsetWidth;pc.classList.add('pop')}
+  function ans(i){if(fin||!cur)return;const ok=(i===0)===cur.same;
+    if(ok){cnt++;streak++;S.querySelector('#ok').textContent=cnt;streak>=5?sfx.combo(streak/2|0):sfx.tick()}else{err++;streak=0;S.querySelector('#er').textContent=err;sfx.bad();buzz()}
+    const cb=S.querySelector('#cb');cb.textContent=streak>=5?'×'+streak:'';cb.classList.toggle('hot',streak>=10);
+    btns[i].classList.add(ok?'right':'wrong');later(()=>btns[i].classList.remove('right','wrong'),160);next()}
+  btns.forEach((b,i)=>b.addEventListener('pointerdown',e=>{e.preventDefault();ans(i)}));
+  onKey(e=>{if(e.key==='ArrowLeft')ans(0);else if(e.key==='ArrowRight')ans(1)});
+  every(()=>{const left=Math.max(0,Math.ceil((end-performance.now())/1000));S.querySelector('#tl').textContent=left;
+    if(left<=0&&!fin){fin=true;const exp=24-2.2*(len-3);
+      done({z:(cnt-exp)/6-err*.06,raw:`${cnt} ✓ · ${err} ✕ · ${len} symbols`,lvl:cnt>=exp+5&&err<3?len+1:cnt<exp-6?len-1:len})}},150);
+  next();
+};
+
+/* ---------- 2D mental rotation (Cooper & Shepard) ---------- */
+function genPolyo(n){const D4=[[1,0],[-1,0],[0,1],[0,-1]];
+  const nrm=a=>{const mx=Math.min(...a.map(p=>p[0])),my=Math.min(...a.map(p=>p[1]));return a.map(p=>(p[0]-mx)+','+(p[1]-my)).sort().join('|')};
+  const rots=[p=>p,([x,y])=>[-y,x],([x,y])=>[-x,-y],([x,y])=>[y,-x]];
+  for(let tr=0;tr<600;tr++){const cs=[[0,0]],set=new Set(['0,0']);while(cs.length<n){const b=pick(cs),d=pick(D4),c=[b[0]+d[0],b[1]+d[1]];if(!set.has(c.join()))set.add(c.join())&&cs.push(c)}
+    const mir=nrm(cs.map(([x,y])=>[-x,y]));if(rots.some(f=>nrm(cs.map(f))===mir))continue; /* chiral: mirror is not a rotation */
+    return cs}return[[0,0],[1,0],[2,0],[2,1],[0,1],[0,2]]}
+function polySVG(cs,ang,mir){const cx=cs.reduce((s,p)=>s+p[0],0)/cs.length,cy=cs.reduce((s,p)=>s+p[1],0)/cs.length,Sz=12;
+  return`<svg viewBox="-50 -50 100 100"><g transform="rotate(${ang}) scale(${mir?-1:1},1)">${cs.map(([x,y])=>{const px=((x-cx)*Sz-Sz/2+.7).toFixed(2),py=((y-cy)*Sz-Sz/2+.7).toFixed(2);
+    return`<rect x="${px}" y="${py}" width="${Sz-1.4}" height="${Sz-1.4}" rx="2.4" fill="url(#pgrad)" stroke="#05070f" stroke-width=".9"/><rect x="${(+px+1.6).toFixed(2)}" y="${(+py+1.4).toFixed(2)}" width="${Sz-4.6}" height="2" rx="1" fill="rgba(255,255,255,.35)"/>`}).join('')}</g></svg>`}
+TESTS.rot2d=(S,done,x={})=>{
+  const N=16,TL=8,ANG=[0,45,90,135,180,225,270,315],plan=shuffle(Array.from({length:N},(_,i)=>({a:ANG[i%8],m:i>=8?1:0})));
+  let k=0,ok=0,cur=null;const rec=[];
+  onKey(e=>{if(!cur)return;if(e.key==='ArrowLeft')cur(0);else if(e.key==='ArrowRight')cur(1)});
+  function step(){if(k>=N)return fin();const tr=plan[k],cs=genPolyo(5+ri(2)),base=ri(8)*45;
+    S.innerHTML=`<div class="hud mono"><span>${k+1} / ${N}</span><span>✓ <b>${ok}</b></span></div><div class="tbar"><i style="animation-duration:${TL}s"></i></div>
+      <div class="r2" dir="ltr"><div>${polySVG(cs,base,0)}</div><div>${polySVG(cs,base+tr.a,tr.m)}</div></div>
+      <div class="opts two" dir="ltr"><button class="opt"><em>←</em>${t('same')}</button><button class="opt"><em>→</em>${t('mirror')}</button></div>`;
+    const btns=[...S.querySelectorAll('.opt')],t0=performance.now();let tm=0;
+    const ans=i=>{cur=null;clearTimeout(tm);const right=i===tr.m;if(right)ok++;rec.push({a:tr.a>180?360-tr.a:tr.a,m:tr.m,ok:right,rt:performance.now()-t0});
+      const bar=S.querySelector('.tbar i');if(bar)bar.style.animationPlayState='paused';
+      if(i>=0)btns[i].classList.add(right?'right':'wrong');if(!right)btns[tr.m].classList.add('right');right?(sfx.ok(),burstEl(btns[i])):(sfx.bad(),buzz());k++;later(step,right?450:900)};
+    btns.forEach((b,i)=>b.onclick=()=>{if(cur)cur(i)});cur=ans;tm=later(()=>{if(cur)cur(-1)},TL*1000)}
+  function fin(){const acc=ok/N,cr=rec.filter(r=>r.ok),mrt=cr.length?cr.reduce((s,r)=>s+r.rt,0)/cr.length/1000:TL;
+    const sm=cr.filter(r=>!r.m);let rs=null;if(sm.length>=4){const mx=sm.reduce((s,r)=>s+r.a,0)/sm.length,my=sm.reduce((s,r)=>s+r.rt,0)/sm.length;let a=0,b=0;for(const r of sm){a+=(r.a-mx)*(r.rt-my);b+=(r.a-mx)**2}const sl=b?a/b:0;if(sl>1)rs=Math.round(1000/sl)}
+    done({z:(acc-.85)/.11+clamp((2.6-mrt)/3,-.35,.35),raw:`${ok}/${N} · ${mrt.toFixed(1)} s${rs?` · ↻ ${rs}°/s`:''}`})}
+  step();
+};
+
+/* ---------- Odd one out (inductive classification) ---------- */
+function genOdd(L){const attrs=['shape','color','fill','count'];
+  for(let tr=0;tr<400;tr++){const key=pick(attrs),others=attrs.filter(a=>a!==key),nvar=clamp(L-1,0,3),vary=shuffle(others).slice(0,nvar);
+    const base={shape:pick(SIDES),color:ri(3),fill:ri(3),count:1+ri(3),rot:0,lines:0},cards=Array.from({length:6},()=>({...base})),odd=ri(6);
+    cards[odd][key]=pick(DOM[key].filter(v=>v!==base[key]));let bad=false;
+    for(const a of vary){let ok=false;for(let q=0;q<80&&!ok;q++){const vals=cards.map(()=>pick(DOM[a])),cnt={};vals.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+      if(Object.values(cnt).every(c=>c<=3)){vals.forEach((v,i)=>cards[i][a]=v);ok=true}}if(!ok){bad=true;break}}
+    if(bad)continue;
+    /* uniqueness: no other card may be the lone exception of any attribute */
+    const lone=attrs.flatMap(a=>{const cnt={};cards.forEach(c=>cnt[c[a]]=(cnt[c[a]]||0)+1);return cards.map((c,i)=>cnt[c[a]]===1&&Object.keys(cnt).length===2?i:-1).filter(i=>i>=0)});
+    if(lone.some(i=>i!==odd))continue;return{cards,odd,key}}
+  return genOdd(1)}
+TESTS.oddone=(S,done,x={})=>{
+  let L=clamp(x.lvl||1,1,6);const N=10,rec=[];let k=0,cur=null;
+  onKey(e=>{const n=parseInt(e.key,10);if(cur&&n>=1&&n<=6)cur(n-1)});
+  function step(){if(k>=N)return fin();const it=genOdd(Math.min(L,4)),TL=Math.max(8,24-3*L);
+    S.innerHTML=`<div class="hud mono"><span>${k+1} / ${N}</span><span class="lvl">${'▮'.repeat(L)}<i>${'▮'.repeat(6-L)}</i></span></div>
+      <div class="tbar"><i style="animation-duration:${TL}s"></i></div><p class="q">${t('odd_hint')}</p>
+      <div class="opts odd" dir="ltr">${it.cards.map((c,i)=>`<button class="opt"><em>${i+1}</em>${cellSVG(c)}</button>`).join('')}</div>`;
+    const btns=[...S.querySelectorAll('.opt')];let tm=0;
+    const ans=i=>{cur=null;clearTimeout(tm);const ok=i===it.odd;rec.push({L,ok});const bar=S.querySelector('.tbar i');if(bar)bar.style.animationPlayState='paused';
+      if(i>=0)btns[i].classList.add(ok?'right':'wrong');if(!ok)btns[it.odd].classList.add('right');
+      if(ok){sfx.ok();burstEl(btns[i]);L=Math.min(6,L+1)}else{sfx.bad();buzz();L=Math.max(1,L-1)}k++;later(step,ok?520:1100)};
+    btns.forEach((b,i)=>b.onclick=()=>{if(cur)cur(i)});cur=ans;tm=later(()=>{if(cur)cur(-1)},TL*1000)}
+  function fin(){const tail=rec.slice(-6),aL=tail.reduce((s,r)=>s+r.L,0)/tail.length,acc=rec.filter(r=>r.ok).length/N;
+    done({z:(aL-3.2)/1.1+(acc-.7),raw:`level ${aL.toFixed(1)} · ${Math.round(acc*100)}%`,lvl:Math.max(1,Math.round(aL)-1)})}
+  step();
+};
+
+/* =====================================================================
+   TRAINING MODE (v3): 17 games, daily workout, streaks, XP, ranks,
+   29 achievements, profile, daily duels, brain card
+   ===================================================================== */
+const DAY0='2026-10-16';
+const dkey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays=(k,n)=>{const[y,m,d]=k.split('-').map(Number);return dkey(new Date(y,m-1,d+n))};
+const dayNo=k=>{const[a,b,c]=DAY0.split('-').map(Number),[y,m,d]=k.split('-').map(Number);return Math.max(1,Math.round((new Date(y,m-1,d)-new Date(a,b-1,c))/864e5)+1)};
+function loadP(){let p=null;try{p=JSON.parse(store.get('nm_profile')||'null')}catch(e){}
+  return Object.assign({age:null,ageAsked:false,xp:0,skill:{},plays:{},best:{},glvl:{},days:{},hist:{},ach:{},bestStreak:0,games:0,workouts:0,fullTest:0,
+    nick:'',ava:'🧠',rival:null,shares:0,duelsWon:0,early:0,night:0},p||{})}
+let P=loadP();
+const saveP=()=>store.set('nm_profile',JSON.stringify(P));
+const hasProfile=()=>P.games>0||!!P.fullTest;
+const clean=s=>String(s||'').replace(/[<>&"'`]/g,'').slice(0,18);
+const gname=id=>t('g_'+id),gdom=id=>GDOM[id],gcol=id=>DCOL[GDOM[id]];
+const domGames=d=>ALLG.filter(g=>GDOM[g]===d);
+function amb(d){document.body.style.setProperty('--amb',d?hexA(DCOL[d],.3):'rgba(124,77,255,.28)')}
+/* the daily workout is identical for everyone on Earth that day: 3 domains, one game from each */
+function dailyGames(k){const r=mulberry32(hashStr('DAILY'+k)),a=[...ORDER];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  return a.slice(0,3).map(d=>{const pool=domGames(d);return pool[Math.floor(r()*pool.length)]})}
+const dayDone=k=>!!(P.days[k]&&P.days[k].done);
+const dayTotal=k=>{const d=P.days[k];return d?dailyGames(k).reduce((s,g)=>s+((d.g||{})[g]||0),0):0};
+function streak(){let k=dkey(),n=0;if(!dayDone(k))k=addDays(k,-1);while(dayDone(k)){n++;k=addDays(k,-1)}return n}
+function lvlInfo(xp){let l=1,need=100,acc=0;while(xp>=acc+need){acc+=need;l++;need=100+50*(l-1)}return{l,cur:xp-acc,need}}
+const RANKS=[[1,'rk1'],[4,'rk2'],[8,'rk3'],[13,'rk4'],[20,'rk5']];
+const rankOf=l=>{let r='rk1';for(const[m,k]of RANKS)if(l>=m)r=k;return t(r)};
+const ptsOf=z=>Math.round(100+900*Phi(z));
+function skillScores(){const o={};for(const id of ORDER)o[id]=P.skill[id]==null?null:Math.round(100+15*P.skill[id]);return o}
+function overallBPI(){const ids=ORDER.filter(id=>P.skill[id]!=null);if(!ids.length)return null;let S=0,sw=0,sw2=0;
+  for(const id of ids){S+=WEIGHT[id]*P.skill[id];sw+=WEIGHT[id];sw2+=WEIGHT[id]**2}return Math.round(clamp(100+15*S/Math.sqrt(sw2+RHO*(sw*sw-sw2)),55,160))}
+const skillLv=()=>{const o={};for(const id of ORDER){const s=P.skill[id];o[id]=s==null?.05:clamp((100+15*s-55)/75,.14,1)}return o};
+const domPlays=d=>domGames(d).reduce((s,g)=>s+(P.plays[g]||0),0);
+/* training variants: difficulty starts at the player's own level */
+function trainOpts(id){const s=P.skill[GDOM[id]]??0,first=!P.plays[id];
+  switch(id){case'logic':return{n:10,start:clamp(s,-2,2.5)};case'numbers':return{n:8,start:clamp(s,-2,2.5)};
+    case'memory':return{start:clamp(Math.round(5+1.2*s)-1,3,8)};case'control':return{n:20,noPractice:!first};
+    case'spatial':return{n:8,noPractice:!first};case'reflex':case'speed':case'attention':return{};default:return{lvl:P.glvl[id]}}}
+
+/* ---------- achievements ---------- */
+const ACH=[['first','✨',p=>p.games>=1],['workout1','🌅',p=>p.workouts>=1],['workouts10','📅',p=>p.workouts>=10],['workouts50','🏆',p=>p.workouts>=50],
+  ['streak3','🔥',p=>p.bestStreak>=3],['streak7','⚡',p=>p.bestStreak>=7],['streak14','🌋',p=>p.bestStreak>=14],['streak30','👑',p=>p.bestStreak>=30],
+  ['fulltest','🧠',p=>!!p.fullTest],['pts900','💎',p=>Object.values(p.best).some(v=>v>=900)],['perfect','🌟',p=>Object.values(p.best).some(v=>v>=975)],
+  ['allgames','🧭',p=>ALLG.every(id=>p.plays[id])],['lvl5','⭐',p=>lvlInfo(p.xp).l>=5],['lvl10','🌠',p=>lvlInfo(p.xp).l>=10],
+  ['bpi120','🚀',p=>(overallBPI()||0)>=120],['games50','🏋',p=>p.games>=50],['nback3','🧩',p=>(p.glvl.nback||1)>=3],['mot5','🛰',p=>(p.glvl.mot||3)>=5],
+  ['early','🐦',p=>!!p.early],['night','🦉',p=>!!p.night],['share','📣',p=>p.shares>=1],['duel','🥊',p=>p.duelsWon>=1],
+  ...RADAR.map(d=>['m_'+d,'🎓',p=>(p.skill[d]??-9)>=1])];
+const achName=id=>id.startsWith('m_')?t('ach_master',{d:t('d_'+id.slice(2))}):t('ach_'+id);
+function checkAch(){const n=[];for(const[id,ic,f]of ACH)if(!P.ach[id]&&f(P)){P.ach[id]=Date.now();n.push([id,ic])}return n}
+function achToasts(list,delay){(list||[]).forEach(([id,ic],i)=>setTimeout(()=>{toast(`🏆 ${t('ach_unlocked')}: ${ic} ${achName(id)}`);sfx.win()},(delay||900)+i*2100))}
+
+function recordGame(id,res,daily){
+  const dom=GDOM[id],z=clamp(ageAdj(dom,res.z,P.age),-3.3,3.3),pts=ptsOf(z),k=dkey(),h=new Date().getHours();
+  const prev=P.skill[dom],prevBpi=prev==null?null:Math.round(100+15*prev),prevLvl=lvlInfo(P.xp).l,prevBest=P.best[id]||0;
+  P.skill[dom]=prev==null?z:prev*.7+z*.3;
+  P.plays[id]=(P.plays[id]||0)+1;P.games++;if(pts>prevBest)P.best[id]=pts;
+  if(res.lvl!=null&&isFinite(res.lvl))P.glvl[id]=res.lvl;
+  if(h>=23||h<4)P.night=1;
+  let xp=Math.round(pts/10),finished=false;
+  if(daily){const d=P.days[k]||(P.days[k]={g:{},done:false});d.g[id]=Math.max(d.g[id]||0,pts);
+    if(!d.done&&dailyGames(k).every(g=>d.g[g]!=null)){d.done=true;finished=true;P.workouts++;xp+=50;P.bestStreak=Math.max(P.bestStreak,streak());if(h<8)P.early=1;
+      const rv=P.rival;if(rv&&rv.day===dayNo(k)&&!rv.done){rv.done=1;if(dayTotal(k)>rv.s){P.duelsWon++;rv.won=1}}}}
+  P.xp+=xp;const b=overallBPI();if(b!=null)P.hist[k]=b;
+  const ach=checkAch();saveP();
+  return{z,pts,xp,newBest:pts>prevBest&&prevBest>0,prevBpi,bpi:Math.round(100+15*P.skill[dom]),lvlUp:lvlInfo(P.xp).l>prevLvl,finished,ach,pct:clamp(Math.round(Phi(z)*100),1,99)};
+}
+function recordTest(st){
+  ORDER.forEach(id=>{const z=clamp(ageAdj(id,st.res[id].z,st.age),-3.3,3.3);P.skill[id]=P.skill[id]==null?z:P.skill[id]*.5+z*.5});
+  P.fullTest=(P.fullTest||0)+1;if(st.age!=null){P.age=st.age;P.ageAsked=true}P.xp+=200;
+  const b=overallBPI();if(b!=null)P.hist[dkey()]=b;const a=checkAch();saveP();return a;
+}
+function initRival(){const d=+params.get('daily'),s=+params.get('s');
+  if(d>0&&s>0&&s<4000)P.rival={day:Math.round(d),s:Math.round(s),n:clean(params.get('n'))||t('friend')},saveP()}
+
+/* ---------- physics confetti & count-up ---------- */
+function confetti(n){if(reduceMotion)return;n=n||170;const c=document.createElement('canvas');c.className='confetti';document.body.appendChild(c);
+  const dpr=Math.min(devicePixelRatio||1,2),W=innerWidth,H=innerHeight;c.width=W*dpr;c.height=H*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);
+  const cols=Object.values(DCOL),ps=Array.from({length:n},()=>({x:W/2+(Math.random()-.5)*W*.25,y:H*.38,vx:(Math.random()-.5)*15,vy:-Math.random()*17-5,r:Math.random()*6.283,vr:(Math.random()-.5)*.45,w:6+Math.random()*7,h:4+Math.random()*6,c:cols[Math.random()*cols.length|0]}));
+  const t0=performance.now();(function f(now){const e=(now-t0)/1000;x.clearRect(0,0,W,H);
+    for(const p of ps){p.vy+=.42;p.vx*=.985;p.vy*=.995;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.globalAlpha=Math.max(0,1-e/3.4);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,Math.abs(Math.cos(p.r*2))*p.h+1);x.restore()}
+    if(e<3.5)requestAnimationFrame(f);else c.remove()})(t0)}
+function countUp(el,to,ms){if(!el)return;const t0=performance.now();(function f(now){const k=clamp((now-t0)/(ms||1200),0,1),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e).toLocaleString();if(k<1&&document.body.contains(el))requestAnimationFrame(f)})(t0)}
+
+/* ---------- navigation ---------- */
+const NAV=[['today','M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+  ['games','M6 8h12a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4h-1l-2-2H9l-2 2H6a4 4 0 0 1-4-4v-1a4 4 0 0 1 4-4zM7 11v3M5.5 12.5h3M16 12h.01M18 14h.01'],
+  ['progress','M4 20V10M10 20V4M16 20v-7M22 20H2'],['test','M12 3a9 9 0 1 0 .01 0M12 8a4 4 0 1 0 .01 0M12 12h.01']];
+let curTab='today';
+function setNav(id){curTab=id||curTab;const tb=$('#tabs');if(!tb)return;tb.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.tab===curTab);b.querySelector('span').textContent=t('nav_'+b.dataset.tab)})}
+function goTab(id){({today,games:gamesScreen,progress:progressScreen,test:intro})[id]()}
+function goHome(){hasProfile()?today():intro()}
+/* Android back button: returns true if handled inside the app */
+window.nmBack=()=>{if(document.body.classList.contains('testing')){if(!confirm(t('quit')))return true;taskActive=null;goHome();return true}
+  if((current===today&&hasProfile())||(current===intro&&!hasProfile()))return false;goHome();return true};
+
+/* ---------- TODAY ---------- */
+function today(){
+  setTesting(false);current=today;setNav('today');amb(null);
+  const k=dkey(),games=dailyGames(k),d=P.days[k]||{g:{}},done=dayDone(k),st=streak(),lv=lvlInfo(P.xp),bpi=overallBPI();
+  const next=games.find(g=>(d.g||{})[g]==null),total=dayTotal(k),rv=P.rival&&P.rival.day===dayNo(k)?P.rival:null;
+  const h=new Date().getHours(),gr=h<5?'greet_n':h<12?'greet_m':h<18?'greet_d':h<23?'greet_e':'greet_n';
+  const week=Array.from({length:7},(_,i)=>addDays(k,i-6));
+  const el=show(`<div class="home">
+    <div class="home-top">
+      <div><div class="kicker mono">${t('challenge_no',{n:dayNo(k)})} · ${k}</div><h1 class="hello">${t(gr)}${P.nick?', '+P.nick:''} <span class="ava">${P.ava}</span></h1></div>
+      <div class="lvl-chip"><div class="lvl-row"><b>${t('level')} ${lv.l} · ${rankOf(lv.l)}</b><span class="mono">${lv.cur} / ${lv.need} XP</span></div><div class="xpbar"><i id="xpf" style="width:0"></i></div></div>
+    </div>
+    ${rv?`<div class="rival panel"><span class="rv-ic">🥊</span><div>${done?(rv.won||total>rv.s?t('you_beat',{n:rv.n}):t('they_lead',{n:rv.n,d:(rv.s-total).toLocaleString()})):t('rival_banner',{n:rv.n,s:rv.s.toLocaleString(),d:rv.day})}</div><b class="mono">${rv.s.toLocaleString()}</b></div>`:''}
+    <div class="home-grid">
+      <div class="panel workout">
+        <div class="wk-head"><div><h2>${t('daily_title')}</h2><p class="mono">${t('daily_sub')}</p></div>
+          <div class="streak${st?' on':''}"><span class="flame">🔥</span><b>${st}</b><small>${t('streak')}</small></div></div>
+        <div class="week">${week.map(w=>`<i class="${dayDone(w)?'on':''}${w===k?' now':''}"></i>`).join('')}</div>
+        <div class="wk-games">${games.map((g,i)=>{const p=(d.g||{})[g];return`<button class="wg${p!=null?' fin':''}${g===next?' next':''}" data-id="${g}" style="--dc:${gcol(g)}">
+          <div class="cico">${icon(g)}</div><div class="wgt"><b>${gname(g)}</b><span class="mono">${p!=null?p+' '+t('points'):t('d_'+gdom(g))}</span></div><em>${p!=null?'✓':i+1}</em>${NEWG.includes(g)&&!P.plays[g]?`<s class="newb">${t('new')}</s>`:''}</button>`}).join('')}</div>
+        ${done?`<div class="wk-done"><div><b>✓ ${t('workout_done')}</b><span class="mono">${total.toLocaleString()} ${t('points')} · ${t('come_back')}</span></div><button class="btn ghost" id="shd">🥊 ${t('challenge')}</button></div>`
+          :`<button class="btn primary big" id="go">${next===games[0]?t('start_workout'):t('continue_workout')} <span>→</span></button>`}
+      </div>
+      <div class="panel brainp">
+        <div class="brainwrap"><canvas id="brain" aria-hidden="true"></canvas></div>
+        <div class="bpi"><div class="kicker mono">${t('bpi')}</div><b>${bpi??'—'}</b><small>${bpi==null?t('empty_progress'):''}</small></div>
+      </div>
+    </div>
+    ${P.fullTest?'':`<button class="panel promo" id="ft" style="--dc:#9b6bff"><div class="cico">${icon('logic')}</div><div><b>${t('test_cta')}</b><span>${t('tagline')}</span></div><em>→</em></button>`}
+    <p class="fine">${t('train_note')}</p>
+  </div>`);
+  const br=Brain.mount(el.querySelector('#brain'),{mode:'result',lv:skillLv()});
+  later(()=>{const f=el.querySelector('#xpf');if(f)f.style.width=(lv.cur/lv.need*100)+'%'},150);
+  el.querySelectorAll('.wg').forEach(b=>{b.addEventListener('pointerenter',()=>br.focus=gdom(b.dataset.id));b.addEventListener('pointerleave',()=>br.focus=null);
+    b.onclick=()=>{const id=b.dataset.id;if(done)return playGame(id,{daily:false});if((d.g||{})[id]!=null)return;playGame(id,{daily:true,i:games.indexOf(id)})}});
+  const go=el.querySelector('#go');if(go){magnet(go);const f=()=>playGame(next,{daily:true,i:games.indexOf(next)});go.onclick=f;onKey(e=>{if(e.key==='Enter'){e.preventDefault();f()}})}
+  const sh=el.querySelector('#shd');if(sh)sh.onclick=shareDay;
+  const ft=el.querySelector('#ft');if(ft){ft.onclick=start;tilt(ft,3)}
+}
+
+/* ---------- a single game (daily or free play) ---------- */
+function playGame(id,ctx){
+  if(!P.ageAsked)return ageScreen(()=>playGame(id,ctx));
+  current=null;setTesting(true);progress(true);amb(gdom(id));
+  const best=P.best[id],sk=skillScores()[gdom(id)];
+  const el=show(`<div class="panel ti"><div class="orb" style="--dc:${gcol(id)}">${icon(id)}</div>
+    <div class="kicker mono">${ctx.daily?`${t('challenge_no',{n:dayNo(dkey())})} · ${ctx.i+1}/3 · `:''}${t('d_'+gdom(id))}</div>
+    <h2>${gname(id)}</h2><p class="lead">${t('i_'+id)}</p>
+    <div class="chips mono" style="margin:-12px 0 26px">${sk!=null?`<span>${t('bpi')}: ${sk}</span>`:''}${best?`<span>${t('best')}: ${best}</span>`:''}<span class="cite">📚 ${CITE[id]}</span></div>
+    <button class="btn primary" id="go">${t('begin')} <span class="kbd">↵</span></button></div>`);
+  const go=()=>runGame(id,ctx),b=el.querySelector('#go');b.onclick=go;magnet(b);onKey(e=>{if(e.key==='Enter'){e.preventDefault();go()}});
+}
+function runGame(id,ctx){
+  rng=ctx.daily?mulberry32(hashStr('DAILY'+dkey()+id)):Math.random;amb(gdom(id));
+  const opts=trainOpts(id),el=show('<div class="stage" id="stage"></div>');taskActive=id;
+  TESTS[id](el.querySelector('#stage'),res=>{taskActive=null;const r=recordGame(id,{...res,z:clamp(res.z,-3,3)},ctx.daily);sfx.win();gameResult(id,res,r,ctx)},opts);
+}
+function gameResult(id,res,r,ctx){
+  setTesting(false);current=null;setNav(ctx.daily?'today':'games');amb(gdom(id));
+  const lv=lvlInfo(P.xp),dd=r.prevBpi==null?null:r.bpi-r.prevBpi,k=dkey(),games=dailyGames(k);
+  const nextG=ctx.daily?games.find(g=>((P.days[k]||{}).g||{})[g]==null):null;
+  const el=show(`<div class="panel done gres" style="--dc:${gcol(id)}">
+    <div class="orb" style="--dc:${gcol(id)}">${icon(id)}</div>
+    <div class="kicker mono">${gname(id)}${r.newBest?` · <span class="nb">★ ${t('new_best')}</span>`:''}</div>
+    <div class="pts"><b id="pn">0</b><span>${t('points')}</span></div>
+    <div class="raw mono">${res.raw}</div>
+    <div class="pctl"><div class="pbar"><i style="--w:${r.pct}%"></i><b style="left:${r.pct}%"></b></div><span class="mono">${t('top_pct',{p:r.pct})}</span></div>
+    <div class="deltas">
+      <div><span class="kicker mono">${t('bpi')} · ${t('d_'+gdom(id))}</span><b>${r.bpi}${dd!=null?` <i class="${dd>=0?'up':'dn'}">${dd>=0?'▲':'▼'} ${Math.abs(dd)}</i>`:''}</b></div>
+      <div><span class="kicker mono">${t('level')} ${lv.l} · ${rankOf(lv.l)}</span><div class="xpbar big"><i id="xpb" style="width:0"></i></div><small class="mono">+${r.xp} XP</small></div>
+    </div>
+    <div class="actions">${ctx.daily?`<button class="btn primary" id="nx">${nextG?t('next_game'):t('finish')} →</button>`
+      :`<button class="btn primary" id="nx">↺ ${t('play_again')}</button><button class="btn ghost" id="bk">${t('back')}</button>`}</div></div>`);
+  countUp(el.querySelector('#pn'),r.pts,1300);
+  later(()=>{el.querySelector('#xpb').style.width=(lv.cur/lv.need*100)+'%'},350);
+  if(r.newBest)later(()=>{const nb=el.querySelector('.nb');if(nb)burstEl(nb,'#ffd23f')},1300);
+  if(r.lvlUp)later(()=>{toast('⭐ '+t('lvl_up',{n:lv.l})+' · '+rankOf(lv.l));confetti(90)},1500);
+  achToasts(r.ach,r.lvlUp?3600:1600);
+  const nx=()=>{if(!ctx.daily)return playGame(id,ctx);nextG?playGame(nextG,{daily:true,i:games.indexOf(nextG)}):workoutDone()};
+  const b=el.querySelector('#nx');b.onclick=nx;magnet(b);onKey(e=>{if(e.key==='Enter'){e.preventDefault();nx()}});
+  const bk=el.querySelector('#bk');if(bk)bk.onclick=gamesScreen;
+}
+const sq=p=>p>=800?'🟪':p>=600?'🟩':p>=400?'🟨':'🟧';
+function workoutDone(){
+  setTesting(false);current=workoutDone;setNav('today');amb(null);
+  const k=dkey(),games=dailyGames(k),d=P.days[k]||{g:{}},tot=dayTotal(k),st=streak(),rv=P.rival&&P.rival.day===dayNo(k)?P.rival:null;
+  const el=show(`<div class="panel done wdone">
+    <div class="bigflame">🔥<b>${st}</b></div>
+    <div class="kicker mono">${t('challenge_no',{n:dayNo(k)})} · ${st} ${t('streak')}</div><h2>${t('workout_done')}</h2>
+    <div class="wsum">${games.map(g=>`<div style="--dc:${gcol(g)}"><div class="cico">${icon(g)}</div><b class="mono">${(d.g||{})[g]??'—'}</b><span>${gname(g)}</span></div>`).join('')}</div>
+    <div class="pts"><b id="pn">0</b><span>${t('points')}</span></div>
+    ${rv?`<div class="rival-res ${tot>rv.s?'win':'lose'}">🥊 ${tot>rv.s?t('you_beat',{n:rv.n}):t('they_lead',{n:rv.n,d:(rv.s-tot).toLocaleString()})} <span class="mono">${tot.toLocaleString()} : ${rv.s.toLocaleString()}</span></div>`:''}
+    <div class="actions"><button class="btn primary" id="sh">🥊 ${t('challenge')}</button><button class="btn ghost" id="pr">${t('nav_progress')}</button><button class="btn ghost" id="hm">${t('nav_today')}</button></div>
+    <p class="lead" style="margin:18px 0 0;font-size:14px">${t('come_back')}</p></div>`);
+  countUp(el.querySelector('#pn'),tot,1600);confetti();
+  el.querySelector('#sh').onclick=shareDay;magnet(el.querySelector('#sh'));
+  el.querySelector('#pr').onclick=progressScreen;el.querySelector('#hm').onclick=today;
+}
+function markShared(){P.shares=(P.shares||0)+1;const a=checkAch();saveP();achToasts(a,400)}
+async function shareDay(){
+  const k=dkey(),games=dailyGames(k),d=P.days[k]||{g:{}},tot=dayTotal(k);
+  const url=`${SITE}?daily=${dayNo(k)}&s=${tot}${P.nick?'&n='+encodeURIComponent(P.nick):''}`;
+  const text=`NeuroMap ${t('challenge_no',{n:dayNo(k)})} 🧠\n${games.map(g=>sq((d.g||{})[g]||0)).join('')} ${tot.toLocaleString()}\n🔥 ${streak()}\n${url}`;
+  markShared();
+  if(window.NMAndroid){NMAndroid.share(text);return}
+  if(navigator.share&&matchMedia('(pointer:coarse)').matches){try{await navigator.share({text});return}catch(e){if(e&&e.name==='AbortError')return}}
+  try{await navigator.clipboard.writeText(text);toast(t('copied'))}catch(e){window.prompt('',text)}
+}
+
+/* ---------- FREE PLAY: 17 games grouped by brain domain ---------- */
+function gamesScreen(){
+  setTesting(false);current=gamesScreen;setNav('games');amb(null);
+  const sk=skillScores();let n=0;
+  const el=show(`<div class="gscreen"><div class="sec-head"><h1 class="hello">${t('free_play')}</h1><p>${t('games_sub')}</p></div>
+    ${RADAR.map(d=>`<div class="dgroup" style="--dc:${DCOL[d]}"><div class="dg-head"><div class="cico">${icon(d)}</div><b>${t('d_'+d)}</b><span class="mono">${t('bpi')} ${sk[d]??'—'}</span></div>
+      <div class="ggrid">${domGames(d).map(id=>`<button class="gcard" data-id="${id}" style="--dc:${DCOL[d]};--d:${(n++)*35}ms">
+        ${NEWG.includes(id)&&!P.plays[id]?`<s class="newb">${t('new')}</s>`:''}<div class="cico">${icon(id)}</div><b>${gname(id)}</b><span class="mono">${CITE[id]}</span>
+        <div class="gstats mono"><span>${t('best')} <b>${P.best[id]||'—'}</b></span><span><b>${P.plays[id]||0}</b> ${t('plays')}</span></div></button>`).join('')}</div></div>`).join('')}</div>`);
+  el.querySelectorAll('.gcard').forEach(c=>{tilt(c,8);c.onclick=()=>playGame(c.dataset.id,{daily:false})});
+}
+
+/* ---------- PROGRESS ---------- */
+function lineSVG(keys,vals){
+  if(vals.length<2)return`<div class="empty mono">${t('empty_progress')}</div>`;
+  const W=520,H=190,mn=Math.min(...vals)-4,mx=Math.max(...vals)+4,X=i=>42+i*(W-56)/(vals.length-1),Y=v=>H-26-(v-mn)/(mx-mn)*(H-50);
+  const pts=vals.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' '),F='font-family="JetBrains Mono,monospace" font-size="10" fill="#8790b5"';
+  return`<svg class="line" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ef2ff" stop-opacity=".32"/><stop offset="1" stop-color="#5ef2ff" stop-opacity="0"/></linearGradient></defs>
+    ${[mn+4,(mn+mx)/2,mx-4].map(v=>`<line x1="42" x2="${W-14}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="rgba(150,175,255,.1)"/><text x="4" y="${(Y(v)+3).toFixed(1)}" ${F}>${Math.round(v)}</text>`).join('')}
+    <polygon points="${X(0)},${H-26} ${pts} ${X(vals.length-1).toFixed(1)},${H-26}" fill="url(#lg2)"/>
+    <polyline points="${pts}" fill="none" stroke="#5ef2ff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(94,242,255,.6))"/>
+    ${vals.map((v,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="${i===vals.length-1?5:2.6}" fill="${i===vals.length-1?'#fff':'#5ef2ff'}"/>`).join('')}
+    <text x="42" y="${H-6}" ${F}>${keys[0].slice(5)}</text><text x="${W-14}" y="${H-6}" text-anchor="end" ${F}>${keys[keys.length-1].slice(5)}</text></svg>`;
+}
+const AVAS=['🧠','🦉','🦊','🐺','🐉','🦄','🐙','🦁','🐼','🤖','👽','🧙','🥷','🚀','⚡','🌙'];
+function progressScreen(){
+  setTesting(false);current=progressScreen;setNav('progress');amb(null);
+  const bpi=overallBPI(),sk=skillScores(),k=dkey(),lv=lvlInfo(P.xp);
+  const hk=Object.keys(P.hist).sort().slice(-30),hv=hk.map(x=>P.hist[x]),delta=hv.length>1?hv[hv.length-1]-hv[0]:null;
+  const cal=Array.from({length:35},(_,i)=>addDays(k,i-34));
+  const stat=(v,l)=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  const nAch=Object.keys(P.ach).length;
+  const el=show(`<div class="pscreen">
+    <div class="prof panel"><button class="ava-b" id="ava" aria-label="avatar">${P.ava}</button>
+      <div class="prof-m"><input id="nick" maxlength="18" placeholder="${t('nick_ph')}" value="${P.nick}"><span class="mono">${t('level')} ${lv.l} · ${rankOf(lv.l)} · ${P.xp} XP</span></div>
+      <button class="btn primary" id="card">🖼 ${t('share_brain')}</button></div>
+    <div class="res-hero">
+      <div class="panel bpanel" style="--ac:#5ef2ff"><div class="brainwrap"><canvas id="brain" aria-hidden="true"></canvas></div>
+        <div class="arch"><div class="kicker mono">${t('bpi')}</div><h3>${bpi??'—'}</h3><p>${bpi==null?t('empty_progress'):delta!=null?`<span class="${delta>=0?'up':'dn'}">${delta>=0?'▲':'▼'} ${Math.abs(delta)}</span> · ${t('trend')}`:''}</p></div></div>
+      <div class="panel spanel"><div class="kicker mono">${t('bpi')} · ${t('trend')}</div>${lineSVG(hk,hv)}
+        <div class="stats">${stat('🔥 '+streak(),t('streak'))}${stat(P.bestStreak,t('best_streak'))}${stat(P.workouts,t('workouts'))}${stat(P.games,t('games_played'))}${stat(Object.keys(P.plays).filter(g=>ALLG.includes(g)).length+'/'+ALLG.length,t('nav_games'))}${stat(nAch+'/'+ACH.length,t('achievements'))}</div></div>
+    </div>
+    <div class="res-mid">
+      <div class="panel bars">${RADAR.map((id,i)=>`<div class="bar" data-id="${id}" style="--dc:${DCOL[id]}"><div class="cico">${icon(id)}</div><div class="bm"><div class="bt"><span>${t('d_'+id)}</span><small>${domPlays(id)} ${t('plays')}</small><b>${sk[id]??'—'}</b></div>
+        <div class="track"><i style="--w:${sk[id]==null?0:(clamp((sk[id]-55)/90,.02,1)*100).toFixed(1)}%;--dl:${200+i*80}ms"></i><span class="mid"></span></div></div></div>`).join('')}</div>
+      <div class="panel calp"><div class="kicker mono">${t('calendar')}</div>
+        <div class="cal">${cal.map(x=>{const p=dayTotal(x);return`<i class="${p?(dayDone(x)?'l3':p>900?'l2':'l1'):''}${x===k?' now':''}" title="${x}${p?': '+p:''}"></i>`}).join('')}</div>
+        <div class="kicker mono" style="margin-top:24px">${t('achievements')} · ${nAch}/${ACH.length}</div>
+        <div class="achs">${ACH.map(([id,ic])=>`<div class="ach${P.ach[id]?' on':''}" title="${achName(id)}"><span>${ic}</span><small>${achName(id)}</small></div>`).join('')}</div></div>
+    </div>
+    <p class="fine">${t('train_note')}</p></div>`);
+  const br=Brain.mount(el.querySelector('#brain'),{mode:'result',lv:skillLv()});
+  el.querySelectorAll('.bar').forEach(b=>{b.addEventListener('pointerenter',()=>br.focus=b.dataset.id);b.addEventListener('pointerleave',()=>br.focus=null)});
+  const ab=el.querySelector('#ava');ab.onclick=()=>{P.ava=AVAS[(AVAS.indexOf(P.ava)+1)%AVAS.length];ab.textContent=P.ava;ab.classList.remove('spin');void ab.offsetWidth;ab.classList.add('spin');sfx.tick();saveP()};
+  const ni=el.querySelector('#nick');ni.oninput=()=>{P.nick=clean(ni.value);saveP()};ni.addEventListener('keydown',e=>e.stopPropagation());
+  el.querySelector('#card').onclick=profileCard;
+}
+/* shareable 1080×1350 brain card */
+async function profileCard(){
+  try{await document.fonts.ready}catch(e){}
+  const cv=document.createElement('canvas');cv.width=1080;cv.height=1350;const x=cv.getContext('2d'),F='"Space Grotesk",system-ui,sans-serif',M='"JetBrains Mono",monospace';
+  const lv=lvlInfo(P.xp),bpi=overallBPI(),sk=skillScores();
+  const g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#0e0826');g.addColorStop(.55,'#05060d');g.addColorStop(1,'#03202a');x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  const blob=(cx,cy,r,col)=>{const rg=x.createRadialGradient(cx,cy,0,cx,cy,r);rg.addColorStop(0,col);rg.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rg;x.fillRect(0,0,1080,1350)};
+  blob(900,140,560,'rgba(155,107,255,.34)');blob(140,1240,560,'rgba(94,242,255,.2)');
+  x.textAlign='left';x.fillStyle='#e9edff';x.font=`700 44px ${F}`;x.fillText('NeuroMap',80,110);
+  x.textAlign='right';x.fillStyle='#8790b5';x.font=`500 24px ${M}`;x.fillText(t('challenge_no',{n:dayNo(dkey())}),1000,106);
+  x.textAlign='center';x.font=`120px ${F}`;x.fillText(P.ava,540,290);
+  x.fillStyle='#fff';x.font=`700 56px ${F}`;x.fillText(P.nick||rankOf(lv.l),540,372);
+  x.fillStyle='#b9c1e2';x.font=`500 28px ${F}`;x.fillText(`${t('level')} ${lv.l} · ${rankOf(lv.l)}`,540,418);
+  const tiles=[['🔥 '+streak(),t('streak')],[bpi??'—',t('bpi')],[String(Object.keys(P.ach).length),t('achievements')]];
+  tiles.forEach(([v,l],i)=>{const cx=240+i*300;x.fillStyle='rgba(255,255,255,.05)';x.strokeStyle='rgba(150,175,255,.2)';x.lineWidth=2;
+    x.beginPath();x.roundRect?x.roundRect(cx-130,452,260,120,22):x.rect(cx-130,452,260,120);x.fill();x.stroke();
+    x.fillStyle='#fff';x.font=`700 46px ${F}`;x.fillText(v,cx,520);x.fillStyle='#8790b5';x.font=`500 20px ${F}`;x.fillText(l,cx,552)});
+  Brain.drawStatic(x,260,560,560,skillLv());
+  RADAR.forEach((id,i)=>{const col=i%2,row=i>>1,bx=col?570:90,by=1150+row*36,w=420,v=sk[id];
+    x.textAlign='left';x.fillStyle='#e9edff';x.font=`500 21px ${F}`;x.fillText(t('d_'+id),bx,by);
+    x.textAlign='right';x.fillStyle=DCOL[id];x.font=`600 21px ${M}`;x.fillText(v??'—',bx+w,by);
+    x.fillStyle='rgba(255,255,255,.08)';x.fillRect(bx+170,by-9,w-220,7);if(v!=null){x.fillStyle=DCOL[id];x.fillRect(bx+170,by-9,(w-220)*clamp((v-55)/90,.02,1),7)}});
+  x.textAlign='center';x.fillStyle='#8790b5';x.font=`500 21px ${M}`;x.fillText(SITE.replace(/^https?:\/\//,''),540,1322);
+  markShared();
+  if(window.NMAndroid){NMAndroid.shareImage(cv.toDataURL('image/png'));return}
+  cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`neuromap-brain.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},'image/png');
+}
+
+/* =====================================================================
    BOOT
    ===================================================================== */
-function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';store.set('nm_lang',L);$('#lang').value=L;if(current)current()}
+function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';store.set('nm_lang',L);$('#lang').value=L;setNav();if(current)current()}
 (function boot(){
   const sel=$('#lang');sel.innerHTML=Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   sel.onchange=()=>setLang(sel.value);
@@ -1323,10 +2238,16 @@ function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.do
   if(!I18N[l]){l='en';for(const n of(navigator.languages||[navigator.language||'en'])){const k=String(n).slice(0,2).toLowerCase();if(I18N[k]){l=k;break}}}
   $('#gh').href=REPO;
   const snd=$('#snd');const paint=()=>{snd.innerHTML=sfx.on?SND_ON:SND_OFF};paint();snd.onclick=()=>{sfx.toggle();paint();sfx.tick()};
-  $('#home').onclick=e=>{e.preventDefault();if(document.body.classList.contains('testing')&&!confirm(t('quit')))return;taskActive=null;history.replaceState(null,'',location.href.split('#')[0]);intro()};
+  $('#home').onclick=e=>{e.preventDefault();if(document.body.classList.contains('testing')&&!confirm(t('quit')))return;taskActive=null;history.replaceState(null,'',location.href.split('#')[0]);goHome()};
+  const tabs=document.createElement('nav');tabs.id='tabs';
+  tabs.innerHTML=NAV.map(([id,d])=>`<button data-tab="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg><span></span></button>`).join('');
+  document.body.appendChild(tabs);
+  tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sfx.tick();goTab(b.dataset.tab)});
   const m=location.hash.match(/^#r=([\d.]+)$/),shared=m?parseScores(m[1]):null;
   L=l;setLang(l);
-  if(shared)results(shared,null,{shared:true});else intro();
+  initRival();
+  if(shared)results(shared,null,{shared:true});else if(VS||CHALLENGE)intro();else if(P.rival&&P.rival.day===dayNo(dkey())&&!P.rival.done)today();else goHome();
+  if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>
 </body>

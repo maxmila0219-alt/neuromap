@@ -2,16 +2,48 @@
 
 # 🧠 NeuroMap
 
-**Map your mind in 15 minutes.**
-An open-source cognitive test: 8 tasks from classic cognitive science, adaptive difficulty, age norms and a living 3D brain that lights up with your results.
+**Daily brain training + a full cognitive test, built on classic cognitive science.**
+17 games, a daily workout that's the same for everyone on Earth, streaks, levels, and a living 3D brain that lights up as you train.
 
-**[▶ Live demo](https://maxmila0219-alt.github.io/neuromap/)** · One HTML file · No frameworks · No tracking · 10 languages
+**[▶ Play now](https://maxmila0219-alt.github.io/neuromap/)** · Installable app (PWA) · Works offline · No frameworks · No tracking · 10 languages
 
 ![NeuroMap](preview.png)
 
 </div>
 
 ---
+
+## 🎮 17 games (v3)
+
+| Domain | Games |
+|---|---|
+| Logic | Matrices · **Odd one out** (classification reasoning) |
+| Numbers | Number series · **Number sense** (dot comparison, Weber fraction; Halberda et al., 2008) |
+| Spatial | 3D rotation · **Flip or turn** (2D rotation; Cooper & Shepard, 1973) |
+| Memory | Corsi blocks · **N-back** (Jaeggi et al., 2008 staircase) |
+| Attention | Trail connect · **Ball tracker** (multiple-object tracking, Pylyshyn & Storm, 1988) · **Hidden T** (visual search, Treisman & Gelade, 1980) |
+| Speed | Symbol code · **Pattern match** (Salthouse & Babcock, 1991) |
+| Self-control | Color clash (Stroop) · **Arrow focus** (Eriksen flanker, 1974) |
+| Reflexes | Reaction · **Go / No-Go** |
+
+- **Real physics.** In Ball tracker, balls collide with perfectly elastic impulses. Momentum and kinetic energy are conserved, and the simulation is verified to machine precision.
+- **Every game remembers your level.** N-back's N, the number of tracked balls, the dot ratio, the search set size and the symbol length all persist and adapt.
+- **30 achievements**, ranks from Novice to Mastermind, a profile with a name and avatar, and a shareable brain card.
+- **Daily duels.** Share your daily score and your friend's app shows "Alex scored 2,100 on Daily #12. Beat it!"
+- **Ambient color.** Each brain domain tints the whole screen while you play.
+
+## 🏋 Daily training
+
+- **Daily workout.** Three games, about 5 minutes. The set is chosen by date, so everyone in the world plays the same workout that day.
+- **Streaks, XP and levels.** Come back daily to keep your 🔥 streak alive.
+- **Adaptive difficulty.** Every game starts at *your* level. Logic and number puzzles use your IRT ability estimate, and Corsi starts at your span.
+- **Brain index.** Per-domain skill is an exponential moving average of your age-normed scores. Your brain map lights up region by region as you play.
+- **Progress screen.** A 30-day chart, an activity calendar and 11 achievements.
+- **Wordle-style sharing.** `NeuroMap Daily #12 🧠 🟪🟩🟨 2,140 🔥 5`
+- **Free play.** Any of the 8 games, any time.
+- **Installable.** Add it to your home screen. It works offline through a service worker.
+
+> Training makes you better at *these tasks*. Evidence that brain-training transfers to general intelligence is weak, so NeuroMap never claims to raise IQ. It helps you track your skills honestly.
 
 ## ✨ What makes it different
 
@@ -62,6 +94,8 @@ An open-source cognitive test: 8 tasks from classic cognitive science, adaptive 
 open index.html            # works offline, just open it
 # GitHub Pages: Settings → Pages → Branch: main → / (root)
 ```
+
+Files: `index.html` (the whole app), `manifest.webmanifest` + `icons/` (install as an app), `sw.js` (offline cache). Your progress is stored only in your browser (`localStorage`).
 
 Before publishing, set the `REPO` constant at the top of the `<script>` to your repository URL. It powers the ⭐ button and the share card.
 
