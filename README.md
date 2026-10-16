@@ -13,14 +13,15 @@
 
 ---
 
-## 🩸 NEW in v7: Living Body (real-time cinema)
+## 🩸 NEW in v7: Living Body, built into the pages
 
-`live.html` is a cinematic flight through the body. It is not a pre-recorded video: your GPU ray-marches every frame live.
+`bodygl.js` adds fast, real-time living-body scenes inside the existing pages. There is no separate window.
 
-- **Chapter 1, inside an artery.** You fly down a fleshy, pulsing vessel. Red blood cells are modelled as true biconcave discs: a signed distance field made from a rim torus smoothly joined to a thin disc. They are lit by an endoscope light with subsurface transmission, wet speculars and plasma fog. Blood flow and the vessel wall surge on every heartbeat.
-- **Chapter 2, the neural forest.** Procedurally wired neurons sit in volumetric darkness. Action potentials race along the axons as volumetric light and light the membranes from inside. Click to fire.
-- **Body rhythms.** The heartbeat (~72 bpm) and breathing (~11/min) drive the scene and the whole site's UI. An optional synthesized heartbeat and breath sound is available.
-- **Adaptive resolution** keeps it smooth, and the scene is available in 10 languages.
+- **Home screen.** A live panel with two scenes, 🩸 Blood and ⚡ Neurons.
+  - Blood is a flight down a pulsing artery. Hundreds of instanced red blood cells are true biconcave lathe meshes built from the Evans–Fung profile. They have subsurface glow, wet speculars and fog, and the blood flow surges with every heartbeat.
+  - Neurons is a forest of tube-mesh pyramidal neurons. Action potentials travel down the axons and glow.
+- **Journey.** A new prologue chapter flies through the bloodstream, and the neural forest lives behind the neuron lab.
+- **Performance.** The scenes are rasterised, not ray-marched: every animation runs on the GPU through instancing and vertex shaders, with no per-frame CPU geometry. They pause when off-screen and adapt their resolution, so they run smoothly on ordinary laptops.
 
 ## 🩻 v6: a real brain, ray-marched on your GPU
 
