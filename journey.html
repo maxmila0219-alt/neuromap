@@ -994,7 +994,7 @@ done:'تم',live:'مباشر',start:'ابدأ',stop:'إيقاف',again:'مرة �
    GLOBAL BRAIN backend (optional): paste your Supabase project URL and
    its public "anon" key below. Leave empty → everything stays local.
    ===================================================================== */
-const GB={url:'',key:''};
+const GB={url:'https://puiavwafyxdnzdsnasdx.supabase.co',key:'sb_publishable_AWYrIsukdxccyKCLYGh-tA_luTxTR-w'};
 
 const REPO='https://github.com/maxmila0219-alt/neuromap';
 const BASEURL=(window.NMAndroid||location.protocol==='file:')?'https://maxmila0219-alt.github.io/neuromap/':location.href.split(/[?#]/)[0].replace(/[^/]*$/,'');
@@ -1485,7 +1485,7 @@ function xNU(){
    8. GLOBAL BRAIN — results, world map, open data
    ===================================================================== */
 const gbOn=()=>!!(GB.url&&GB.key);
-const gbH=()=>({apikey:GB.key,Authorization:'Bearer '+GB.key,'Content-Type':'application/json'});
+const gbH=()=>Object.assign({apikey:GB.key,'Content-Type':'application/json'},/^eyJ/.test(GB.key)?{Authorization:'Bearer '+GB.key}:{});
 let STATS=null,metric='n';
 async function gbStats(force){if(!gbOn())return null;
   try{const c=JSON.parse(store.get('nm_gb_cache')||'null');if(!force&&c&&Date.now()-c.at<5*60e3)return STATS=c.d}catch(e){}
