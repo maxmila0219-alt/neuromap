@@ -1822,7 +1822,9 @@ function boot(){
   $('#lang').innerHTML=Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');$('#lang').onchange=e=>setLang(e.target.value);
   setLang(l);countUp();startBrain();
   gbStats().then(()=>{renderResults();renderMap();renderHours()});
-  if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker'in navigator&&location.protocol==='https:'){const had=!!navigator.serviceWorker.controller;let rl=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!rl){rl=true;location.reload()}});
+    navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{})}
 }
 boot();
 

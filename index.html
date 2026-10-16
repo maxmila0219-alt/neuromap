@@ -2341,7 +2341,7 @@ function glMount(cv,opt){
   const mob=innerWidth<700,R=NGL.create(cv,{auto:.22,maxDpr:mob?1.5:1.75,minDist:2.2,maxDist:5});if(!R)throw new Error('no gl');
   const D=glBrainData(mob),L=R.addLayer(D.b,{sat:1.1}),T=R.addLayer(D.tr),U=R.addLayer(D.dust);U.fade=.7;
   let SH=null,FB=null,alive=true;glExtras(mob,d=>{if(!alive||!d.shell)return;SH=R.addMesh(d.shell,{tint:[.42,.58,1],fade:0,scan:opt.mode==='hero'?1:.6});FB=R.addLines(d.fib,{fade:0})});
-  R.setCam({dist:3.05,yaw:-.95,pitch:.22});
+  R.setCam({dist:3.45,yaw:-.95,pitch:.22});
   let focus=null,next=0,fb2=null;
   R.onFrame=(t,dt)=>{
     for(const d of NGL.DOMAINS){const i=DIDX(d);L.gain[i]=opt.mode==='hero'?.42:(opt.lv?opt.lv[d]:.5)}L.gain[8]=.22;
@@ -2521,7 +2521,10 @@ function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.do
   initRival();
   {const na=checkAch();if(na.length){saveP();achToasts(na,1600)}}
   if(shared)results(shared,null,{shared:true});else if(VS||CHALLENGE)intro();else if(P.rival&&P.rival.day===dayNo(dkey())&&!P.rival.done)today();else goHome();
-  if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+  /* auto-update: when a new version's service worker takes over, reload once into it */
+  if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){const had=!!navigator.serviceWorker.controller;let rl=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!rl){rl=true;location.reload()}});
+    navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{})}
 })();
 </script>
 </body>
