@@ -5,11 +5,39 @@
 **Daily brain training + a full cognitive test, built on classic cognitive science.**
 17 games, a daily workout that's the same for everyone on Earth, streaks, levels, and a living 3D brain that lights up as you train.
 
-**[▶ Play now](https://maxmila0219-alt.github.io/neuromap/)** · Installable app (PWA) · Works offline · No frameworks · No tracking · 10 languages
+**[▶ Play now](https://maxmila0219-alt.github.io/neuromap/)** · **[🧠 Journey into the Brain](https://maxmila0219-alt.github.io/neuromap/journey.html)** · Installable app (PWA) · Works offline · No frameworks · No tracking · 10 languages
 
 ![NeuroMap](preview.png)
 
 </div>
+
+---
+
+## 🧠 NEW: Journey into the Brain
+
+**[Open the journey →](https://maxmila0219-alt.github.io/neuromap/journey.html)**
+
+![Journey into the Brain](journey-preview.png)
+
+A scroll-driven voyage from the whole brain down to a single firing neuron. A 3D particle brain follows your scroll, lights up each lobe, then dives through the cortex. On the way, your own brain becomes the test subject:
+
+| Chapter | Live experiment | Classic source |
+|---|---|---|
+| 👁 Vision | Find your **blind spot** and watch your brain fill it in · the **lilac chaser** illusion | Mariotte 1668 · Troxler 1804 · Hinton 2005 |
+| 🔢 Parietal lobe | **Instant counting**: find your subitizing limit | Kaufman et al. 1949 |
+| 🛑 Frontal lobe | **Stroop test**: measure your conflict cost in ms | Stroop 1935 |
+| 🌀 Temporal lobe | **False memory**: your brain "remembers" a word it never saw | Roediger & McDermott 1995 |
+| ⚡ Motor system | **Reaction time**, with the signal path from eye to finger | — |
+| 🔬 Neuron | A real **Hodgkin–Huxley** model running live: stimulate, hold current, remove myelin, add pufferfish toxin | Hodgkin & Huxley 1952 |
+| 🌍 Global Brain | Anonymous results on an **open world map**, "when is humanity fastest?" chart, shareable brain card, friend challenges | — |
+
+### 🌍 Global Brain backend (optional, free)
+Without a backend the journey runs 100% locally. To switch on the live world map:
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Open **SQL Editor**, paste [`global-brain.sql`](global-brain.sql) and run it. This creates an insert-only table plus an aggregate function. Raw rows are never public, and countries with fewer than 5 participants are hidden.
+3. In `journey.html`, fill in `const GB={url:'https://YOUR-PROJECT.supabase.co',key:'YOUR-ANON-KEY'}`. The anon key is designed to be public; security comes from row-level security.
+
+Data sent: country, age group, hour of day, language and four scores. No names, accounts or cookies.
 
 ---
 

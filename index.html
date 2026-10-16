@@ -855,6 +855,8 @@ ar:{g_logic:'المصفوفات',g_numbers:'المتتاليات العددية'
  ach_workouts10:'منتظم · 10 تمارين',ach_workouts50:'مخلص · 50 تمرينًا',ach_streak14:'بركان · 14 يومًا',ach_perfect:'بلا أخطاء · 975+',ach_lvl10:'المستوى 10',ach_nback3:'بهلوان · 3-باك',ach_mot5:'رادار · 5 أجسام',ach_early:'الطائر المبكر',ach_night:'بومة الليل',ach_share:'الرسول',ach_duel:'مبارز · تغلّب على صديق',ach_master:'أستاذ · {d}'}
 };
 for(const k in I18N_V3)Object.assign(I18N[k],I18N_V3[k]);
+const I18N_V4={en:{jr_t:'Journey into the Brain',jr_s:'A scroll-through voyage with 7 live experiments: blind spot, false memory, a real firing neuron — and a world map of minds.',ach_journey:'Explorer · journey into the brain',jr_btn:'Journey into the brain'},ru:{jr_t:'Путешествие внутрь мозга',jr_s:'Путь с 7 живыми экспериментами: слепое пятно, ложная память, настоящий нейрон — и карта умов всего мира.',ach_journey:'Исследователь · путешествие в мозг',jr_btn:'Путешествие в мозг'},es:{jr_t:'Viaje al cerebro',jr_s:'Un viaje con 7 experimentos en vivo: punto ciego, falso recuerdo, una neurona real que se dispara y un mapa mundial de mentes.',ach_journey:'Explorador · viaje al cerebro',jr_btn:'Viaje al cerebro'},pt:{jr_t:'Viagem ao cérebro',jr_s:'Uma viagem com 7 experimentos ao vivo: ponto cego, memória falsa, um neurônio real disparando e um mapa-múndi de mentes.',ach_journey:'Explorador · viagem ao cérebro',jr_btn:'Viagem ao cérebro'},fr:{jr_t:'Voyage au cœur du cerveau',jr_s:'Un voyage avec 7 expériences en direct : tache aveugle, faux souvenir, un vrai neurone qui décharge et une carte mondiale des esprits.',ach_journey:'Explorateur · voyage au cerveau',jr_btn:'Voyage au cerveau'},de:{jr_t:'Reise ins Gehirn',jr_s:'Eine Reise mit 7 Live-Experimenten: blinder Fleck, falsche Erinnerung, ein echtes feuerndes Neuron und eine Weltkarte der Köpfe.',ach_journey:'Entdecker · Reise ins Gehirn',jr_btn:'Reise ins Gehirn'},zh:{jr_t:'大脑之旅',jr_s:'一段包含 7 个实时实验的旅程：盲点、虚假记忆、真实放电的神经元，以及全球心智地图。',ach_journey:'探索者 · 大脑之旅',jr_btn:'大脑之旅'},ja:{jr_t:'脳への旅',jr_s:'7 つのライブ実験をめぐる旅：盲点、偽の記憶、本物の発火するニューロン、そして心の世界地図。',ach_journey:'探検家 · 脳への旅',jr_btn:'脳への旅'},hi:{jr_t:'मस्तिष्क के भीतर यात्रा',jr_s:'7 लाइव प्रयोगों वाली यात्रा: ब्लाइंड स्पॉट, झूठी याद, असली फ़ायर होता न्यूरॉन — और मन का विश्व-मानचित्र।',ach_journey:'खोजकर्ता · मस्तिष्क यात्रा',jr_btn:'मस्तिष्क यात्रा'},ar:{jr_t:'رحلة إلى داخل الدماغ',jr_s:'رحلة فيها 7 تجارب حيّة: النقطة العمياء، الذكرى الزائفة، خلية عصبية حقيقية تنطلق — وخريطة عالمية للعقول.',ach_journey:'مستكشف · رحلة إلى الدماغ',jr_btn:'رحلة إلى الدماغ'}};
+for(const k in I18N_V4)Object.assign(I18N[k],I18N_V4[k]);
 
 
 let L='en';
@@ -1455,7 +1457,7 @@ function intro(){
       <div class="badge mono"><span class="pulse"></span>${VS?`⚔ ${t('vs_intro',{s:calc(VS).iq})}`:CHALLENGE?`⚔ ${t('challenge')} · ${SEED}`:t('meta')}</div>
       <h1 class="title">Neuro<span>Map</span></h1>
       <p class="tag">${t('tagline')}</p>
-      <div class="cta"><button class="btn primary big" id="st">${t('train_cta')} <span>→</span></button><button class="btn ghost big" id="st2">${t('test_cta')}</button>
+      <div class="cta"><button class="btn primary big" id="st">${t('train_cta')} <span>→</span></button><button class="btn ghost big" id="st2">${t('test_cta')}</button><a class="btn ghost big" href="journey.html" id="jr" style="text-decoration:none">🧠 ${t('jr_btn')}</a>
         ${run?`<button class="btn ghost" id="cont">↻ ${t('cont',{n:run.i+1,t:ORDER.length})}</button>`:''}</div>
       ${last&&last.scores?`<div class="last">${t('last')}: <button id="lastb">${calc(last.scores).iq} · ${t('a_'+topOf(last.scores))} →</button></div>`:''}
     </div>
@@ -1978,12 +1980,13 @@ function trainOpts(id){const s=P.skill[GDOM[id]]??0,first=!P.plays[id];
     case'spatial':return{n:8,noPractice:!first};case'reflex':case'speed':case'attention':return{};default:return{lvl:P.glvl[id]}}}
 
 /* ---------- achievements ---------- */
+function journeyDone(){try{return !!(JSON.parse(store.get('nm_journey')||'{}')||{}).done}catch(e){return false}}
 const ACH=[['first','✨',p=>p.games>=1],['workout1','🌅',p=>p.workouts>=1],['workouts10','📅',p=>p.workouts>=10],['workouts50','🏆',p=>p.workouts>=50],
   ['streak3','🔥',p=>p.bestStreak>=3],['streak7','⚡',p=>p.bestStreak>=7],['streak14','🌋',p=>p.bestStreak>=14],['streak30','👑',p=>p.bestStreak>=30],
   ['fulltest','🧠',p=>!!p.fullTest],['pts900','💎',p=>Object.values(p.best).some(v=>v>=900)],['perfect','🌟',p=>Object.values(p.best).some(v=>v>=975)],
   ['allgames','🧭',p=>ALLG.every(id=>p.plays[id])],['lvl5','⭐',p=>lvlInfo(p.xp).l>=5],['lvl10','🌠',p=>lvlInfo(p.xp).l>=10],
   ['bpi120','🚀',p=>(overallBPI()||0)>=120],['games50','🏋',p=>p.games>=50],['nback3','🧩',p=>(p.glvl.nback||1)>=3],['mot5','🛰',p=>(p.glvl.mot||3)>=5],
-  ['early','🐦',p=>!!p.early],['night','🦉',p=>!!p.night],['share','📣',p=>p.shares>=1],['duel','🥊',p=>p.duelsWon>=1],
+  ['early','🐦',p=>!!p.early],['night','🦉',p=>!!p.night],['share','📣',p=>p.shares>=1],['journey','🔭',()=>journeyDone()],['duel','🥊',p=>p.duelsWon>=1],
   ...RADAR.map(d=>['m_'+d,'🎓',p=>(p.skill[d]??-9)>=1])];
 const achName=id=>id.startsWith('m_')?t('ach_master',{d:t('d_'+id.slice(2))}):t('ach_'+id);
 function checkAch(){const n=[];for(const[id,ic,f]of ACH)if(!P.ach[id]&&f(P)){P.ach[id]=Date.now();n.push([id,ic])}return n}
@@ -2061,6 +2064,7 @@ function today(){
         <div class="bpi"><div class="kicker mono">${t('bpi')}</div><b>${bpi??'—'}</b><small>${bpi==null?t('empty_progress'):''}</small></div>
       </div>
     </div>
+    <a class="panel promo" href="journey.html" style="--dc:#ff5fd2;text-decoration:none"><div class="cico" style="font-size:24px;display:grid;place-items:center">🧠</div><div><b>${t('jr_t')}${journeyDone()?' ✓':''}</b><span>${t('jr_s')}</span></div><em>→</em></a>
     ${P.fullTest?'':`<button class="panel promo" id="ft" style="--dc:#9b6bff"><div class="cico">${icon('logic')}</div><div><b>${t('test_cta')}</b><span>${t('tagline')}</span></div><em>→</em></button>`}
     <p class="fine">${t('train_note')}</p>
   </div>`);
@@ -2246,6 +2250,7 @@ function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.do
   const m=location.hash.match(/^#r=([\d.]+)$/),shared=m?parseScores(m[1]):null;
   L=l;setLang(l);
   initRival();
+  {const na=checkAch();if(na.length){saveP();achToasts(na,1600)}}
   if(shared)results(shared,null,{shared:true});else if(VS||CHALLENGE)intro();else if(P.rival&&P.rival.day===dayNo(dkey())&&!P.rival.done)today();else goHome();
   if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();

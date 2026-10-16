@@ -1,6 +1,6 @@
 /* NeuroMap service worker: offline play + fast loads */
-const CACHE = 'neuromap-v3';
-const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+const CACHE = 'neuromap-v4';
+const CORE = ['./', 'index.html', 'journey.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
