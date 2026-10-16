@@ -13,7 +13,16 @@
 
 ---
 
-## 🩻 NEW in v6: a real brain, ray-marched on your GPU
+## 🩸 NEW in v7: Living Body (real-time cinema)
+
+`live.html` is a cinematic flight through the body. It is not a pre-recorded video: your GPU ray-marches every frame live.
+
+- **Chapter 1, inside an artery.** You fly down a fleshy, pulsing vessel. Red blood cells are modelled as true biconcave discs: a signed distance field made from a rim torus smoothly joined to a thin disc. They are lit by an endoscope light with subsurface transmission, wet speculars and plasma fog. Blood flow and the vessel wall surge on every heartbeat.
+- **Chapter 2, the neural forest.** Procedurally wired neurons sit in volumetric darkness. Action potentials race along the axons as volumetric light and light the membranes from inside. Click to fire.
+- **Body rhythms.** The heartbeat (~72 bpm) and breathing (~11/min) drive the scene and the whole site's UI. An optional synthesized heartbeat and breath sound is available.
+- **Adaptive resolution** keeps it smooth, and the scene is available in 10 languages.
+
+## 🩻 v6: a real brain, ray-marched on your GPU
 
 The brain is no longer a particle sketch. NeuroMap now loads a real 3D MRI volume, the **MNI ICBM152** average brain built from 152 people, and ray-marches it in a WebGL2 fragment shader.
 
@@ -23,7 +32,7 @@ The brain is no longer a particle sketch. NeuroMap now loads a real 3D MRI volum
 - **Your training on real anatomy.** Each skill glows at the MNI coordinates of the network that research links to it. The glow is a smooth Gaussian field with flickering cortical "activity" that sits on the gyral crowns. Click the cortex and the GPU-picked region flies you inside.
 - **Journey.** The organ chapter becomes an X-ray, then a scroll-driven axial scan. The lobes light up on the real cortex, and the dive zooms into real gyri.
 
-Files: `brain_hd.bin` (desktop, ~2 MB) and `brain_sd.bin` (phones, ~1 MB). Each one is a gzip of a JSON header, an 8-bit T1 volume and region labels. Phones keep the particle brain by default because the MRI is one tap away. Add `?nomri` to disable it.
+Files: `brain_hd.bin` (desktop, ~2 MB) and `brain_sd.bin` (phones, ~1 MB). Each one is a gzip of a JSON header, an 8-bit T1 volume and region labels. The particle brain stays the default and the MRI is one tap away (`?mri` turns it on in the Journey). Add `?nomri` to disable it.
 
 **Attribution (required by the template licence):** MNI ICBM152 2009 nonlinear template, Copyright (C) 1993–2009 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University. Fonov V.S. et al. (2011), *NeuroImage* 54:313–327; Fonov V.S. et al. (2009), *NeuroImage* 47:S102.
 

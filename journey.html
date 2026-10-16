@@ -1312,7 +1312,7 @@ function startBrain(){
     const bd=NGL.brain({n:m0?13000:24000,mode:'lobe',colors:LOBE});GLB=GR.addLayer(bd,{sat:1.1});GR.addLayer(NGL.dust(m0?500:1000,6));
     GR.onFail=why=>{try{const n=+(sessionStorage.getItem('nm_gl_fail')||0)+1;sessionStorage.setItem('nm_gl_fail',n);if(/probe|framebuffer|gl error/.test(why)||n>1)localStorage.setItem('nm_nogl','2')}catch(e){}location.reload()};
     (window.requestIdleCallback||setTimeout)(()=>{try{GSH=GR.addMesh(NGL.shell(bd,{res:m0?40:56}),{tint:[.42,.58,1],fade:0});GFB=GR.addLines(NGL.fibers({n:m0?450:1000,steps:m0?56:70}),{fade:0})}catch(e){console.warn(e)}},{timeout:800});
-    if(!m0&&!/[?&]nomri\b/.test(location.search))NGL.loadVolume('brain_hd.bin').then(v=>{if(!GR)return;GV=GR.addVolume(v,{fade:0,steps:260});if(!GV)return;
+    if(/[?&]mri\b/.test(location.search))NGL.loadVolume('brain_hd.bin').then(v=>{if(!GR)return;GV=GR.addVolume(v,{fade:0,steps:260});if(!GV)return;
       GV.setSeeds(v.seedsFor(LSEED,NGL.LOBES));NGL.LOBES.forEach((n,i)=>GV.col.set(NGL.hex(LOBE[n]),(i+1)*3));GV.seedR=.2;GV.t0=performance.now()}).catch(e=>console.warn('MRI',e));
     GR.start()}catch(e){console.warn(e);GR=null}}
   window.__GL=!!GR;

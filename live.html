@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Living Body — NeuroMap</title>
+<meta name="description" content="A cinematic real-time flight through your bloodstream into a living neural network, rendered on your GPU.">
+<meta name="theme-color" content="#050208">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<meta property="og:title" content="Living Body — a flight inside you">
+<meta property="og:image" content="https://maxmila0219-alt.github.io/neuromap/live-neuro.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--text:#f3f1ff;--soft:rgba(243,241,255,.72);--mute:rgba(243,241,255,.5);--line:rgba(255,255,255,.12);--font:'Space Grotesk',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;--ac:#ff3b5c}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#050208;color:var(--text);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block;cursor:crosshair}
+#flash{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 50%,#fff 0,rgba(255,120,140,.9) 25%,rgba(120,10,30,.6) 55%,transparent 80%);transition:opacity .45s}
+#flash.on{opacity:1;transition:opacity .35s}
+.top{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:16px clamp(16px,3vw,32px);z-index:5;pointer-events:none}
+.top>*{pointer-events:auto}
+.chip{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(10,6,16,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--text);font:600 13.5px var(--font);display:inline-flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none}
+.chip:hover{border-color:rgba(255,255,255,.3)}
+.tools{display:flex;gap:8px}
+select.chip{appearance:none;-webkit-appearance:none}
+.cap{position:fixed;left:clamp(16px,5vw,64px);bottom:clamp(110px,16vh,160px);max-width:min(560px,88vw);z-index:4;pointer-events:none}
+.cap .k{font:600 11px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ac);display:flex;align-items:center;gap:10px}
+.cap .k::before{content:"";width:26px;height:1px;background:var(--ac)}
+.cap h1{font-size:clamp(34px,5.4vw,68px);line-height:1;letter-spacing:-.035em;margin:12px 0 14px;text-shadow:0 4px 40px rgba(0,0,0,.6)}
+.cap p{font-size:clamp(15px,1.5vw,18px);line-height:1.55;color:var(--soft);text-shadow:0 2px 18px rgba(0,0,0,.8);min-height:3.1em;transition:opacity .6s}
+.cap.swap h1,.cap.swap p{opacity:0;transform:translateY(8px)}
+.cap h1,.cap p{transition:opacity .7s,transform .7s}
+.vit{position:fixed;right:clamp(16px,3vw,32px);bottom:clamp(110px,16vh,160px);z-index:4;display:flex;flex-direction:column;gap:10px;align-items:flex-end;font-family:var(--mono);pointer-events:none}
+.vit div{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:rgba(10,6,16,.45);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:12px;color:var(--soft)}
+.vit b{font-size:16px;color:var(--text);min-width:2.2em;text-align:end}
+.heart{color:#ff3b5c;display:inline-block;transform:scale(calc(1 + var(--hb,0)*.35));transition:transform .05s}
+.lung{width:46px;height:6px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}.lung i{display:block;height:100%;width:calc(var(--br,0)*100%);background:linear-gradient(90deg,#5ef2ff,#9b6bff)}
+.nav{position:fixed;left:50%;bottom:clamp(24px,5vh,44px);transform:translateX(-50%);z-index:5;display:flex;gap:8px;padding:6px;border-radius:16px;background:rgba(10,6,16,.55);border:1px solid var(--line);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav button{height:42px;padding:0 16px;border-radius:11px;border:0;background:none;color:var(--soft);font:600 14px var(--font);cursor:pointer;display:flex;align-items:center;gap:8px;position:relative;overflow:hidden}
+.nav button.on{color:#fff;background:rgba(255,255,255,.08)}
+.nav button.on::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:calc(var(--p,0)*100%);background:var(--ac)}
+.hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(clamp(24px,5vh,44px) + 62px);z-index:4;font:11px var(--mono);color:var(--mute);white-space:nowrap;pointer-events:none;transition:opacity 1s}
+.fps{position:fixed;left:8px;bottom:8px;font:10px var(--mono);color:var(--mute);z-index:5;opacity:.5}
+.fail{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:24px;z-index:9}
+.fail.on{display:grid}
+@media(max-width:700px){.vit{bottom:auto;top:70px}.cap{bottom:120px}.nav button{padding:0 12px;font-size:13px}.hint{display:none}}
+@media(prefers-reduced-motion:reduce){#flash{display:none}}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="flash"></div>
+<header class="top">
+  <a class="chip" href="./">← <span data-i="back"></span></a>
+  <div class="tools"><button class="chip" id="snd" aria-label="sound">🔇</button><select class="chip" id="lang" aria-label="Language"></select></div>
+</header>
+<div class="cap" id="cap"><div class="k" id="kick"></div><h1 id="ttl"></h1><p id="fact"></p></div>
+<div class="vit"><div><span class="heart">♥</span><b id="bpm">72</b><span data-i="bpm"></span></div><div><span data-i="breath"></span><span class="lung"><i></i></span></div></div>
+<div class="hint" id="hint" data-i="hint"></div>
+<nav class="nav" id="nav"><button data-c="0">🩸 <span data-i="c0"></span></button><button data-c="1">⚡ <span data-i="c1"></span></button></nav>
+<div class="fps" id="fps"></div>
+<div class="fail" id="fail"><div><h2 data-i="nogl_t"></h2><p style="color:var(--soft);margin-top:10px" data-i="nogl_p"></p><p style="margin-top:20px"><a class="chip" href="./" data-i="back"></a></p></div></div>
+<script>
+const I={
+en:{back:"NeuroMap",bpm:"bpm",breath:"breath",hint:"Move the mouse to look around · tap to fire a signal",c0:"Blood",c1:"Neurons",k0:"Chapter 1 · Inside an artery",k1:"Chapter 2 · The neural forest",
+ t0:"The river that feeds your mind",t1:"86 billion neurons, talking",
+ f0:["Your brain is 2% of your body but takes about 15% of every heartbeat — roughly 750 ml of blood a minute.","Each red blood cell is a 7.5 µm disc without a nucleus, flexible enough to squeeze through capillaries narrower than itself.","One drop of blood carries about 250 million of these cells, each loaded with oxygen for your neurons."],
+ f1:["Each neuron can connect to thousands of others — around 100 trillion synapses in total.","A signal races along a myelinated axon at up to 120 m/s — faster than a Formula 1 car.","Every flash you see is an action potential: a 1-millisecond wave of sodium ions rushing into the cell."],
+ nogl_t:"Your browser can't run this scene",nogl_p:"It needs WebGL2 and a graphics card. Try Chrome or Edge on a computer."},
+ru:{back:"NeuroMap",bpm:"уд/мин",breath:"дыхание",hint:"Двигай мышью — смотри вокруг · кликни — запусти импульс",c0:"Кровь",c1:"Нейроны",k0:"Глава 1 · Внутри артерии",k1:"Глава 2 · Нейронный лес",
+ t0:"Река, которая питает разум",t1:"86 миллиардов нейронов говорят",
+ f0:["Мозг — 2% массы тела, но забирает около 15% каждого удара сердца: примерно 750 мл крови в минуту.","Эритроцит — гибкий диск 7,5 мкм без ядра: он протискивается сквозь капилляры уже себя.","В одной капле крови около 250 миллионов таких клеток, и каждая везёт кислород твоим нейронам."],
+ f1:["Каждый нейрон связан с тысячами других — всего около 100 триллионов синапсов.","Сигнал бежит по миелиновому аксону со скоростью до 120 м/с — быстрее болида Формулы-1.","Каждая вспышка — потенциал действия: волна ионов натрия, врывающаяся в клетку за 1 миллисекунду."],
+ nogl_t:"Браузер не тянет эту сцену",nogl_p:"Нужен WebGL2 и видеокарта. Попробуй Chrome или Edge на компьютере."},
+es:{back:"NeuroMap",bpm:"lpm",breath:"respiración",hint:"Mueve el ratón para mirar · toca para lanzar una señal",c0:"Sangre",c1:"Neuronas",k0:"Capítulo 1 · Dentro de una arteria",k1:"Capítulo 2 · El bosque neuronal",
+ t0:"El río que alimenta tu mente",t1:"86 mil millones de neuronas hablando",
+ f0:["Tu cerebro es el 2% de tu cuerpo, pero recibe cerca del 15% de cada latido: unos 750 ml de sangre por minuto.","Cada glóbulo rojo es un disco de 7,5 µm sin núcleo, tan flexible que atraviesa capilares más estrechos que él.","Una gota de sangre lleva unos 250 millones de estas células, cada una cargada de oxígeno para tus neuronas."],
+ f1:["Cada neurona puede conectar con miles de otras: unos 100 billones de sinapsis en total.","Una señal recorre un axón mielinizado a hasta 120 m/s, más rápido que un Fórmula 1.","Cada destello es un potencial de acción: una ola de iones de sodio que entra en la célula en 1 milisegundo."],
+ nogl_t:"Tu navegador no puede mostrar esta escena",nogl_p:"Necesita WebGL2 y una tarjeta gráfica. Prueba Chrome o Edge en un ordenador."},
+pt:{back:"NeuroMap",bpm:"bpm",breath:"respiração",hint:"Mova o mouse para olhar · toque para disparar um sinal",c0:"Sangue",c1:"Neurônios",k0:"Capítulo 1 · Dentro de uma artéria",k1:"Capítulo 2 · A floresta neural",
+ t0:"O rio que alimenta sua mente",t1:"86 bilhões de neurônios conversando",
+ f0:["Seu cérebro é 2% do corpo, mas recebe cerca de 15% de cada batimento — uns 750 ml de sangue por minuto.","Cada hemácia é um disco de 7,5 µm sem núcleo, flexível o bastante para passar por capilares mais estreitos que ela.","Uma gota de sangue carrega cerca de 250 milhões dessas células, cada uma levando oxigênio aos seus neurônios."],
+ f1:["Cada neurônio pode se ligar a milhares de outros — cerca de 100 trilhões de sinapses no total.","Um sinal corre por um axônio mielinizado a até 120 m/s — mais rápido que um carro de Fórmula 1.","Cada clarão é um potencial de ação: uma onda de íons de sódio entrando na célula em 1 milissegundo."],
+ nogl_t:"Seu navegador não roda esta cena",nogl_p:"Ela precisa de WebGL2 e de uma placa de vídeo. Tente Chrome ou Edge no computador."},
+fr:{back:"NeuroMap",bpm:"bpm",breath:"respiration",hint:"Bougez la souris pour regarder · touchez pour lancer un signal",c0:"Sang",c1:"Neurones",k0:"Chapitre 1 · Dans une artère",k1:"Chapitre 2 · La forêt neuronale",
+ t0:"Le fleuve qui nourrit ton esprit",t1:"86 milliards de neurones qui se parlent",
+ f0:["Ton cerveau pèse 2 % du corps mais reçoit environ 15 % de chaque battement — près de 750 ml de sang par minute.","Chaque globule rouge est un disque de 7,5 µm sans noyau, assez souple pour passer dans des capillaires plus étroits que lui.","Une goutte de sang contient environ 250 millions de ces cellules, chacune chargée d'oxygène pour tes neurones."],
+ f1:["Chaque neurone peut se connecter à des milliers d'autres — environ 100 000 milliards de synapses au total.","Un signal file le long d'un axone myélinisé jusqu'à 120 m/s — plus vite qu'une Formule 1.","Chaque éclair est un potentiel d'action : une vague d'ions sodium qui entre dans la cellule en 1 milliseconde."],
+ nogl_t:"Votre navigateur ne peut pas afficher cette scène",nogl_p:"Il faut WebGL2 et une carte graphique. Essayez Chrome ou Edge sur ordinateur."},
+de:{back:"NeuroMap",bpm:"S/min",breath:"Atem",hint:"Maus bewegen zum Umsehen · tippen, um ein Signal zu feuern",c0:"Blut",c1:"Neuronen",k0:"Kapitel 1 · In einer Arterie",k1:"Kapitel 2 · Der neuronale Wald",
+ t0:"Der Fluss, der deinen Geist nährt",t1:"86 Milliarden Neuronen im Gespräch",
+ f0:["Dein Gehirn macht 2 % des Körpers aus, bekommt aber etwa 15 % jedes Herzschlags — rund 750 ml Blut pro Minute.","Jedes rote Blutkörperchen ist eine 7,5 µm große Scheibe ohne Zellkern, biegsam genug für Kapillaren, die enger sind als es selbst.","Ein Blutstropfen enthält etwa 250 Millionen dieser Zellen, jede beladen mit Sauerstoff für deine Neuronen."],
+ f1:["Jedes Neuron kann mit Tausenden anderen verbunden sein — insgesamt etwa 100 Billionen Synapsen.","Ein Signal rast mit bis zu 120 m/s über ein myelinisiertes Axon — schneller als ein Formel-1-Wagen.","Jeder Blitz ist ein Aktionspotenzial: eine Welle von Natrium-Ionen, die in 1 Millisekunde in die Zelle strömt."],
+ nogl_t:"Dein Browser kann diese Szene nicht darstellen",nogl_p:"Sie braucht WebGL2 und eine Grafikkarte. Probier Chrome oder Edge am Computer."},
+zh:{back:"NeuroMap",bpm:"次/分",breath:"呼吸",hint:"移动鼠标环顾四周 · 点击发出信号",c0:"血液",c1:"神经元",k0:"第一章 · 动脉之内",k1:"第二章 · 神经森林",
+ t0:"滋养心智的河流",t1:"860 亿个神经元在对话",
+ f0:["大脑只占体重的 2%，却分走每次心跳约 15% 的血液——每分钟约 750 毫升。","红细胞是直径 7.5 微米、没有细胞核的柔软圆盘，能挤过比自己还窄的毛细血管。","一滴血里约有 2.5 亿个红细胞，每一个都为你的神经元运送氧气。"],
+ f1:["每个神经元可与成千上万个神经元相连——总共约 100 万亿个突触。","信号沿有髓鞘的轴突传播，最快可达 120 米/秒，比一级方程式赛车还快。","每一次闪光都是一个动作电位：钠离子在 1 毫秒内涌入细胞。"],
+ nogl_t:"你的浏览器无法运行此场景",nogl_p:"需要 WebGL2 和显卡。请在电脑上使用 Chrome 或 Edge。"},
+ja:{back:"NeuroMap",bpm:"拍/分",breath:"呼吸",hint:"マウスで見回す · タップで信号を発火",c0:"血液",c1:"ニューロン",k0:"第1章 · 動脈の中へ",k1:"第2章 · 神経の森",
+ t0:"心を養う川",t1:"860億のニューロンが語り合う",
+ f0:["脳は体重の2%しかないのに、心拍ごとの血液の約15%——毎分およそ750mlを受け取ります。","赤血球は核のない直径7.5µmの円盤。自分より細い毛細血管もすり抜けるほど柔らかいのです。","血液1滴には約2億5000万個の赤血球があり、それぞれがニューロンへ酸素を運びます。"],
+ f1:["1つのニューロンは数千のニューロンとつながり、シナプスは全部で約100兆個。","信号は髄鞘のある軸索を最大秒速120mで走ります——F1マシンより速く。","光の一つひとつが活動電位。ナトリウムイオンが1ミリ秒で細胞に流れ込む波です。"],
+ nogl_t:"このブラウザではシーンを表示できません",nogl_p:"WebGL2とグラフィックカードが必要です。パソコンのChromeかEdgeでお試しください。"},
+hi:{back:"NeuroMap",bpm:"धड़कन/मि",breath:"साँस",hint:"चारों ओर देखने के लिए माउस घुमाएँ · सिग्नल भेजने के लिए टैप करें",c0:"रक्त",c1:"न्यूरॉन",k0:"अध्याय 1 · धमनी के भीतर",k1:"अध्याय 2 · न्यूरॉन का जंगल",
+ t0:"वह नदी जो मन को पोषण देती है",t1:"86 अरब न्यूरॉन बातें कर रहे हैं",
+ f0:["दिमाग शरीर का 2% है, पर हर धड़कन का लगभग 15% रक्त लेता है — लगभग 750 मि.ली. प्रति मिनट।","हर लाल रक्त कोशिका 7.5 µm की बिना केंद्रक वाली डिस्क है, जो खुद से संकरी केशिकाओं से भी निकल जाती है।","खून की एक बूँद में लगभग 25 करोड़ ऐसी कोशिकाएँ होती हैं, हर एक आपके न्यूरॉन के लिए ऑक्सीजन लाती है।"],
+ f1:["हर न्यूरॉन हज़ारों दूसरों से जुड़ सकता है — कुल लगभग 100 ट्रिलियन सिनैप्स।","माइलिन वाले एक्सॉन पर सिग्नल 120 मी/से तक की रफ़्तार से दौड़ता है — फ़ॉर्मूला 1 कार से तेज़।","हर चमक एक ऐक्शन पोटेंशियल है: 1 मिलीसेकंड में कोशिका में घुसती सोडियम आयनों की लहर।"],
+ nogl_t:"आपका ब्राउज़र यह दृश्य नहीं चला सकता",nogl_p:"इसके लिए WebGL2 और ग्राफ़िक्स कार्ड चाहिए। कंप्यूटर पर Chrome या Edge आज़माएँ।"},
+ar:{back:"NeuroMap",bpm:"نبضة/د",breath:"التنفس",hint:"حرّك الفأرة لتنظر حولك · انقر لإطلاق إشارة",c0:"الدم",c1:"العصبونات",k0:"الفصل 1 · داخل شريان",k1:"الفصل 2 · الغابة العصبية",
+ t0:"النهر الذي يغذّي عقلك",t1:"86 مليار عصبون تتحدث",
+ f0:["دماغك 2% من جسمك لكنه يأخذ نحو 15% من كل نبضة قلب — قرابة 750 مل من الدم في الدقيقة.","كل كرية حمراء قرص بقطر 7.5 ميكرومتر بلا نواة، مرن بما يكفي ليعبر شعيرات أضيق منه.","تحمل قطرة دم واحدة نحو 250 مليون كرية، وكل واحدة محمّلة بالأكسجين لعصبوناتك."],
+ f1:["يمكن لكل عصبون أن يتصل بآلاف العصبونات — نحو 100 تريليون مشبك إجمالًا.","تنطلق الإشارة على محور مُغمَّد بالميالين بسرعة تصل إلى 120 م/ث — أسرع من سيارة فورمولا 1.","كل ومضة جهد فعل: موجة من أيونات الصوديوم تندفع إلى الخلية خلال 1 ملي ثانية."],
+ nogl_t:"متصفحك لا يستطيع تشغيل هذا المشهد",nogl_p:"يحتاج إلى WebGL2 وبطاقة رسوميات. جرّب Chrome أو Edge على الحاسوب."}};
+const LANGS={en:'English',ru:'Русский',es:'Español',pt:'Português',fr:'Français',de:'Deutsch',zh:'中文',ja:'日本語',hi:'हिन्दी',ar:'العربية'};
+let L='en';const t=k=>(I[L]&&I[L][k])??I.en[k];
+const FSB=`#version 300 es
+precision highp float;
+uniform vec2 uR, uLook; uniform float uT, uBeat, uBreath, uFade; out vec4 o;
+#define PI 3.14159265
+float h11(float n){return fract(sin(n*127.1)*43758.5453);}
+vec3 h31(float n){return fract(sin(vec3(n,n+1.7,n+3.3)*vec3(127.1,311.7,74.7))*43758.5453);}
+float h21(vec2 p){return fract(sin(dot(p,vec2(41.3,289.1)))*43758.5453);}
+float noise(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);float n=dot(i,vec3(1.,57.,113.));
+  return mix(mix(mix(h11(n),h11(n+1.),f.x),mix(h11(n+57.),h11(n+58.),f.x),f.y),mix(mix(h11(n+113.),h11(n+114.),f.x),mix(h11(n+170.),h11(n+171.),f.x),f.y),f.z);}
+float fbm(vec3 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*noise(p);p=p*2.03+1.7;a*=.5;}return s;}
+/* vessel centreline */
+vec2 path(float z){return vec2(sin(z*.11)*1.6+sin(z*.047)*1.2, cos(z*.083)*1.1);}
+mat3 rotm(vec3 a){vec3 s=sin(a),c=cos(a);
+  return mat3(c.y*c.z,c.y*s.z,-s.y, s.x*s.y*c.z-c.x*s.z, s.x*s.y*s.z+c.x*c.z, s.x*c.y, c.x*s.y*c.z+s.x*s.z, c.x*s.y*s.z-s.x*c.z, c.x*c.y);}
+/* red blood cell: Evans–Fung biconcave thickness profile */
+float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+/* red blood cell: smooth union of a rim torus and a thin central disc → true biconcave profile, exact-ish SDF */
+float rbc(vec3 p){ vec2 q=vec2(length(p.xz),p.y);
+  float tor=length(q-vec2(.36,0.))-.15;
+  vec2 d=abs(q)-vec2(.36,.035); float disc=min(max(d.x,d.y),0.)+length(max(d,0.))-.03;
+  return smin(tor,disc,.09); }
+float FLOW;
+float wallR(vec3 p){ return 2.35+.06*sin(uT*7.54)*uBeat+.03*uBreath; }
+/* scene: x = distance, y = material (0 wall, 1 cell), z = cell id */
+vec3 map(vec3 p){
+  vec2 c=path(p.z); vec3 q=vec3(p.xy-c,p.z);
+  float rad=length(q.xy);
+  vec2 dir=q.xy/max(rad,1e-3); float dw=wallR(p)-rad + (fbm(vec3(dir*2.2,p.z*.9)*1.6)-.5)*.32 + .04*sin(p.z*5.+dir.x*6.+dir.y*4.);
+  vec3 res=vec3(dw,0.,0.);
+  float s=.7, z=p.z-FLOW;
+  float id0=floor(z/s);
+  for(int k=-1;k<=1;k++){ for(int l=0;l<2;l++){
+    float id=id0+float(k), cid=id*2.+float(l); vec3 h=h31(cid);
+    if(h.z<.25)continue;                                           /* gaps in the stream */
+    float a=(float(l)+h.x*.85)*PI+id*.9, rr=.85+sqrt(h.y)*.8;
+    vec3 cp=vec3(cos(a)*rr, sin(a)*rr, (id+.5)*s+FLOW+(h.z-.5)*.22);
+    float tumb=uT*(.4+h.x*.9)+cid;
+    vec3 lp=(q-cp)*rotm(vec3(tumb*.7+h.y*6.,tumb*.3,h.z*6.+tumb*.5));
+    float d=rbc(lp);
+    if(d<res.x)res=vec3(d,1.,cid);
+  }}
+  return res; }
+vec3 nrm(vec3 p){vec2 e=vec2(.003,0);return normalize(vec3(map(p+e.xyy).x-map(p-e.xyy).x,map(p+e.yxy).x-map(p-e.yxy).x,map(p+e.yyx).x-map(p-e.yyx).x));}
+vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy-.5*uR)/uR.y;
+  float zc=uT*1.1; FLOW=uT*1.6*(1.+.0)+uBeat*.0;
+  vec3 ro=vec3(path(zc),zc); vec3 ta=vec3(path(zc+2.),zc+2.);
+  ro.xy+=vec2(.15*sin(uT*.3),.1*cos(uT*.23));
+  vec3 fw=normalize(ta-ro), rt=normalize(cross(vec3(sin(uT*.1)*.2,1,0),fw)), up=cross(fw,rt);
+  vec3 rd=normalize(uv.x*rt+uv.y*up+1.15*fw+(rt*uLook.x+up*uLook.y)*.35);
+  float t=.05; vec3 m; bool hit=false;
+  for(int i=0;i<200;i++){ m=map(ro+rd*t); if(m.x<.0006*t+.0003){hit=true;break;} t+=m.x*.6; if(t>22.)break; }
+  vec3 L=ro+fw*.3+up*.35;                                                /* endoscope light rides with the camera */
+  vec3 plasma=vec3(.55,.06,.05);
+  vec3 col=vec3(0.);
+  if(hit){
+    vec3 p=ro+rd*t, n=nrm(p), ld=normalize(L-p); float dl=length(L-p);
+    float att=1./(1.+dl*dl*.09);
+    float dif=max(dot(n,ld),0.), wrap=max((dot(n,ld)+.6)/1.6,0.);
+    vec3 hv=normalize(ld-rd); float spec=pow(max(dot(n,hv),0.),70.);
+    float fres=pow(1.-max(dot(n,-rd),0.),4.);
+    float ao=clamp(map(p+n*.12).x/.12,0.,1.)*.6+.4;
+    if(m.y>.5){
+      /* thickness → subsurface transmission: thin dimple glows orange-red when back-lit */
+      float th=clamp(-map(p-n*.08).x/.08,0.,1.);
+      vec3 alb=vec3(.72,.05,.06);
+      vec3 sss=vec3(1.,.22,.08)*pow(1.-th,2.)*(.45+.55*max(dot(-n,ld),0.)+.35*wrap);
+      col=(alb*wrap*1.1+sss*1.3)*att*2.4*ao + spec*att*1.6*vec3(1.,.85,.8) + fres*vec3(.9,.25,.2)*.25*att;
+    } else {
+      vec2 dq=normalize(p.xy-path(p.z)); float vein=smoothstep(.55,.62,fbm(vec3(dq*3.,p.z*1.4)));
+      vec3 alb=mix(vec3(.62,.13,.15),vec3(.85,.42,.42),fbm(p*3.))*mix(1.,.55,vein);
+      float sss=pow(wrap,1.5)*.5;
+      col=(alb*(dif*.9+.12)+vec3(.9,.12,.08)*sss)*att*2.2*ao + spec*att*.9*vec3(1.,.9,.85);
+    }
+    float fog=1.-exp(-t*.16);
+    col=mix(col,plasma*.18,fog);
+  } else col=plasma*.12;
+  /* in-scatter glow around the light (volumetric plasma) */
+  col+=vec3(.9,.18,.1)*.05*exp(-length(uv)*2.);
+  col*=1.+.18*uBeat;
+  col=aces(col*1.25);
+  col=pow(col,vec3(.95,1.,1.05));
+  col*=smoothstep(1.25,.3,length(uv));
+  col+=(h21(gl_FragCoord.xy+fract(uT)*91.)-.5)*.03;
+  o=vec4(col*uFade,1.);
+}`, FSN=`#version 300 es
+precision highp float;
+uniform vec2 uR, uLook; uniform float uT, uBeat, uBreath, uFade; out vec4 o;
+#define PI 3.14159265
+vec3 h33(vec3 p){p=vec3(dot(p,vec3(127.1,311.7,74.7)),dot(p,vec3(269.5,183.3,246.1)),dot(p,vec3(113.5,271.9,124.6)));return fract(sin(p)*43758.5453);}
+float h21(vec2 p){return fract(sin(dot(p,vec2(41.3,289.1)))*43758.5453);}
+float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+const float G=3.2;
+vec3 soma(vec3 c){ return (c+.5)*G + (h33(c)-.5)*G*.55; }
+/* tapered, slightly wavy capsule between two somata; returns dist, writes param along it */
+float link(vec3 p, vec3 a, vec3 b, float ra, float rb, out float h){
+  vec3 pa=p-a, ba=b-a; h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);
+  vec3 q=pa-ba*h; float w=sin(h*PI); q+= (vec3(sin(h*9.+a.x),cos(h*7.+a.y),sin(h*8.+a.z))*.07)*w;
+  return length(q)-mix(ra,rb,h)*(1.-.3*w); }
+float GLOW; vec3 GCOL;
+float map(vec3 p, bool acc){
+  vec3 c0=floor(p/G-.5); float d=1e9;
+  for(int i=0;i<8;i++){ vec3 c=c0+vec3(i&1,(i>>1)&1,(i>>2)&1);
+    vec3 s=soma(c), hh=h33(c+7.);
+    float r=.17+hh.x*.07; d=smin(d,length(p-s)-r,.3);
+    for(int k=0;k<3;k++){ vec3 h2=h33(c+float(k)*13.1); int m=1+int(h2.y*6.99); vec3 n=c+vec3(m&1,(m>>1)&1,(m>>2)&1);
+      if(h2.x<.15)continue;
+      vec3 e=soma(n); float hp; float dl=link(p,s,e,.075,.045,hp); d=smin(d,dl,.18);
+      if(acc){ /* action potentials racing along the axon → volumetric light */
+        float ph=fract(uT*(.18+h2.y*.25)+h2.z), dd=abs(hp-ph)*length(e-s);
+        float g=exp(-dd*dd*6.)/(1.+max(dl,0.)*max(dl,0.)*90.);
+        GLOW+=g; GCOL+=g*mix(vec3(.25,.75,1.),vec3(.85,.4,1.),h2.y); }
+    }
+    if(acc){ float fire=pow(max(sin(uT*(.7+hh.y)+hh.z*20.),0.),30.); float g=fire*3./(1.+pow(max(length(p-s)-r,0.),2.)*25.); GLOW+=g; GCOL+=g*vec3(.6,.9,1.); }
+  }
+  return d; }
+vec3 nrm(vec3 p){vec2 e=vec2(.004,0);return normalize(vec3(map(p+e.xyy,false)-map(p-e.xyy,false),map(p+e.yxy,false)-map(p-e.yxy,false),map(p+e.yyx,false)-map(p-e.yyx,false)));}
+vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
+void main(){
+  vec2 uv=(gl_FragCoord.xy-.5*uR)/uR.y;
+  float tt=uT*.35;
+  vec3 ro=vec3(1.6+sin(tt*.7)*1.2, 1.9+cos(tt*.5)*.8, tt*2.2);
+  vec3 ta=ro+vec3(sin(tt*.4)*.6,cos(tt*.3)*.3,2.);
+  vec3 fw=normalize(ta-ro), rt=normalize(cross(vec3(0,1,0),fw)), up=cross(fw,rt);
+  vec3 rd=normalize(uv.x*rt+uv.y*up+1.2*fw+(rt*uLook.x+up*uLook.y)*.35);
+  GLOW=0.; GCOL=vec3(0.);
+  float t=.1, d; bool hit=false; vec3 vol=vec3(0.);
+  for(int i=0;i<170;i++){ vec3 p=ro+rd*t; GLOW=0.; GCOL=vec3(0.); d=map(p,true);
+    float st=max(d*.7,.03); vol+=GCOL*st*exp(-t*.12);
+    if(d<.0015*t){hit=true;break;} t+=d*.55; if(t>26.)break; }
+  vec3 fogc=vec3(.012,.018,.05);
+  vec3 col=fogc;
+  if(hit){ vec3 p=ro+rd*t, n=nrm(p); vec3 L=normalize(vec3(.4,.8,-.3));
+    float fr=pow(1.-max(dot(n,-rd),0.),3.);
+    float th=clamp(-map(p-n*.15,false)/.15,0.,1.);             /* thin membranes let light through */
+    float ao=clamp(map(p+n*.3,false)/.3,0.,1.);
+    vec3 mem=vec3(.35,.42,.85);
+    col=mem*(max(dot(n,L),0.)*.25+.05)*ao + fr*vec3(.35,.6,1.)*.8 + vec3(.5,.3,1.)*(1.-th)*.25;
+    GLOW=0.;GCOL=vec3(0.); map(p+n*.05,true); col+=GCOL*.35;          /* lit from within by the spikes */
+    col=mix(col,fogc,1.-exp(-t*.09)); }
+  col+=vol*.9*(1.+uBeat*.7);
+  /* drifting dust bokeh */
+  for(int i=0;i<14;i++){ vec3 h=h33(vec3(float(i),3.,1.)); vec2 bp=(h.xy-.5)*vec2(1.8,1.)+vec2(sin(uT*.1+h.z*6.),cos(uT*.13+h.x*6.))*.1;
+    col+=vec3(.4,.6,1.)*.035*smoothstep(.06,.0,length(uv-bp)-h.z*.02); }
+  col=aces(col*1.75); col*=smoothstep(1.3,.35,length(uv)); col+=(h21(gl_FragCoord.xy+fract(uT)*91.)-.5)*.025;
+  o=vec4(pow(col,vec3(.95))*uFade,1.);
+}`;
+const VS=`#version 300 es
+void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);gl_Position=vec4(p*2.-1.,0,1);}`;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches, Q=new URLSearchParams(location.search);
+const cv=document.getElementById('gl'),gl=cv.getContext('webgl2',{antialias:false,powerPreference:'high-performance'});
+let PR=[],ok=!!gl;
+function prog(fs){const sh=(ty,s)=>{const x=gl.createShader(ty);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x};
+  const p=gl.createProgram();gl.attachShader(p,sh(gl.VERTEX_SHADER,VS));gl.attachShader(p,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));
+  const u={};['uR','uLook','uT','uBeat','uBreath','uFade'].forEach(n=>u[n]=gl.getUniformLocation(p,n));return{p,u}}
+try{if(ok)PR=[prog(FSB),prog(FSN)]}catch(e){console.warn(e);ok=false}
+if(!ok)document.getElementById('fail').classList.add('on');
+/* ---------- state ---------- */
+const CH_LEN=26;                      /* seconds per chapter in auto mode */
+let ch=+(Q.get('c')||0)%2,chT=0,fade=0,fi=0,factT=0,scale=.62,ft=[],look=[0,0],lookG=[0,0],tShift=0,auto=true;
+const T0=performance.now();
+/* ---------- sound: synthesized heartbeat + breath (off by default) ---------- */
+let AC=null,snd=false,lastBeat=0;
+function thump(v){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();o.type='sine';o.frequency.setValueAtTime(70,AC.currentTime);o.frequency.exponentialRampToValueAtTime(38,AC.currentTime+.18);
+  f.type='lowpass';f.frequency.value=180;g.gain.setValueAtTime(.0001,AC.currentTime);g.gain.exponentialRampToValueAtTime(.55*v,AC.currentTime+.012);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.32);o.connect(f).connect(g).connect(AC.destination);o.start();o.stop(AC.currentTime+.35)}
+let breathG=null;
+function startSound(){AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume();if(!breathG){const n=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  n.buffer=b;n.loop=true;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=500;f.Q.value=.6;breathG=AC.createGain();breathG.gain.value=0;n.connect(f).connect(breathG).connect(AC.destination);n.start()}}
+document.getElementById('snd').onclick=e=>{snd=!snd;e.currentTarget.textContent=snd?'🔊':'🔇';if(snd)startSound();else if(breathG)breathG.gain.value=0};
+/* ---------- UI ---------- */
+const cap=document.getElementById('cap'),nav=[...document.querySelectorAll('#nav button')];
+function paintText(){document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));document.getElementById('kick').textContent=t('k'+ch);document.getElementById('ttl').textContent=t('t'+ch);
+  document.getElementById('fact').textContent=t('f'+ch)[fi%t('f'+ch).length];nav.forEach(b=>b.classList.toggle('on',+b.dataset.c===ch));document.documentElement.style.setProperty('--ac',ch?'#5ef2ff':'#ff3b5c')}
+function setLang(l){L=I[l]?l:'en';document.documentElement.lang=L;document.documentElement.dir=L==='ar'?'rtl':'ltr';try{localStorage.setItem('nm_lang',L)}catch(e){}document.getElementById('lang').value=L;paintText()}
+{const s=document.getElementById('lang');s.innerHTML=Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');s.onchange=()=>setLang(s.value);
+  let l=Q.get('lang');try{if(!I[l])l=localStorage.getItem('nm_lang')}catch(e){}if(!I[l]){l='en';for(const n of(navigator.languages||[navigator.language||'en'])){const k=String(n).slice(0,2).toLowerCase();if(I[k]){l=k;break}}}setLang(l)}
+let switching=false;
+function go(c,manual){if(switching||c===ch)return;switching=true;if(manual)auto=false;const fl=document.getElementById('flash');fl.classList.add('on');cap.classList.add('swap');
+  setTimeout(()=>{ch=c;chT=0;fi=0;factT=0;fade=0;tShift=Math.random()*40;paintText();fl.classList.remove('on');cap.classList.remove('swap');switching=false},RM?0:420)}
+nav.forEach(b=>b.onclick=()=>go(+b.dataset.c,true));
+addEventListener('pointermove',e=>{lookG=[(e.clientX/innerWidth-.5)*2,-(e.clientY/innerHeight-.5)*2]},{passive:true});
+let kick=0;cv.addEventListener('pointerdown',()=>{kick=1;if(snd)thump(1)});
+setTimeout(()=>document.getElementById('hint').style.opacity=0,9000);
+/* ---------- render loop with adaptive resolution ---------- */
+let last=performance.now();
+function frame(now){requestAnimationFrame(frame);if(!ok||document.hidden)return;
+  const dt=Math.min(.1,(now-last)/1000);last=now;const T=(now-T0)/1000;
+  ft.push(dt);if(ft.length>=24){const a=ft.reduce((s,v)=>s+v)/ft.length;ft=[];if(a>1/42&&scale>.3)scale=Math.max(.3,scale*.85);else if(a<1/58&&scale<1)scale=Math.min(1,scale*1.08);
+    document.getElementById('fps').textContent=Math.round(1/a)+' fps · '+Math.round(scale*100)+'%'}
+  const dpr=Math.min(devicePixelRatio||1,2),W=Math.max(2,Math.round(innerWidth*dpr*scale)),H=Math.max(2,Math.round(innerHeight*dpr*scale));
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}
+  chT+=dt;factT+=dt;fade=Math.min(1,fade+dt*.8);if(factT>8.5){factT=0;fi++;const p=document.getElementById('fact');p.style.opacity=0;setTimeout(()=>{p.textContent=t('f'+ch)[fi%3];p.style.opacity=1},600)}
+  if(auto&&chT>CH_LEN)go(1-ch);nav.forEach(b=>b.style.setProperty('--p',+b.dataset.c===ch?Math.min(1,chT/CH_LEN):0));
+  for(let i=0;i<2;i++)look[i]+=(lookG[i]-look[i])*Math.min(1,dt*2.5);
+  const hp=(T*1.2)%1,beat=Math.exp(-Math.pow(hp/.05,2))+.55*Math.exp(-Math.pow((hp-.27)/.06,2))+Math.exp(-Math.pow((hp-1)/.05,2)),bp=(T/5.4)%1,breath=bp<.4?(1-Math.cos(bp/.4*Math.PI))/2:(1+Math.cos((bp-.4)/.6*Math.PI))/2;
+  if(snd){if(hp<lastBeat)thump(1);else if(lastBeat<.27&&hp>=.27)thump(.55);if(breathG)breathG.gain.value=.05*Math.abs(bp<.4?Math.sin(bp/.4*Math.PI):Math.sin((bp-.4)/.6*Math.PI))}lastBeat=hp;
+  kick=Math.max(0,kick-dt*1.5);
+  const ds=document.documentElement.style;ds.setProperty('--hb',beat.toFixed(3));ds.setProperty('--br',breath.toFixed(3));
+  const P=PR[ch];gl.viewport(0,0,W,H);gl.useProgram(P.p);gl.uniform2f(P.u.uR,W,H);gl.uniform2f(P.u.uLook,look[0]*.6,look[1]*.4);
+  gl.uniform1f(P.u.uT,(RM?0:chT)+tShift+(Q.has('t')?+Q.get('t'):0));gl.uniform1f(P.u.uBeat,RM?0:beat+kick);gl.uniform1f(P.u.uBreath,breath);gl.uniform1f(P.u.uFade,fade);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+}
+if(ok)requestAnimationFrame(frame);
+</script>
+</body>
+</html>

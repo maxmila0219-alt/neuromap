@@ -29,7 +29,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{color-scheme:dark}
 body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;transform:scale(calc(1 + var(--br,0)*.06));opacity:calc(.8 + var(--br,0)*.2);
   background:radial-gradient(1100px 700px at 78% -12%,var(--amb,rgba(124,77,255,.28)),transparent 60%),radial-gradient(900px 620px at -6% 108%,rgba(0,190,220,.18),transparent 55%)}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:30;opacity:.07;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -585,6 +585,18 @@ em.act.st-none{color:var(--mute)}em.act.st-lo{color:#e9edff}
 body.mbdeep .mb-view,body.mbtour .mb-view{opacity:0;pointer-events:none}
 .mb-credit{margin:0;font-size:9.5px;line-height:1.35;color:var(--mute);opacity:.75;cursor:help}
 .brainp{cursor:pointer}
+.livec{position:relative;display:flex;align-items:flex-end;min-height:200px;padding:22px 24px;overflow:hidden;text-decoration:none;color:inherit;border-color:rgba(255,80,110,.3);isolation:isolate}
+.lv-img,.lv-img i{position:absolute;inset:0;z-index:-1}
+.lv-img i{background-size:cover;background-position:center;animation:lvkb 18s ease-in-out infinite alternate}
+.lv-img i:nth-child(2){animation:lvkb 18s ease-in-out infinite alternate,lvx 12s ease-in-out infinite}
+.lv-img::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,3,10,.88) 0,rgba(5,3,10,.45) 55%,rgba(5,3,10,.1)),linear-gradient(0deg,rgba(5,3,10,.6),transparent 60%)}
+@keyframes lvkb{from{transform:scale(1.04)}to{transform:scale(1.16) translate(-2%,1%)}}
+@keyframes lvx{0%,40%{opacity:0}50%,90%{opacity:1}100%{opacity:0}}
+.lv-txt{display:flex;flex-direction:column;gap:6px;max-width:520px}.lv-txt .kicker{color:#ff6b86}
+.lv-txt b{font-size:clamp(24px,3vw,32px);letter-spacing:-.02em}.lv-txt span{color:var(--soft);font-size:14.5px;line-height:1.45}
+.lv-play{position:absolute;right:22px;top:50%;transform:translateY(-50%) scale(calc(1 + var(--hb,0)*.08));width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;background:rgba(255,59,92,.85);box-shadow:0 0 0 8px rgba(255,59,92,.18),0 10px 40px rgba(255,59,92,.45)}
+.livec:hover .lv-img i{animation-duration:9s}
+@media(max-width:700px){.livec{min-height:180px}.lv-play{top:22px;transform:none;width:46px;height:46px}}
 .brainp .open-b{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;white-space:nowrap}
 @media(max-width:760px){
   .mb-top{top:64px}.mb-btns .btn{height:42px;padding:0 14px;font-size:14px}
@@ -958,6 +970,8 @@ const I18N_V5={"en": {"nav_brain": "Brain", "mb_k": "Your living neural world", 
 for(const k in I18N_V5)Object.assign(I18N[k],I18N_V5[k]);
 const I18N_V6={"en": {"v_mri": "MRI", "v_neural": "Neurons", "v_xray": "X-ray", "v_cut": "Slice", "cut_sag": "Sagittal", "cut_cor": "Coronal", "cut_ax": "Axial", "cut_off": "Off", "mri_load": "Loading real MRI…", "mri_note": "Real anatomy: the MNI ICBM152 average brain, built from MRI scans of 152 people. The glow shows the networks you train.", "mri_credit": "MRI: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "ru": {"v_mri": "МРТ", "v_neural": "Нейроны", "v_xray": "Рентген", "v_cut": "Срез", "cut_sag": "Сагиттальный", "cut_cor": "Корональный", "cut_ax": "Аксиальный", "cut_off": "Выкл", "mri_load": "Загружаю настоящую МРТ…", "mri_note": "Настоящая анатомия: усреднённый мозг MNI ICBM152 по МРТ 152 человек. Свечение — сети, которые ты тренируешь.", "mri_credit": "МРТ: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "es": {"v_mri": "RM", "v_neural": "Neuronas", "v_xray": "Rayos X", "v_cut": "Corte", "cut_sag": "Sagital", "cut_cor": "Coronal", "cut_ax": "Axial", "cut_off": "No", "mri_load": "Cargando resonancia real…", "mri_note": "Anatomía real: el cerebro promedio MNI ICBM152, creado a partir de resonancias de 152 personas. El brillo muestra las redes que entrenas.", "mri_credit": "RM: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "pt": {"v_mri": "RM", "v_neural": "Neurônios", "v_xray": "Raio-X", "v_cut": "Corte", "cut_sag": "Sagital", "cut_cor": "Coronal", "cut_ax": "Axial", "cut_off": "Não", "mri_load": "Carregando ressonância real…", "mri_note": "Anatomia real: o cérebro médio MNI ICBM152, feito a partir de ressonâncias de 152 pessoas. O brilho mostra as redes que você treina.", "mri_credit": "RM: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "fr": {"v_mri": "IRM", "v_neural": "Neurones", "v_xray": "Rayons X", "v_cut": "Coupe", "cut_sag": "Sagittale", "cut_cor": "Coronale", "cut_ax": "Axiale", "cut_off": "Non", "mri_load": "Chargement de la vraie IRM…", "mri_note": "Anatomie réelle : le cerveau moyen MNI ICBM152, construit à partir des IRM de 152 personnes. La lueur montre les réseaux que vous entraînez.", "mri_credit": "IRM : MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "de": {"v_mri": "MRT", "v_neural": "Neuronen", "v_xray": "Röntgen", "v_cut": "Schnitt", "cut_sag": "Sagittal", "cut_cor": "Koronal", "cut_ax": "Axial", "cut_off": "Aus", "mri_load": "Echtes MRT wird geladen…", "mri_note": "Echte Anatomie: das MNI-ICBM152-Durchschnittsgehirn aus MRT-Aufnahmen von 152 Menschen. Das Leuchten zeigt die Netzwerke, die du trainierst.", "mri_credit": "MRT: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "zh": {"v_mri": "核磁", "v_neural": "神经元", "v_xray": "透视", "v_cut": "切面", "cut_sag": "矢状面", "cut_cor": "冠状面", "cut_ax": "轴状面", "cut_off": "关", "mri_load": "正在加载真实核磁共振…", "mri_note": "真实解剖：MNI ICBM152 平均大脑，由 152 人的核磁共振扫描构建。发光部分是你正在训练的网络。", "mri_credit": "MRI：MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "ja": {"v_mri": "MRI", "v_neural": "ニューロン", "v_xray": "透視", "v_cut": "断面", "cut_sag": "矢状断", "cut_cor": "冠状断", "cut_ax": "水平断", "cut_off": "オフ", "mri_load": "本物のMRIを読み込み中…", "mri_note": "本物の解剖：152人のMRIから作られた平均脳 MNI ICBM152。光っているのはあなたが鍛えているネットワークです。", "mri_credit": "MRI：MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "hi": {"v_mri": "MRI", "v_neural": "न्यूरॉन", "v_xray": "एक्स-रे", "v_cut": "स्लाइस", "cut_sag": "सैजिटल", "cut_cor": "कोरोनल", "cut_ax": "एक्सियल", "cut_off": "बंद", "mri_load": "असली MRI लोड हो रहा है…", "mri_note": "असली शरीर-रचना: MNI ICBM152 औसत मस्तिष्क, 152 लोगों के MRI स्कैन से बना। चमक वे नेटवर्क दिखाती है जिन्हें आप प्रशिक्षित करते हैं।", "mri_credit": "MRI: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "ar": {"v_mri": "رنين", "v_neural": "عصبونات", "v_xray": "أشعة", "v_cut": "مقطع", "cut_sag": "سهمي", "cut_cor": "إكليلي", "cut_ax": "محوري", "cut_off": "إيقاف", "mri_load": "جارٍ تحميل رنين مغناطيسي حقيقي…", "mri_note": "تشريح حقيقي: الدماغ المتوسط MNI ICBM152 المبني من صور رنين لـ 152 شخصًا. التوهج يُظهر الشبكات التي تدرّبها.", "mri_credit": "الرنين: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}};
 for(const k in I18N_V6)Object.assign(I18N[k],I18N_V6[k]);
+const I18N_V7={"en": {"lv_k": "NEW · real-time cinema", "lv_t": "Living Body", "lv_s": "Fly through your bloodstream into a living neural forest — rendered live on your GPU"}, "ru": {"lv_k": "НОВОЕ · кино в реальном времени", "lv_t": "Живое тело", "lv_s": "Пролети по своему кровотоку в живой лес нейронов — рисуется вживую на твоей видеокарте"}, "es": {"lv_k": "NUEVO · cine en tiempo real", "lv_t": "Cuerpo vivo", "lv_s": "Vuela por tu torrente sanguíneo hasta un bosque de neuronas vivo, renderizado en tu GPU"}, "pt": {"lv_k": "NOVO · cinema em tempo real", "lv_t": "Corpo vivo", "lv_s": "Voe pela sua corrente sanguínea até uma floresta viva de neurônios, renderizada na sua GPU"}, "fr": {"lv_k": "NOUVEAU · cinéma en temps réel", "lv_t": "Corps vivant", "lv_s": "Traverse ton flux sanguin jusqu'à une forêt de neurones vivante, rendue en direct par ta carte graphique"}, "de": {"lv_k": "NEU · Echtzeit-Kino", "lv_t": "Lebender Körper", "lv_s": "Flieg durch deinen Blutstrom in einen lebenden Neuronenwald, live auf deiner Grafikkarte gerendert"}, "zh": {"lv_k": "新 · 实时电影", "lv_t": "活的身体", "lv_s": "穿过你的血流，飞进一片活的神经元森林——由你的显卡实时渲染"}, "ja": {"lv_k": "新登場 · リアルタイム映像", "lv_t": "生きている体", "lv_s": "血流を抜けて、生きたニューロンの森へ——あなたのGPUでリアルタイム描画"}, "hi": {"lv_k": "नया · रियल-टाइम सिनेमा", "lv_t": "जीवित शरीर", "lv_s": "अपने रक्तप्रवाह से होकर जीवित न्यूरॉन के जंगल तक उड़ें — आपके GPU पर लाइव रेंडर"}, "ar": {"lv_k": "جديد · سينما فورية", "lv_t": "الجسد الحي", "lv_s": "حلّق عبر مجرى دمك إلى غابة عصبونات حية — تُرسم مباشرة على بطاقتك الرسومية"}};
+for(const k in I18N_V7)Object.assign(I18N[k],I18N_V7[k]);
 
 
 let L='en';
@@ -1770,6 +1784,10 @@ async function downloadCard(c,sc,top,seed){
   requestAnimationFrame(frame);
 })();
 
+/* body rhythm: breath (≈11/min) and heartbeat (≈72 bpm) as CSS vars --br / --hb, so the whole UI breathes */
+if(!reduceMotion)setInterval(()=>{const T=performance.now()/1000,hp=(T*1.2)%1,bp=(T/5.4)%1,ds=document.documentElement.style;
+  ds.setProperty('--hb',(Math.exp(-Math.pow(hp/.05,2))+.55*Math.exp(-Math.pow((hp-.27)/.06,2))).toFixed(3));ds.setProperty('--br',(bp<.4?(1-Math.cos(bp/.4*Math.PI))/2:(1+Math.cos((bp-.4)/.6*Math.PI))/2).toFixed(3))},50);
+
 /* =====================================================================
    v3 GAMES — nine extra training games, each tied to one brain domain.
    Each: (stage, done, opts) → done({z, raw, lvl})  — lvl persists per game.
@@ -2167,6 +2185,8 @@ function today(){
         ${GL_OK?`<span class="btn ghost sm open-b">🧠 ${t('mb_open')} →</span>`:''}
       </div>
     </div>
+    <a class="panel livec" href="live.html"><div class="lv-img"><i style="background-image:url(live-blood.jpg)"></i><i style="background-image:url(live-neuro.jpg)"></i></div>
+      <div class="lv-txt"><div class="kicker mono">${t('lv_k')}</div><b>${t('lv_t')}</b><span>${t('lv_s')}</span></div><em class="lv-play">▶</em></a>
     <a class="panel promo" href="journey.html" style="--dc:#ff5fd2;text-decoration:none"><div class="cico" style="font-size:24px;display:grid;place-items:center">🧠</div><div><b>${t('jr_t')}${journeyDone()?' ✓':''}</b><span>${t('jr_s')}</span></div><em>→</em></a>
     ${P.fullTest?'':`<button class="panel promo" id="ft" style="--dc:#9b6bff"><div class="cico">${icon('logic')}</div><div><b>${t('test_cta')}</b><span>${t('tagline')}</span></div><em>→</em></button>`}
     <p class="fine">${t('train_note')}</p>
@@ -2361,7 +2381,7 @@ function glMount(cv,opt){
   const mob=innerWidth<700,R=NGL.create(cv,{auto:.22,maxDpr:mob?1.5:1.75,minDist:2.2,maxDist:5});if(!R)throw new Error('no gl');
   const D=glBrainData(mob),L=R.addLayer(D.b,{sat:1.1}),T=R.addLayer(D.tr),U=R.addLayer(D.dust);U.fade=.7;
   let SH=null,FB=null,VL=null,VV=null,alive=true;
-  if(!mob&&!/[?&]nomri\b/.test(location.search))loadMRI(false).then(v=>{if(!alive)return;VV=v;VL=R.addVolume(v,{fade:0,steps:200});if(VL&&focus)VL.focus=v.labels.indexOf(focus)}).catch(e=>console.warn(e));
+  if(/[?&]mri\b/.test(location.search))loadMRI(false).then(v=>{if(!alive)return;VV=v;VL=R.addVolume(v,{fade:0,steps:200});if(VL&&focus)VL.focus=v.labels.indexOf(focus)}).catch(e=>console.warn(e));
   glExtras(mob,d=>{if(!alive||!d.shell)return;SH=R.addMesh(d.shell,{tint:[.42,.58,1],fade:0,scan:opt.mode==='hero'?1:.6});FB=R.addLines(d.fib,{fade:0})});
   R.setCam({dist:3.45,yaw:-.95,pitch:.22});
   let focus=null,next=0,fb2=null;
@@ -2422,7 +2442,7 @@ function brainScreen(){
     <div class="mb-chips" id="chips">${RADAR.map(chip).join('')}</div>
     <aside class="mb-panel panel" id="rp" hidden></aside>
     <div class="mb-view panel" id="vw">
-      <div class="seg"><button data-v="mri">🧠 <span>${t('v_mri')}</span></button><button data-v="xray">◎ <span>${t('v_xray')}</span></button><button data-v="neural">✦ <span>${t('v_neural')}</span></button></div>
+      <div class="seg"><button data-v="neural">✦ <span>${t('v_neural')}</span></button><button data-v="mri">🧠 <span>${t('v_mri')}</span></button><button data-v="xray">◎ <span>${t('v_xray')}</span></button></div>
       <div class="cutr"><span class="mono">✂ ${t('v_cut')}</span><div class="seg sm"><button data-c="" class="on">${t('cut_off')}</button><button data-c="x">${t('cut_sag')}</button><button data-c="z">${t('cut_cor')}</button><button data-c="y">${t('cut_ax')}</button></div>
         <input type="range" id="cpos" min="-85" max="85" value="0" aria-label="${t('v_cut')}"></div>
       <p class="mb-credit mono" id="mcr" title="${t('mri_note')}" hidden>ⓘ ${t('mri_credit')}</p>
@@ -2442,7 +2462,7 @@ function brainScreen(){
   TRACTS.forEach(([a,b],i)=>TL.tr[i]=clamp(Math.min(ST[a].plays,ST[b].plays)/18,.04,1)*(.4+.6*Math.min(ST[a].act,ST[b].act)));
   R.setCam({dist:5.2,yaw:-1.1,pitch:.35});R.flyTo({dist:ovD(),yaw:-.85,pitch:.24},2.2);R.start();
   /* --- real MRI brain: raymarched MNI152 volume, your trained networks glow inside real anatomy --- */
-  let VL=null,VV=null,view=store.get('nm_view')||(mob?'neural':'mri');
+  let VL=null,VV=null,view=store.get('nm_view2')||'neural';
   window.__mb={R,BL,TL,get VL(){return VL},get SHL(){return SHL},get FBL(){return FBL}};const cut={ax:'',pos:0},vw=el.querySelector('#vw'),hintEl=el.querySelector('#hint');
   const vIdx=d=>VV?VV.labels.indexOf(d):-1,isMRI=()=>view!=='neural'&&!!VL;
   function ensureMRI(){if(VL)return Promise.resolve(true);if(VV===false)return Promise.resolve(false);hintEl.textContent=t('mri_load');
@@ -2451,7 +2471,7 @@ function brainScreen(){
       hintEl.textContent=t(deep?'mb_tap':'mb_hint');el.querySelector('#mcr').hidden=false;return true})
       .catch(e=>{console.warn('MRI',e);VV=false;hintEl.textContent=t('mb_hint');return false})}
   function markView(){vw.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===view));vw.classList.toggle('mri',view!=='neural')}
-  function setView(v){view=v;store.set('nm_view',v);markView();if(v!=='neural')ensureMRI().then(ok=>{if(!ok){view='neural';markView();vw.querySelector('.cutr').hidden=true}})}
+  function setView(v){view=v;store.set('nm_view2',v);markView();if(v!=='neural')ensureMRI().then(ok=>{if(!ok){view='neural';markView();vw.querySelector('.cutr').hidden=true}})}
   vw.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{sfx.tick();setView(b.dataset.v)});
   vw.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{sfx.tick();cut.ax=b.dataset.c;vw.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b));vw.classList.toggle('cutting',!!cut.ax);if(cut.ax&&view==='neural')setView('mri')});
   vw.querySelector('#cpos').oninput=e=>{cut.pos=+e.target.value/100};
