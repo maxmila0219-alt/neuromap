@@ -22,6 +22,17 @@ const M4 = {
     const yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
     return new Float32Array([xx, yx, zx, 0, xy, yy, zy, 0, xz, yz, zz, 0, -(xx * e[0] + xy * e[1] + xz * e[2]), -(yx * e[0] + yy * e[1] + yz * e[2]), -(zx * e[0] + zy * e[1] + zz * e[2]), 1])
   },
+  inv(m) {
+    const o = new Float32Array(16), [a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33] = m;
+    const b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12;
+    const b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32;
+    let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06; if (!det) return o; det = 1 / det;
+    o[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det; o[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det; o[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det; o[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+    o[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det; o[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det; o[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det; o[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+    o[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det; o[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det; o[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det; o[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+    o[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det; o[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det; o[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det; o[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+    return o;
+  },
   mul(a, b) { const o = new Float32Array(16); for (let c = 0; c < 4; c++)for (let r = 0; r < 4; r++) { let s = 0; for (let k = 0; k < 4; k++)s += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = s } return o }
 };
 
@@ -119,6 +130,79 @@ void main(){ vec4 c=uPV*vec4(aPos,1.); gl_Position=c;
   vC=aC.rgb*(.16+pulse*uFlow*1.4)*uFade*fog; }`;
 const FS_LINE = `#version 300 es
 precision mediump float; in vec3 vC; out vec4 o; void main(){ o=vec4(vC,0.); }`;
+const FS_VOL = `#version 300 es
+precision highp float; precision highp sampler3D;
+in vec2 vUv; out vec4 o;
+uniform sampler3D uVol; uniform sampler3D uLab; uniform mat4 uIPV; uniform vec3 uEye, uB, uCol[9];
+uniform float uTime, uMode, uIso, uFade, uGain[9], uSteps, uFocus;
+uniform vec4 uClip; uniform vec4 uWave[6]; uniform float uWaveA[6];
+vec3 tc(vec3 p){ return vec3(p.x/uB.x, p.z/uB.z, p.y/uB.y)*.5+.5; }                 /* world → MRI texture (x=L/R, z=ant/post, y=sup/inf) */
+float vol(vec3 p){ return texture(uVol,tc(p)).r; }
+float hash(vec2 p){ return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453); }
+vec3 grad(vec3 p,float e){ return vec3(vol(p+vec3(e,0,0))-vol(p-vec3(e,0,0)),vol(p+vec3(0,e,0))-vol(p-vec3(0,e,0)),vol(p+vec3(0,0,e))-vol(p-vec3(0,0,e))); }
+uniform vec4 uSeed[24]; uniform float uNSeed, uSeedR;
+float vnoise(vec3 p){ vec3 i=floor(p), f=fract(p); f=f*f*(3.-2.*f); float n=dot(i,vec3(1.,57.,113.));
+  vec4 a=fract(sin(vec4(n,n+1.,n+57.,n+58.))*43758.5453), b=fract(sin(vec4(n+113.,n+114.,n+170.,n+171.))*43758.5453);
+  vec4 c=mix(a,b,f.z); vec2 d=mix(c.xy,c.zw,f.y); return mix(d.x,d.y,f.x); }
+/* smooth functional maps: gaussian fields around real MNI coordinates of each skill's network */
+vec3 region(vec3 p,out float g){ vec3 c=vec3(0.); g=0.; float r2=1./(uSeedR*uSeedR);
+  for(int i=0;i<24;i++){ if(float(i)>=uNSeed)break; vec4 s=uSeed[i]; vec3 d=p-s.xyz; float w=exp(-dot(d,d)*r2); int li=int(s.w+.5);
+    float k=uGain[li]; if(uFocus>-.5){ k*= abs(s.w-1.-uFocus)<.5?1.7:.2; } c+=uCol[li]*k*w; g+=k*w; }
+  float wv=0.; for(int i=0;i<6;i++){ if(uWaveA[i]<=0.)continue; float d=length(p-uWave[i].xyz)-uWave[i].w; wv+=exp(-d*d*90.)*uWaveA[i]; }
+  vec3 cc=g>1e-4?c/g:vec3(.5,.7,1.); cc=cc*cc*1.25; g=min(g,1.6)+wv*.9; return cc; }   /* squared → richer chroma after ACES */
+bool clipped(vec3 p){ return uClip.w>-9. && dot(p,uClip.xyz)>uClip.w; }
+void main(){
+  vec4 a=uIPV*vec4(vUv*2.-1.,-1.,1.), b=uIPV*vec4(vUv*2.-1.,1.,1.); vec3 ro=uEye, rd=normalize(b.xyz/b.w-a.xyz/a.w);
+  vec3 inv=1./rd, t0=(-uB-ro)*inv, t1=(uB-ro)*inv, tmn=min(t0,t1), tmx=max(t0,t1);
+  float tn=max(max(max(tmn.x,tmn.y),tmn.z),0.), tf=min(min(tmx.x,tmx.y),tmx.z);
+  if(tf<=tn){ o=vec4(0); return; }
+  float dt=length(uB)*2./uSteps, t=tn+dt*hash(gl_FragCoord.xy+fract(uTime));
+  vec3 V=-rd, sd=normalize(cross(vec3(0,1,0),V)+1e-4);                        /* camera-relative studio rig: key, fill, rim */
+  vec3 L1=normalize(V*.55+vec3(0,.75,0)+sd*.45), L2=normalize(-sd*.8+V*.3-vec3(0,.2,0));
+  vec4 acc=vec4(0.); bool wasClip=false; float cl=uClip.w>-9.?1.:0.;
+  for(int i=0;i<512;i++){
+    if(t>tf||float(i)>=uSteps||acc.a>.97)break;
+    vec3 p=ro+rd*t;
+    if(cl>0.&&clipped(p)){ t+=dt; wasClip=true; continue; }
+    if(wasClip&&uMode<.5){ wasClip=false;                     /* exact plane entry → is there tissue on the cut? */
+      float tp=(uClip.w-dot(ro,uClip.xyz))/dot(rd,uClip.xyz); vec3 q=ro+rd*(tp+1e-4); float s=vol(q);
+      if(tp>tn-1e-3&&s>uIso*.9){
+        float g; vec3 rc=region(q,g);
+        float wm=smoothstep(.5,.78,s);                                                       /* T1: grey vs white matter */
+        vec3 c=mix(vec3(.5,.36,.37),vec3(.88,.82,.76),wm)*(.75+.25*s);
+        c*=.85+.15*vnoise(q*160.);                                                           /* tissue grain */
+        c=mix(c,c*(.6+rc),clamp(g,0.,1.)*.5)+rc*g*.35*(1.-wm);
+        acc=vec4(c*.5,1.); break; } }
+    wasClip=false; float v=vol(p);
+    if(uMode<.5){                                           /* realistic surface: first hit, refined, lit */
+      if(v>uIso){
+        float lo=t-dt,hi=t; for(int k=0;k<5;k++){ float m=(lo+hi)*.5; if(vol(ro+rd*m)>uIso)hi=m; else lo=m; } t=hi; p=ro+rd*t;
+        float g; vec3 rc=region(p,g); g=min(g,1.);
+        vec3 N=-normalize(grad(p,.012)+1e-5);
+        float ao=clamp(1.-(vol(p+N*.04)-uIso)*2.2,0.,1.)*clamp(1.-(vol(p+N*.09)-uIso)*1.2,0.,1.);
+        float d1=max(dot(N,L1)*.6+.4,0.), d2=max(dot(N,L2),0.);
+        float vs=vol(p-N*.02);                                                                 /* tone from slightly inside: less MRI noise */
+        vec3 base=mix(vec3(.80,.58,.55),vec3(.94,.84,.80),smoothstep(.45,.8,vs));            /* cortex tissue tone */
+        float fr=pow(1.-max(dot(N,V),0.),3.);
+        float sp=pow(max(dot(N,normalize(L1+V)),0.),40.)*.4;
+        vec3 c=base*(d1*d1*.62*vec3(1.,.95,.9)+d2*.16*vec3(.5,.65,1.)+.03)*ao*ao + sp*ao*.7 + fr*vec3(.5,.65,1.)*.22;
+        float act=vnoise(p*11.+vec3(0.,uTime*.35,uTime*.2))*.7+vnoise(p*31.-uTime*.6)*.3;     /* flickering cortical activity */
+        float gy=smoothstep(.25,.9,ao);                                                       /* glow sits on gyral crowns */
+        c=mix(c,c*(.55+rc*1.1),g*.5);
+        c+=rc*g*(.25+gy*.75)*(.3+act*act*1.3)*1.5;
+        acc=vec4(c,1.); break;
+      }
+    } else {                                                /* x-ray / glass: emission-absorption with edge glow */
+      float gm=length(grad(p,.02));
+      float a1=(smoothstep(uIso*.6,uIso*1.25,v)*.003+smoothstep(.05,.2,gm)*.03*smoothstep(.1,.3,v))*(300./uSteps);
+      float g=0.; vec3 rc=vec3(0.); if(v>.25) rc=region(p,g);
+      vec3 c=(mix(vec3(.1,.25,.8)*(.3+v),vec3(.55,.75,1.),smoothstep(.7,.95,v))*(.3+gm*3.)+rc*g*2.5*step(.3,v))*.6;
+      acc.rgb+=(1.-acc.a)*c*a1; acc.a+=(1.-acc.a)*a1*.9;
+    }
+    t+=dt;
+  }
+  o=vec4(acc.rgb*uFade,acc.a*uFade);
+}`;
 const FS_COMP = `#version 300 es
 precision mediump float; in vec2 vUv; uniform sampler2D uS, uB, uB2; uniform float uBloom, uExp, uOpaque, uTime, uCA; uniform vec3 uBg; out vec4 o;
 float hash(vec2 p){ return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453); }
@@ -159,6 +243,7 @@ function create(canvas, opt) {
   /* half-float targets give real HDR bloom, but many phone GPUs can't render to them → verify, else fall back to RGBA8 */
   let hdr = !/[?&]ldr\b/.test(location.search) && (!!gl.getExtension('EXT_color_buffer_float') || !!gl.getExtension('EXT_color_buffer_half_float'));
   const P = compile(gl, VS_PTS, FS_PTS), PB = compile(gl, VS_FS, FS_BRIGHT), PL = compile(gl, VS_FS, FS_BLUR), PC = compile(gl, VS_FS, FS_COMP);
+  let PV3 = null; try { PV3 = compile(gl, VS_FS, FS_VOL) } catch (e) { console.warn('volume shader', e) }
   let PM = null, PLN = null; try { PM = compile(gl, VS_MESH, FS_MESH) } catch (e) { console.warn('mesh shader', e) } try { PLN = compile(gl, VS_LINE, FS_LINE) } catch (e) { console.warn('line shader', e) }
   const dbgInfo = gl.getExtension('WEBGL_debug_renderer_info');
   const info = { renderer: dbgInfo ? gl.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER), hdr, fbo: '', errors: [] };
@@ -238,6 +323,16 @@ function create(canvas, opt) {
     attr(0, d.pos, 3); attr(1, d.nrm, 3); const ib = gl.createBuffer(); bufs.push(ib); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, d.idx, gl.STATIC_DRAW); gl.bindVertexArray(null);
     const L = Object.assign({ type: 'mesh', vao, bufs, n: d.idx.length, fade: 1, tint: [.45, .6, 1], scan: 1, visible: true }, uni || {}); layers.push(L); return L;
   }
+  function addVolume(v, uni) {
+    if (!PV3) return null;
+    const tex = (arr, filt) => { const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_3D, t); gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+      gl.texImage3D(gl.TEXTURE_3D, 0, gl.R8, v.dims[0], v.dims[1], v.dims[2], 0, gl.RED, gl.UNSIGNED_BYTE, arr);
+      gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, filt); gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, filt);
+      for (const w of [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T, gl.TEXTURE_WRAP_R]) gl.texParameteri(gl.TEXTURE_3D, w, gl.CLAMP_TO_EDGE); return t };
+    const L = Object.assign({ type: 'volume', tVol: tex(v.data, gl.LINEAR), tLab: tex(v.lab, gl.NEAREST), B: v.B, n: 1, fade: 1, mode: 0, iso: .3, steps: 300, focus: -1, clip: [0, 0, 1, -99],
+      gain: new Float32Array(9).fill(0), col: new Float32Array(27), waves: [], visible: true, bufs: [], seedR: .17,
+      src: v, seedV: new Float32Array(96), nSeed: Math.min(24, (v.seeds || []).length) }, uni || {}); L.setSeeds = arr => { L.seedV.fill(0); arr.slice(0, 24).forEach((q, i) => L.seedV.set(q, i * 4)); L.nSeed = Math.min(24, arr.length) }; L.setSeeds(v.seeds || []); layers.push(L); return L;
+  }
   function addLines(d, uni) {
     if (!PLN) return null; const vao = gl.createVertexArray(); gl.bindVertexArray(vao); const bufs = [];
     const attr = (loc, arr, size) => { const b = gl.createBuffer(); bufs.push(b); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0) };
@@ -251,7 +346,7 @@ function create(canvas, opt) {
     const L = Object.assign({ type: 'points', vao, bufs, n: d.n, fade: 1, focus: -1, gain: new Float32Array(16).fill(.6), tr: new Float32Array(16).fill(0), sat: 1.2, base: [.42, .5, 1], vel: 1, my: 0, inn: .1, visible: true, waves: [] }, uni || {});
     layers.push(L); return L;
   }
-  function removeLayer(L) { const i = layers.indexOf(L); if (i < 0) return; layers.splice(i, 1); gl.deleteVertexArray(L.vao); L.bufs.forEach(b => gl.deleteBuffer(b)) }
+  function removeLayer(L) { const i = layers.indexOf(L); if (i < 0) return; layers.splice(i, 1); if (L.vao) gl.deleteVertexArray(L.vao); L.bufs.forEach(b => gl.deleteBuffer(b)); if (L.tVol) { gl.deleteTexture(L.tVol); gl.deleteTexture(L.tLab) } }
   /* ---------- frame ---------- */
   let raf = 0, running = false, ft = [], visible = true, lastT = 0, frames = 0, failed = false, destroyed = false;
   function fail(why) { if (failed || destroyed) return; failed = true; info.errors.push(why); console.warn('NeuroGL failed:', why); R.stop(); R.failed = why; try { R.onFail && R.onFail(why) } catch (e) { } }
@@ -283,7 +378,21 @@ function create(canvas, opt) {
     if (R.spkDirty) { gl.bindTexture(gl.TEXTURE_2D, spkTex); gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, SPK_W, 2, gl.RGBA, gl.FLOAT, spk); R.spkDirty = false }
     /* scene pass */
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb.s.f); gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE); gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.DEPTH_TEST);
+    for (const L of layers) {
+      if (L.type !== 'volume' || !L.visible || L.fade <= .003) continue;
+      gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      const v = PV3.u; gl.useProgram(PV3.p); gl.bindVertexArray(emptyVao);
+      gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_3D, L.tVol); gl.uniform1i(v.uVol, 1);
+      gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_3D, L.tLab); gl.uniform1i(v.uLab, 2);
+      gl.uniformMatrix4fv(v.uIPV, false, M4.inv(PV)); gl.uniform3fv(v.uEye, eye); gl.uniform3fv(v.uB, L.B);
+      gl.uniform1f(v.uTime, t); gl.uniform1f(v.uMode, L.mode); gl.uniform1f(v.uIso, L.iso); gl.uniform1f(v.uFade, L.fade); gl.uniform1f(v.uSteps, L.steps); gl.uniform1f(v.uFocus, L.focus);
+      gl.uniform1fv(v.uGain, L.gain); gl.uniform3fv(v.uCol, L.col); gl.uniform4fv(v.uClip, L.clip);
+      gl.uniform4fv(v.uSeed, L.seedV); gl.uniform1f(v.uNSeed, L.nSeed); gl.uniform1f(v.uSeedR, L.seedR);
+      waveA.fill(0); L.waves.forEach((w, i) => { if (i < 6) { waveV.set([w.x, w.y, w.z, w.r], i * 4); waveA[i] = w.a } }); gl.uniform4fv(v.uWave, waveV); gl.uniform1fv(v.uWaveA, waveA);
+      gl.drawArrays(gl.TRIANGLES, 0, 3); gl.activeTexture(gl.TEXTURE0);
+    }
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
     gl.useProgram(P.p); const u = P.u;
     gl.uniformMatrix4fv(u.uPV, false, PV); gl.uniform3fv(u.uCam, [eye[0] - cam.target[0], eye[1] - cam.target[1], eye[2] - cam.target[2]]);
     gl.uniform1f(u.uDist, cam.dist); gl.uniform1f(u.uFocusD, R.focusD || cam.dist); gl.uniform1f(u.uDof, R.dof); gl.uniform1f(u.uTime, t); gl.uniform1f(u.uPx, H * .5 / Math.tan(cam.fov / 2) * .01);
@@ -298,7 +407,7 @@ function create(canvas, opt) {
     }
     const eyeRel = [eye[0], eye[1], eye[2]];
     for (const L of layers) {
-      if (L.type === 'points' || !L.visible || L.fade <= .003) continue;
+      if (L.type === 'points' || L.type === 'volume' || !L.visible || L.fade <= .003) continue;
       if (L.type === 'mesh') { gl.useProgram(PM.p); gl.uniformMatrix4fv(PM.u.uPV, false, PV); gl.uniform3fv(PM.u.uEye, eyeRel); gl.uniform1f(PM.u.uTime, t); gl.uniform1f(PM.u.uFade, L.fade); gl.uniform1f(PM.u.uScan, L.scan); gl.uniform3fv(PM.u.uTint, L.tint);
         gl.bindVertexArray(L.vao); gl.drawElements(gl.TRIANGLES, L.n, gl.UNSIGNED_INT, 0) }
       else { gl.useProgram(PLN.p); gl.uniformMatrix4fv(PLN.u.uPV, false, PV); gl.uniform1f(PLN.u.uTime, t); gl.uniform1f(PLN.u.uFade, L.fade); gl.uniform1f(PLN.u.uFlow, L.flow); gl.uniform1f(PLN.u.uDist, cam.dist);
@@ -323,10 +432,28 @@ function create(canvas, opt) {
     gl.uniform1f(PC.u.uCA, R.ca * .02); gl.uniform1f(PC.u.uBloom, R.bloom); gl.uniform1f(PC.u.uExp, R.exposure); gl.uniform1f(PC.u.uOpaque, opt.opaque ? 1 : 0); gl.uniform1f(PC.u.uTime, t % 100); gl.uniform3fv(PC.u.uBg, opt.bg);
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3); gl.activeTexture(gl.TEXTURE0);
   }
+  /* CPU ray-pick against a volume layer: returns {p:[x,y,z] world hit, label:'logic'|…|null, seed:nearest domain} */
+  function pick(L, x, y) {
+    const v = L && L.src; if (!v || !R.PV || !R.eye) return null; const I = M4.inv(R.PV), w = canvas.clientWidth, h = canvas.clientHeight, nx = x / w * 2 - 1, ny = 1 - y / h * 2;
+    const un = z => { const q = [0, 1, 2, 3].map(r => I[r] * nx + I[4 + r] * ny + I[8 + r] * z + I[12 + r]); return [q[0] / q[3], q[1] / q[3], q[2] / q[3]] };
+    const a = R.eye, b = un(1), d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], dl = Math.hypot(...d); d[0] /= dl; d[1] /= dl; d[2] /= dl;
+    const [X, Y, Z] = v.dims, B = v.B, iso = L.iso * 255, c = L.clip;
+    for (let t = 0; t < 12; t += .006) {
+      const p = [a[0] + d[0] * t, a[1] + d[1] * t, a[2] + d[2] * t];
+      if (Math.abs(p[0]) > B[0] || Math.abs(p[1]) > B[1] || Math.abs(p[2]) > B[2]) continue;
+      if (c[3] > -9 && p[0] * c[0] + p[1] * c[1] + p[2] * c[2] > c[3]) continue;
+      const i = Math.min(X - 1, (p[0] / B[0] * .5 + .5) * X | 0), j = Math.min(Y - 1, (p[2] / B[2] * .5 + .5) * Y | 0), k = Math.min(Z - 1, (p[1] / B[1] * .5 + .5) * Z | 0);
+      if (v.data[i + X * (j + Y * k)] > iso) {
+        let best = null, bd = 1e9; (v.seeds || []).forEach(sd => { const q = Math.hypot(sd[0] - p[0], sd[1] - p[1], sd[2] - p[2]); if (q < bd) { bd = q; best = sd } });
+        return { p, dist: bd, label: best && bd < .32 ? v.labels[best[3] - 1] : null };
+      }
+    }
+    return null;
+  }
   function project(p) { const m = R.PV; if (!m) return null; const x = m[0] * p[0] + m[4] * p[1] + m[8] * p[2] + m[12], y = m[1] * p[0] + m[5] * p[1] + m[9] * p[2] + m[13], w = m[3] * p[0] + m[7] * p[1] + m[11] * p[2] + m[15];
     if (w <= .01) return null; return [(x / w * .5 + .5) * canvas.clientWidth, (1 - (y / w * .5 + .5)) * canvas.clientHeight, w] }
   const R = {
-    gl, cam, goal, layers, addLayer, addMesh, addLines, removeLayer, info, dof: opt.dof, ca: opt.ca, focusD: 0, flyTo, setCam, project, now: () => now() / 1000, spk, SPK_W, spkDirty: true, bloom: opt.bloom, exposure: opt.exposure,
+    gl, cam, goal, layers, addLayer, addMesh, addLines, addVolume, removeLayer, info, dof: opt.dof, ca: opt.ca, focusD: 0, flyTo, setCam, project, pick, now: () => now() / 1000, spk, SPK_W, spkDirty: true, bloom: opt.bloom, exposure: opt.exposure,
     set auto(v) { auto = v }, get auto() { return auto }, set controls(v) { opt.controls = v },
     start() { if (!running) { running = true; lastT = now() / 1000; raf = requestAnimationFrame(frame) } return R },
     stop() { running = false; cancelAnimationFrame(raf) },
@@ -587,5 +714,33 @@ function fibers(o) {
   return { pos: new Float32Array(pos), col: new Float32Array(col), ph: new Float32Array(ph), n: pos.length / 3, lines };
 }
 
-root.NGL = { supported, create, brain, tracts, dust, column, Net, shell, fibers, DOMAINS, LOBES, hex, mulberry32 };
+/* ---------- real MRI volume (MNI ICBM152) loader ---------- */
+const MM = 90;   /* 90 mm = 1 world unit */
+const VSEEDS = { logic: [[44, 36, 22]], numbers: [[36, -50, 46]], spatial: [[20, -64, 58]], memory: [[28, -22, -14], [26, -8, -26]], attention: [[30, -2, 56]],
+  speed: [[12, -88, 4], [20, -80, -8]], control: [[6, 26, 30], [6, 40, 10]], reflex: [[36, -22, 58], [24, -60, -32]] };
+async function loadVolume(url) {
+  const res = await fetch(url); if (!res.ok) throw new Error('volume ' + res.status);
+  let buf;
+  const raw = new Uint8Array(await res.arrayBuffer());
+  if (raw[0] === 0x1f && raw[1] === 0x8b) {
+    if (!('DecompressionStream' in window)) throw new Error('no DecompressionStream');
+    buf = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+  } else buf = raw;
+  const hl = new DataView(buf.buffer).getUint32(0, true), hdr = JSON.parse(new TextDecoder().decode(buf.subarray(4, 4 + hl)));
+  const [nx, ny, nz] = hdr.dims, N = nx * ny * nz, data = buf.subarray(4 + hl, 4 + hl + N), lab = buf.subarray(4 + hl + N, 4 + hl + 2 * N);
+  const B = [nx * hdr.mm[0] / 2 / MM, nz * hdr.mm[2] / 2 / MM, ny * hdr.mm[1] / 2 / MM];
+  /* region centroids in world space (for labels and camera targets) */
+  const acc = hdr.labels.map(() => [0, 0, 0, 0]);
+  for (let k = 0; k < nz; k += 2)for (let j = 0; j < ny; j += 2)for (let i = 0; i < nx; i += 2) { const l = lab[i + nx * (j + ny * k)]; if (!l) continue; const a = acc[l - 1]; a[0] += i; a[1] += j; a[2] += k; a[3]++ }
+  const w = (i, j, k) => [((i + .5) / nx - .5) * 2 * B[0], ((k + .5) / nz - .5) * 2 * B[1], ((j + .5) / ny - .5) * 2 * B[2]];
+  const cen = {}; hdr.labels.forEach((n, li) => { const a = acc[li]; cen[n] = a[3] ? w(a[0] / a[3], a[1] / a[3], a[2] / a[3]) : [0, 0, 0] });
+  /* functional seeds (MNI mm, mirrored L/R) → world; drive the smooth region glow on the GPU */
+  const mni = (x, y, z) => w((x - hdr.origin[0]) / hdr.mm[0] - .5, (y - hdr.origin[1]) / hdr.mm[1] - .5, (z - hdr.origin[2]) / hdr.mm[2] - .5);
+  const seeds = []; hdr.labels.forEach((n, li) => (VSEEDS[n] || []).forEach(([x, y, z]) => { seeds.push([...mni(x, y, z), li + 1]); seeds.push([...mni(-x, y, z), li + 1]) }));
+  /* custom seed sets, e.g. lobes: {name:[[x,y,z] MNI mm…]} + ordered names → mirrored world seeds tagged 1..n */
+  const seedsFor = (tab, names) => { const o = []; names.forEach((n, li) => (tab[n] || []).forEach(([x, y, z]) => { o.push([...mni(x, y, z), li + 1]); if (Math.abs(x) > 4) o.push([...mni(-x, y, z), li + 1]) })); return o };
+  return { dims: hdr.dims, data, lab, B, cen, seeds, seedsFor, mni, labels: hdr.labels, source: hdr.source, mm: hdr.mm, origin: hdr.origin };
+}
+
+root.NGL = { supported, create, loadVolume, brain, tracts, dust, column, Net, shell, fibers, DOMAINS, LOBES, hex, mulberry32 };
 })(window);

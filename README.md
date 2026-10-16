@@ -13,6 +13,20 @@
 
 ---
 
+## 🩻 NEW in v6: a real brain, ray-marched on your GPU
+
+The brain is no longer a particle sketch. NeuroMap now loads a real 3D MRI volume, the **MNI ICBM152** average brain built from 152 people, and ray-marches it in a WebGL2 fragment shader.
+
+- **MRI mode.** Each pixel finds the cortical surface, refines it with a bisection search and lights it with gradient normals, ambient occlusion, a key/fill/rim light rig and filmic tonemapping. Every gyrus and sulcus is real anatomy.
+- **X-ray mode.** Emission–absorption volume rendering with edge glow, overlaid with the DTI-style fibre tractography.
+- **Live slicing.** Sagittal, coronal or axial cuts show the real MRI cross-section, with grey matter, white matter, ventricles, hippocampus and cerebellum.
+- **Your training on real anatomy.** Each skill glows at the MNI coordinates of the network that research links to it. The glow is a smooth Gaussian field with flickering cortical "activity" that sits on the gyral crowns. Click the cortex and the GPU-picked region flies you inside.
+- **Journey.** The organ chapter becomes an X-ray, then a scroll-driven axial scan. The lobes light up on the real cortex, and the dive zooms into real gyri.
+
+Files: `brain_hd.bin` (desktop, ~2 MB) and `brain_sd.bin` (phones, ~1 MB). Each one is a gzip of a JSON header, an 8-bit T1 volume and region labels. Phones keep the particle brain by default because the MRI is one tap away. Add `?nomri` to disable it.
+
+**Attribution (required by the template licence):** MNI ICBM152 2009 nonlinear template, Copyright (C) 1993–2009 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University. Fonov V.S. et al. (2011), *NeuroImage* 54:313–327; Fonov V.S. et al. (2009), *NeuroImage* 47:S102.
+
 ## 🧬 NEW in v5: a living brain
 
 - **WebGL engine** (`neurogl.js`, no dependencies): tens of thousands of glowing particles, HDR bloom, filmic tonemapping and adaptive resolution for weak phones. It falls back to the 2D renderer automatically.

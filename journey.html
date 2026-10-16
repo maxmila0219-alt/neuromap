@@ -439,6 +439,7 @@ footer a{color:var(--c1)}
     <li>Halberda J., Mazzocco M.M.M., Feigenson L. (2008). Individual differences in non-verbal number acuity correlate with maths achievement. <i>Nature</i> 455:665–668.</li>
     <li>Segall M.H., Campbell D.T., Herskovits M.J. (1966). <i>The Influence of Culture on Visual Perception</i>. Bobbs-Merrill.</li>
     <li>Rodríguez Valiente A. et al. (2014). Extended high-frequency (9–20 kHz) audiometry reference thresholds in 645 healthy subjects. <i>Int J Audiol</i> 53:531–545.</li>
+    <li>Fonov V.S., Evans A.C., Botteron K., Almli C.R., McKinstry R.C., Collins D.L. (2011). Unbiased average age-appropriate atlases for pediatric studies. <i>NeuroImage</i> 54:313–327. · 3D anatomy: MNI ICBM152 2009 nonlinear template © McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University.</li>
     <li>Troxler D. (1804). Über das Verschwinden gegebener Gegenstände innerhalb unseres Gesichtskreises. · Lilac chaser: J. Hinton (2005).</li>
   </ol>
   <p><span data-i="disclaimer"></span> · <a href="https://github.com/maxmila0219-alt/neuromap">GitHub</a> · MIT</p>
@@ -1304,11 +1305,15 @@ function pulseLobe(lb,a=1){const G=Brain.build(innerWidth<700?2200:3800),c=G.cen
 function startBrain(){
   const cv=$('#brain'),fl=$('#flash');let last=performance.now(),next=0;
   /* WebGL path: real glow + continuous dive into a living cortical network */
-  let GR=null,GLB=null,GCL=null,GCOL=null,GNET=null,GSH=null,GFB=null,stimT=0;
+  let GR=null,GLB=null,GCL=null,GCOL=null,GNET=null,GSH=null,GFB=null,stimT=0,GV=null,gvIn=0,gvNext=0,orgP=0;
+  /* real MRI anatomy (MNI ICBM152) — lobes glow on the real cortex; desktop GPUs only */
+  const LSEED={frontal:[[32,42,22],[22,58,2]],motor:[[38,-18,56]],parietal:[[34,-58,46]],temporal:[[54,-18,-12]],occipital:[[20,-90,6]],cereb:[[24,-66,-36]],stem:[[0,-28,-32]]};
   if(window.NGL&&NGL.supported()){try{const m0=innerWidth<860;GR=NGL.create(cv,{controls:false,maxDpr:m0?1.5:1.75});
     const bd=NGL.brain({n:m0?13000:24000,mode:'lobe',colors:LOBE});GLB=GR.addLayer(bd,{sat:1.1});GR.addLayer(NGL.dust(m0?500:1000,6));
     GR.onFail=why=>{try{const n=+(sessionStorage.getItem('nm_gl_fail')||0)+1;sessionStorage.setItem('nm_gl_fail',n);if(/probe|framebuffer|gl error/.test(why)||n>1)localStorage.setItem('nm_nogl','2')}catch(e){}location.reload()};
     (window.requestIdleCallback||setTimeout)(()=>{try{GSH=GR.addMesh(NGL.shell(bd,{res:m0?40:56}),{tint:[.42,.58,1],fade:0});GFB=GR.addLines(NGL.fibers({n:m0?450:1000,steps:m0?56:70}),{fade:0})}catch(e){console.warn(e)}},{timeout:800});
+    if(!m0&&!/[?&]nomri\b/.test(location.search))NGL.loadVolume('brain_hd.bin').then(v=>{if(!GR)return;GV=GR.addVolume(v,{fade:0,steps:260});if(!GV)return;
+      GV.setSeeds(v.seedsFor(LSEED,NGL.LOBES));NGL.LOBES.forEach((n,i)=>GV.col.set(NGL.hex(LOBE[n]),(i+1)*3));GV.seedR=.2;GV.t0=performance.now()}).catch(e=>console.warn('MRI',e));
     GR.start()}catch(e){console.warn(e);GR=null}}
   window.__GL=!!GR;
   const x=GR?null:cv.getContext('2d');
@@ -1327,6 +1332,16 @@ function startBrain(){
     }else{GLB.visible=true;GLB.fade=1;if(GCL)GCL.visible=false}
     if(GSH){const org=scene==='organ'||scene==='intro',ex=!SC[scene]||SC[scene].alpha<.5,df=scene==='dive'?GLB.fade*(GLB.visible?1:0):1;
       const ts=(org?.7:ex?.45:.4)*df,tf=(scene==='organ'?.85:org?.35:ex?.25:.16)*df;const kk=scene==='dive'?.35:.06;GSH.fade=lerp(GSH.fade,ts,kk);GFB.fade=lerp(GFB.fade,tf,kk);if(scene==='dive'&&dp>.5){GSH.fade=GFB.fade=0}GSH.visible=GFB.visible=GSH.fade>.01||ts>0}
+    if(GV){gvIn=clamp((performance.now()-GV.t0)/900,0,1);const inDive=scene==='dive';
+      NGL.LOBES.forEach((n,i)=>GV.gain[i+1]=GLB.gain[i]*(inDive?.06:F==='all'?.22:Array.isArray(F)?1:.3));
+      let mode=0,clip=[0,0,1,-99];
+      if(scene==='organ'){mode=orgP<.45?1:0;if(orgP>=.45){const s=clamp((orgP-.45)/.5,0,1),e=s*s*(3-2*s);clip=[0,1,0,lerp(GV.B[1]*.9,-GV.B[1]*.5,e)];pitch=lerp(pitch,.95,clamp(s*3,0,1))}}
+      GV.mode=mode;GV.clip=clip;GV.steps=mode?170:260;
+      GV.fade=gvIn*(inDive?(dp<.5?GLB.fade:0):1);GV.visible=GV.fade>.003;
+      if(!inDive||dp<.5)GLB.fade*=1-gvIn;
+      for(const w of GV.waves){w.r+=.016;w.a=Math.max(0,w.a-.009)}GV.waves=GV.waves.filter(w=>w.a>0);
+      const now2=performance.now();if(now2>gvNext&&!reduceMotion){const sd=GV.seedV,n=GV.nSeed,i=Math.random()*n|0;GV.waves.push({x:sd[i*4],y:sd[i*4+1],z:sd[i*4+2],r:0,a:1});gvNext=now2+700+Math.random()*700}
+      if(GSH){GSH.fade=lerp(GSH.fade,0,.1);GFB.fade=lerp(GFB.fade,scene==='organ'&&mode===1?.85:0,.08);GSH.visible=false;GFB.visible=GFB.fade>.01}}
     GR.dof=scene==='dive'&&dp>.5?.32:.16;
     const c=GR.cam,g=GR.goal;c.dist=g.dist=dist;c.yaw=g.yaw=gy;c.pitch=g.pitch=pitch;c.target=tgt;g.target=[...tgt];
   }
@@ -1342,6 +1357,7 @@ function startBrain(){
     let cur=secs[0];for(const s of secs){const r=s.getBoundingClientRect();if(r.top<=H*.5&&r.bottom>H*.5){cur=s;break}}
     const nsc=cur.dataset.sc;if(nsc!==scene){scene=nsc;document.body.style.setProperty('--amb',AMB[scene]||AMB.intro);onScene(scene,cur)}
     const T=SC[scene]||SC.intro;
+    if(scene==='organ'){const r=cur.getBoundingClientRect();orgP=clamp(-r.top/Math.max(1,r.height-H),0,1)}
     const k=1-Math.exp(-dt*2.6);
     let tz=T.zoom,tox=mob?0:(T.side?(rtl?-.22:.22):0),toy=mob&&T.side?-.2:0,ta=T.alpha,tdive=0;
     if(mob&&T.side){tz*=.82;ta=Math.min(ta,.85)}
