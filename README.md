@@ -13,50 +13,6 @@
 
 ---
 
-## 🩸 NEW in v7: Living Body, built into the pages
-
-`bodygl.js` adds fast, real-time living-body scenes inside the existing pages. There is no separate window.
-
-- **Home screen.** A live panel with two scenes, 🩸 Blood and ⚡ Neurons.
-  - Blood is a flight down a pulsing artery. Hundreds of instanced red blood cells are true biconcave lathe meshes built from the Evans–Fung profile. They have subsurface glow, wet speculars and fog, and the blood flow surges with every heartbeat.
-  - Neurons is a forest of tube-mesh pyramidal neurons. Action potentials travel down the axons and glow.
-- **Journey.** A new prologue chapter flies through the bloodstream, and the neural forest lives behind the neuron lab.
-- **Performance.** The scenes are rasterised, not ray-marched: every animation runs on the GPU through instancing and vertex shaders, with no per-frame CPU geometry. They pause when off-screen and adapt their resolution, so they run smoothly on ordinary laptops.
-
-## 🩻 v6: a real brain, ray-marched on your GPU
-
-The brain is no longer a particle sketch. NeuroMap now loads a real 3D MRI volume, the **MNI ICBM152** average brain built from 152 people, and ray-marches it in a WebGL2 fragment shader.
-
-- **MRI mode.** Each pixel finds the cortical surface, refines it with a bisection search and lights it with gradient normals, ambient occlusion, a key/fill/rim light rig and filmic tonemapping. Every gyrus and sulcus is real anatomy.
-- **X-ray mode.** Emission–absorption volume rendering with edge glow, overlaid with the DTI-style fibre tractography.
-- **Live slicing.** Sagittal, coronal or axial cuts show the real MRI cross-section, with grey matter, white matter, ventricles, hippocampus and cerebellum.
-- **Your training on real anatomy.** Each skill glows at the MNI coordinates of the network that research links to it. The glow is a smooth Gaussian field with flickering cortical "activity" that sits on the gyral crowns. Click the cortex and the GPU-picked region flies you inside.
-- **Journey.** The organ chapter becomes an X-ray, then a scroll-driven axial scan. The lobes light up on the real cortex, and the dive zooms into real gyri.
-
-Files: `brain_hd.bin` (desktop, ~2 MB) and `brain_sd.bin` (phones, ~1 MB). Each one is a gzip of a JSON header, an 8-bit T1 volume and region labels. The particle brain stays the default and the MRI is one tap away (`?mri` turns it on in the Journey). Add `?nomri` to disable it.
-
-**Attribution (required by the template licence):** MNI ICBM152 2009 nonlinear template, Copyright (C) 1993–2009 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University. Fonov V.S. et al. (2011), *NeuroImage* 54:313–327; Fonov V.S. et al. (2009), *NeuroImage* 47:S102.
-
-## 🧬 NEW in v5: a living brain
-
-- **WebGL engine** (`neurogl.js`, no dependencies): tens of thousands of glowing particles, HDR bloom, filmic tonemapping and adaptive resolution for weak phones. It falls back to the 2D renderer automatically.
-- **My brain**: your own brain grows from your real training data.
-  - 8 regions light up by skill and are linked by white-matter tracts.
-  - Tap a region to fly *inside* it, into a **cortical column of procedurally grown neurons**. You see pyramidal cells and interneurons, dendrites with spines, axons, myelin sheaths with nodes of Ranvier and synaptic boutons.
-  - The network is a real **leaky integrate-and-fire spiking network** with conduction delays. Impulses travel along axons and cross synapses, and they jump from node to node when myelinated. Tap to make neurons fire.
-  - Practice adds neurons and synapses, consistency adds myelin (signals get faster), and regions you don't train fall asleep.
-  - Every region shows your progress since day one, trend, percentile, next milestone and a real finding from neuroscience.
-  - **Brain tour** flies the camera through your brain, region by region.
-- **Journey into the Brain 2.0**: a GL brain with a continuous zoom from the whole organ into a firing cortical network, plus 4 new experiments: hearing range ("how old are your ears"), attentional blink, Müller-Lyer illusion and number sense (Weber fraction, fitted by maximum likelihood).
-
-- **Glass brain + tractography** (v5.1): a translucent glass cortex, built with naive surface nets from the particle density field, with fresnel rim, thin-film iridescence and an MRI-style scan plane. Inside it run ~1000 white-matter streamlines coloured with the real **diffusion-MRI convention** (red = left↔right, green = front↔back, blue = up↔down).
-- **Cinematic post-processing**: depth of field (bokeh), ACES filmic tonemapping, lens chromatic aberration, HDR bloom.
-- **Bullet-proof on phones**: the engine draws a probe frame through the whole HDR pipeline and reads it back. If a GPU can't render half-float targets it switches to 8-bit; if it still fails, it hands over to the 2D renderer and remembers that choice. Add `?gldebug` to the URL to see renderer, format and fps, and `?gl` to re-enable 3D.
-
-> Honesty note: the neurons, synapses and myelin in "My brain" visualise *your practice* (a metaphor for neuroplasticity). They are not a scan of your real brain.
-
----
-
 ## 🧠 NEW: Journey into the Brain
 
 **[Open the journey →](https://maxmila0219-alt.github.io/neuromap/journey.html)**
@@ -73,10 +29,6 @@ A scroll-driven voyage from the whole brain down to a single firing neuron. A 3D
 | 🌀 Temporal lobe | **False memory**: your brain "remembers" a word it never saw | Roediger & McDermott 1995 |
 | ⚡ Motor system | **Reaction time**, with the signal path from eye to finger | — |
 | 🔬 Neuron | A real **Hodgkin–Huxley** model running live: stimulate, hold current, remove myelin, add pufferfish toxin | Hodgkin & Huxley 1952 |
-| 👂 Temporal lobe | **Hearing range**: how old are your ears? | ISO 7029 · Rodríguez Valiente et al. 2014 |
-| ⏱ Attention | **Attentional blink** in a 10-per-second letter stream | Raymond, Shapiro & Arnell 1992 |
-| 📏 Vision | **Müller-Lyer** illusion strength in % | Segall et al. 1966 |
-| 🎯 Parietal lobe | **Number sense**: your Weber fraction | Halberda et al. 2008 |
 | 🌍 Global Brain | Anonymous results on an **open world map**, "when is humanity fastest?" chart, shareable brain card, friend challenges | — |
 
 ### 🌍 Global Brain backend (optional, free)

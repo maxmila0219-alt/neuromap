@@ -29,7 +29,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{color-scheme:dark}
 body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;transform:scale(calc(1 + var(--br,0)*.06));opacity:calc(.8 + var(--br,0)*.2);
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(1100px 700px at 78% -12%,var(--amb,rgba(124,77,255,.28)),transparent 60%),radial-gradient(900px 620px at -6% 108%,rgba(0,190,220,.18),transparent 55%)}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:30;opacity:.07;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -505,112 +505,6 @@ body::before{transition:background .8s}
 .opts.odd .opt{aspect-ratio:1;display:grid;place-items:center}
 .opts.odd .opt svg{width:84%;height:84%}
 @media(max-width:560px){.dgroup .ggrid{grid-template-columns:repeat(2,1fr)}.prof .btn{width:100%}}
-
-/* ---------- v5: my brain ---------- */
-.mb [hidden]{display:none!important}
-body.mbmode main{padding:0;align-items:stretch}
-body.mbmode .screen{max-width:none}
-body.mbmode #bg{opacity:0}
-.mb{position:relative;width:100%;min-height:100vh;height:100vh;overflow:hidden}
-.mbcv{position:fixed;inset:0;width:100vw;height:100vh;display:block;z-index:0;touch-action:none;cursor:grab}
-.mbcv:active{cursor:grabbing}
-.mbflash{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.95),rgba(160,190,255,.5) 30%,transparent 70%)}
-.mbflash.on{opacity:1;transition:opacity .25s}
-.mb-top{position:absolute;z-index:4;top:76px;left:clamp(16px,4vw,48px);right:clamp(16px,4vw,48px);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
-.mb-top>*{pointer-events:auto}
-.mb-top .hello{font-size:clamp(28px,4vw,44px);margin:4px 0 6px}
-.mb-sum{font-size:13px;color:var(--soft)}
-.mb-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.mb-labs{position:absolute;inset:0;z-index:2;pointer-events:none}
-.rl{position:absolute;left:0;top:0;pointer-events:auto;display:flex;align-items:center;gap:7px;padding:6px 11px 6px 8px;border-radius:99px;font-size:12.5px;font-weight:600;white-space:nowrap;
-  background:rgba(8,10,24,.66);border:1px solid color-mix(in srgb,var(--dc) 55%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:opacity .3s,box-shadow .2s;will-change:transform}
-.rl i{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 10px var(--dc)}
-.rl b{color:var(--dc);font-size:12px}
-.rl:hover{box-shadow:0 0 24px -4px var(--dc)}
-.rl.back{filter:saturate(.4)}
-body.mbdeep .rl,body.mbdeep .mb-chips,body.mbtour .mb-chips,body.mbtour .mb-hint{opacity:0!important;pointer-events:none}
-body.mbmode{overflow:hidden}
-.mb-hint{position:absolute;z-index:4;left:50%;transform:translateX(-50%);bottom:170px;font-size:12px;color:var(--mute);white-space:nowrap;pointer-events:none;text-shadow:0 1px 8px #000}
-.mb-chips{position:absolute;z-index:4;left:0;right:0;bottom:96px;display:flex;gap:8px;overflow-x:auto;padding:4px clamp(16px,4vw,48px) 10px;scrollbar-width:none;transition:opacity .3s}
-.mb-chips::-webkit-scrollbar{display:none}
-.mbc-chip{flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:14px;background:rgba(10,13,30,.72);border:1px solid var(--line);font-size:13.5px;font-weight:600;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:border-color .2s,transform .25s var(--spring)}
-.mbc-chip:hover{border-color:var(--dc);transform:translateY(-2px)}
-.mbc-chip b{color:var(--dc)}
-.mbc-chip i,.act{flex:none}
-.mbc-chip i{width:9px;height:9px;border-radius:50%}
-.st-hi{background:var(--ok);box-shadow:0 0 10px var(--ok)}.st-mid{background:var(--warn);box-shadow:0 0 8px var(--warn)}.st-lo{background:#6b7399}.st-none{background:transparent;border:1px solid #6b7399}
-em.act{font-style:normal;font-size:11px;font-family:var(--mono);padding:4px 9px;border-radius:99px;color:#060714}
-em.act.st-none{color:var(--mute)}em.act.st-lo{color:#e9edff}
-.mb-cap{position:absolute;z-index:4;left:50%;bottom:118px;transform:translateX(-50%);min-width:260px;max-width:min(92vw,460px);padding:14px 20px;border-color:color-mix(in srgb,var(--dc) 50%,transparent);text-align:center;animation:rin .5s}
-.mb-cap b{display:block;font-size:22px;margin:4px 0}.mb-cap b span{color:var(--dc)}.mb-cap p{color:var(--soft);font-size:14px}
-.mb-panel{position:absolute;z-index:5;top:150px;bottom:96px;inset-inline-end:clamp(12px,3vw,40px);width:min(390px,92vw);overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;
-  border-color:color-mix(in srgb,var(--dc) 35%,transparent);animation:pin .6s cubic-bezier(.2,.8,.2,1);scrollbar-width:thin}
-@keyframes pin{from{opacity:0;transform:translateX(30px)}}
-@keyframes rin{from{opacity:0;transform:translate(-50%,12px)}}
-.rp-head{display:flex;align-items:center;gap:12px}
-.rp-head .cico{width:44px;height:44px;border-radius:13px;flex:none}
-.rp-head b{display:block;font-size:19px}.rp-head span{font-size:11.5px;color:var(--mute)}
-.rp-head em{margin-inline-start:auto}
-.rp-big{display:flex;align-items:center;gap:14px}
-.rp-big>b{font-size:54px;letter-spacing:-.04em;line-height:1;color:var(--dc);text-shadow:0 0 30px color-mix(in srgb,var(--dc) 60%,transparent)}
-.rp-big div{display:flex;flex-direction:column;gap:2px}.rp-big span{font-size:12px;color:var(--mute)}.rp-big small{font-size:13px;color:var(--soft)}
-.rp-big .up{color:var(--ok)}.rp-big .dn{color:var(--bad)}
-.mb-spark{width:100%;height:auto}
-.mb-empty{font-size:12px;color:var(--mute)}
-.rp-wake,.rp-warn{font-size:14px;color:var(--soft);padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px dashed var(--line2)}
-.rp-warn{border-color:rgba(255,198,92,.4)}
-.rp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.rp-stats div{padding:10px 6px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);text-align:center}
-.rp-stats b{display:block;font-size:18px}.rp-stats span{font-size:10.5px;color:var(--mute)}
-.rp-next{font-size:12px;color:var(--dc)}
-.rp-live{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--soft)}
-.btn.sm{height:38px;padding:0 14px;font-size:13.5px;border-radius:12px}
-.rp-games{display:flex;flex-direction:column;gap:6px}
-.rp-games button{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--line);text-align:start;font-size:14px;font-weight:600}
-.rp-games button:hover{border-color:var(--dc)}
-.rp-games .cico{width:30px;height:30px;border-radius:9px;flex:none}
-.rp-games small{margin-inline-start:auto;font-size:11px;color:var(--mute);font-weight:400}
-.rp-sci{padding:12px 14px;border-radius:14px;background:radial-gradient(circle at 0 0,color-mix(in srgb,var(--dc) 14%,transparent),transparent 70%);border:1px solid var(--line)}
-.rp-sci p{font-size:14px;line-height:1.55;margin:6px 0}.rp-sci span{font-size:11px;color:var(--mute)}
-.mb-panel .fine{font-size:11.5px;margin:0}
-.mb-view{position:absolute;z-index:4;left:clamp(12px,3vw,40px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;padding:10px;border-radius:18px;width:206px;transition:opacity .3s}
-.mb-view .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
-.mb-view .seg button{flex:1;height:34px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--soft);white-space:nowrap;padding:0 4px;transition:background .2s,color .2s}
-.mb-view .seg button.on{background:linear-gradient(135deg,rgba(94,242,255,.22),rgba(155,107,255,.28));color:#fff;box-shadow:inset 0 0 0 1px rgba(160,200,255,.35)}
-.mb-view .seg.sm{flex-wrap:wrap}.mb-view .seg.sm button{height:28px;font-size:11px;flex:1 1 40%}
-.mb-view .cutr{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--mute)}
-.mb-view .cutr input{width:100%;accent-color:#9b6bff;opacity:.35;pointer-events:none;transition:opacity .2s}
-.mb-view.cutting .cutr input{opacity:1;pointer-events:auto}
-.mb-view:not(.mri) .cutr{opacity:.55}
-body.mbdeep .mb-view,body.mbtour .mb-view{opacity:0;pointer-events:none}
-.mb-credit{margin:0;font-size:9.5px;line-height:1.35;color:var(--mute);opacity:.75;cursor:help}
-.brainp{cursor:pointer}
-.livec{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;min-height:320px;padding:24px 26px;overflow:hidden;isolation:isolate;border-color:rgba(255,80,110,.28)}
-.lv-cv{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:-2;cursor:crosshair}
-.lv-shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(5,3,10,.82) 0,rgba(5,3,10,.35) 50%,rgba(5,3,10,0) 75%),linear-gradient(0deg,rgba(5,3,10,.55),transparent 55%)}
-.lv-txt{display:flex;flex-direction:column;gap:6px;max-width:500px;pointer-events:none}.lv-txt .kicker{color:#ff6b86;display:flex;align-items:center;gap:8px}
-.lv-dot{width:7px;height:7px;border-radius:50%;background:#ff3b5c;box-shadow:0 0 10px #ff3b5c;transform:scale(calc(1 + var(--hb,0)*.6))}
-.lv-txt b{font-size:clamp(26px,3.2vw,36px);letter-spacing:-.02em}.lv-txt span{color:var(--soft);font-size:14.5px;line-height:1.5;text-shadow:0 1px 12px rgba(0,0,0,.8)}
-.lv-seg{display:flex;gap:4px;padding:4px;border-radius:13px;background:rgba(8,6,16,.6);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);flex:none}
-.lv-seg button{height:38px;padding:0 14px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--soft)}
-.lv-seg button.on{background:rgba(255,255,255,.1);color:#fff}
-@media(max-width:700px){.livec{min-height:300px;flex-direction:column;align-items:flex-start;justify-content:flex-end}.lv-shade{background:linear-gradient(0deg,rgba(5,3,10,.85),rgba(5,3,10,.2) 70%)}}
-.brainp .open-b{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;white-space:nowrap}
-@media(max-width:760px){
-  .mb-top{top:64px}.mb-btns .btn{height:42px;padding:0 14px;font-size:14px}
-  .mb-panel{top:auto;bottom:88px;left:8px;right:8px;width:auto;max-height:47vh;border-radius:22px;animation:pup .6s cubic-bezier(.2,.8,.2,1)}
-  @keyframes pup{from{opacity:0;transform:translateY(40px)}}
-  .mb-hint{bottom:160px;font-size:11px}.mb-chips{bottom:88px}
-  .rl{font-size:11px;padding:4px 9px 4px 6px}.rl b{display:none}
-  .mb-cap{bottom:104px}
-  .mb-view{top:auto;bottom:146px;transform:none;left:8px;right:8px;width:auto;padding:6px;gap:6px}
-  .mb-view .seg button{height:30px;font-size:11.5px}
-  .mb-view .cutr{flex-direction:row;align-items:center;gap:6px}.mb-view .cutr>span{display:none}
-  .mb-view .seg.sm{flex:1;flex-wrap:nowrap}.mb-view .seg.sm button{flex:1;min-width:0;font-size:10px;padding:0 2px;height:26px;overflow:hidden;text-overflow:ellipsis}.mb-view .cutr input{width:76px;flex:none}
-  .mb-hint{bottom:252px;white-space:normal;width:92vw;text-align:center}.mb-credit{display:none}
-  #tabs button{min-width:60px;padding:8px 6px}
-}
-
 </style>
 </head>
 <body>
@@ -637,8 +531,6 @@ body.mbdeep .mb-view,body.mbtour .mb-view{opacity:0;pointer-events:none}
   <pattern id="h2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.9" height="5" fill="#ffc65c"/></pattern>
 </defs></svg>
 
-<script src="neurogl.js"></script>
-<script src="bodygl.js"></script>
 <script>
 'use strict';
 /* =====================================================================
@@ -963,14 +855,8 @@ ar:{g_logic:'المصفوفات',g_numbers:'المتتاليات العددية'
  ach_workouts10:'منتظم · 10 تمارين',ach_workouts50:'مخلص · 50 تمرينًا',ach_streak14:'بركان · 14 يومًا',ach_perfect:'بلا أخطاء · 975+',ach_lvl10:'المستوى 10',ach_nback3:'بهلوان · 3-باك',ach_mot5:'رادار · 5 أجسام',ach_early:'الطائر المبكر',ach_night:'بومة الليل',ach_share:'الرسول',ach_duel:'مبارز · تغلّب على صديق',ach_master:'أستاذ · {d}'}
 };
 for(const k in I18N_V3)Object.assign(I18N[k],I18N_V3[k]);
-const I18N_V4={en:{jr_t:'Journey into the Brain',jr_s:'A scroll-through voyage with 11 live experiments: blind spot, false memory, a real firing neuron — and a world map of minds.',ach_journey:'Explorer · journey into the brain',jr_btn:'Journey into the brain'},ru:{jr_t:'Путешествие внутрь мозга',jr_s:'Путь с 11 живыми экспериментами: слепое пятно, ложная память, настоящий нейрон — и карта умов всего мира.',ach_journey:'Исследователь · путешествие в мозг',jr_btn:'Путешествие в мозг'},es:{jr_t:'Viaje al cerebro',jr_s:'Un viaje con 11 experimentos en vivo: punto ciego, falso recuerdo, una neurona real que se dispara y un mapa mundial de mentes.',ach_journey:'Explorador · viaje al cerebro',jr_btn:'Viaje al cerebro'},pt:{jr_t:'Viagem ao cérebro',jr_s:'Uma viagem com 11 experimentos ao vivo: ponto cego, memória falsa, um neurônio real disparando e um mapa-múndi de mentes.',ach_journey:'Explorador · viagem ao cérebro',jr_btn:'Viagem ao cérebro'},fr:{jr_t:'Voyage au cœur du cerveau',jr_s:'Un voyage avec 11 expériences en direct : tache aveugle, faux souvenir, un vrai neurone qui décharge et une carte mondiale des esprits.',ach_journey:'Explorateur · voyage au cerveau',jr_btn:'Voyage au cerveau'},de:{jr_t:'Reise ins Gehirn',jr_s:'Eine Reise mit 11 Live-Experimenten: blinder Fleck, falsche Erinnerung, ein echtes feuerndes Neuron und eine Weltkarte der Köpfe.',ach_journey:'Entdecker · Reise ins Gehirn',jr_btn:'Reise ins Gehirn'},zh:{jr_t:'大脑之旅',jr_s:'一段包含 11 个实时实验的旅程：盲点、虚假记忆、真实放电的神经元，以及全球心智地图。',ach_journey:'探索者 · 大脑之旅',jr_btn:'大脑之旅'},ja:{jr_t:'脳への旅',jr_s:'11 のライブ実験をめぐる旅：盲点、偽の記憶、本物の発火するニューロン、そして心の世界地図。',ach_journey:'探検家 · 脳への旅',jr_btn:'脳への旅'},hi:{jr_t:'मस्तिष्क के भीतर यात्रा',jr_s:'11 लाइव प्रयोगों वाली यात्रा: ब्लाइंड स्पॉट, झूठी याद, असली फ़ायर होता न्यूरॉन — और मन का विश्व-मानचित्र।',ach_journey:'खोजकर्ता · मस्तिष्क यात्रा',jr_btn:'मस्तिष्क यात्रा'},ar:{jr_t:'رحلة إلى داخل الدماغ',jr_s:'رحلة فيها 11 تجربة حيّة: النقطة العمياء، الذكرى الزائفة، خلية عصبية حقيقية تنطلق — وخريطة عالمية للعقول.',ach_journey:'مستكشف · رحلة إلى الدماغ',jr_btn:'رحلة إلى الدماغ'}};
+const I18N_V4={en:{jr_t:'Journey into the Brain',jr_s:'A scroll-through voyage with 7 live experiments: blind spot, false memory, a real firing neuron — and a world map of minds.',ach_journey:'Explorer · journey into the brain',jr_btn:'Journey into the brain'},ru:{jr_t:'Путешествие внутрь мозга',jr_s:'Путь с 7 живыми экспериментами: слепое пятно, ложная память, настоящий нейрон — и карта умов всего мира.',ach_journey:'Исследователь · путешествие в мозг',jr_btn:'Путешествие в мозг'},es:{jr_t:'Viaje al cerebro',jr_s:'Un viaje con 7 experimentos en vivo: punto ciego, falso recuerdo, una neurona real que se dispara y un mapa mundial de mentes.',ach_journey:'Explorador · viaje al cerebro',jr_btn:'Viaje al cerebro'},pt:{jr_t:'Viagem ao cérebro',jr_s:'Uma viagem com 7 experimentos ao vivo: ponto cego, memória falsa, um neurônio real disparando e um mapa-múndi de mentes.',ach_journey:'Explorador · viagem ao cérebro',jr_btn:'Viagem ao cérebro'},fr:{jr_t:'Voyage au cœur du cerveau',jr_s:'Un voyage avec 7 expériences en direct : tache aveugle, faux souvenir, un vrai neurone qui décharge et une carte mondiale des esprits.',ach_journey:'Explorateur · voyage au cerveau',jr_btn:'Voyage au cerveau'},de:{jr_t:'Reise ins Gehirn',jr_s:'Eine Reise mit 7 Live-Experimenten: blinder Fleck, falsche Erinnerung, ein echtes feuerndes Neuron und eine Weltkarte der Köpfe.',ach_journey:'Entdecker · Reise ins Gehirn',jr_btn:'Reise ins Gehirn'},zh:{jr_t:'大脑之旅',jr_s:'一段包含 7 个实时实验的旅程：盲点、虚假记忆、真实放电的神经元，以及全球心智地图。',ach_journey:'探索者 · 大脑之旅',jr_btn:'大脑之旅'},ja:{jr_t:'脳への旅',jr_s:'7 つのライブ実験をめぐる旅：盲点、偽の記憶、本物の発火するニューロン、そして心の世界地図。',ach_journey:'探検家 · 脳への旅',jr_btn:'脳への旅'},hi:{jr_t:'मस्तिष्क के भीतर यात्रा',jr_s:'7 लाइव प्रयोगों वाली यात्रा: ब्लाइंड स्पॉट, झूठी याद, असली फ़ायर होता न्यूरॉन — और मन का विश्व-मानचित्र।',ach_journey:'खोजकर्ता · मस्तिष्क यात्रा',jr_btn:'मस्तिष्क यात्रा'},ar:{jr_t:'رحلة إلى داخل الدماغ',jr_s:'رحلة فيها 7 تجارب حيّة: النقطة العمياء، الذكرى الزائفة، خلية عصبية حقيقية تنطلق — وخريطة عالمية للعقول.',ach_journey:'مستكشف · رحلة إلى الدماغ',jr_btn:'رحلة إلى الدماغ'}};
 for(const k in I18N_V4)Object.assign(I18N[k],I18N_V4[k]);
-const I18N_V5={"en": {"nav_brain": "Brain", "mb_k": "Your living neural world", "mb_title": "My brain", "mb_sum": "{n} neurons · {s} synapses · {a}/8 regions active", "mb_tour": "Brain tour", "mb_stop": "Stop", "mb_back": "Whole brain", "mb_hint": "Tap a region to fly inside · drag to rotate", "mb_tap": "Tap the network to fire neurons", "mb_stim": "Fire", "mb_rate": "spikes/s", "act_hi": "Active", "act_mid": "Cooling down", "act_lo": "Asleep", "act_none": "Not awakened", "mb_pct": "better than {p}% of people", "mb_delta": "since you started", "mb_neur": "neurons", "mb_syn": "synapses", "mb_my": "myelin", "mb_plays": "sessions", "mb_next_my": "{n} more training days → myelin {m}/5: faster signals", "mb_next_n": "{n} more games → +{k} neurons", "mb_max": "Region fully grown — keep it active!", "mb_train": "Train this region", "mb_games": "Games for this region", "mb_note": "This is a model of your practice: neurons and synapses grow as you train, myelin grows with consistency. It visualises neuroplasticity — it is not a scan of your real brain.", "mb_wake": "Play a game for this region to wake its neurons.", "mb_sleep": "Not trained for {n} days — skills fade without practice. Use it or lose it.", "mb_sci": "Science", "mb_trend": "progress", "mb_open": "Open my brain", "mb_cap_none": "not trained yet", "ra_logic": "Lateral prefrontal cortex", "ra_numbers": "Intraparietal sulcus", "ra_spatial": "Superior parietal lobule", "ra_memory": "Hippocampus · medial temporal lobe", "ra_attention": "Frontal eye fields", "ra_speed": "Visual cortex", "ra_control": "Anterior cingulate cortex", "ra_reflex": "Motor cortex · cerebellum", "rf_logic": "The lateral prefrontal cortex works harder the more rules a puzzle asks you to juggle at once.", "rf_numbers": "Some neurons here fire for a specific number of items — real “number neurons”.", "rf_spatial": "Activity here rises the further you have to mentally rotate a shape.", "rf_memory": "London taxi drivers, who memorise thousands of streets, have a larger rear hippocampus.", "rf_attention": "These fields steer your attention around a scene — even while your eyes stay still.", "rf_speed": "Your visual cortex can tell whether a photo contains an animal in about 150 ms.", "rf_control": "It works like a conflict alarm: it lights up when a word and its colour disagree.", "rf_reflex": "A few weeks of daily practice of a movement enlarges its map in the motor cortex."}, "ru": {"nav_brain": "Мозг", "mb_k": "Твой живой нейронный мир", "mb_title": "Мой мозг", "mb_sum": "{n} нейронов · {s} синапсов · {a}/8 зон активны", "mb_tour": "Прогулка", "mb_stop": "Стоп", "mb_back": "Весь мозг", "mb_hint": "Нажми на зону, чтобы влететь внутрь · крути, чтобы осмотреть", "mb_tap": "Нажми на сеть, чтобы запустить нейроны", "mb_stim": "Импульс", "mb_rate": "имп./с", "act_hi": "Активна", "act_mid": "Остывает", "act_lo": "Спит", "act_none": "Не разбужена", "mb_pct": "лучше, чем у {p}% людей", "mb_delta": "с первого дня", "mb_neur": "нейронов", "mb_syn": "синапсов", "mb_my": "миелин", "mb_plays": "тренировок", "mb_next_my": "Ещё {n} дн. тренировок → миелин {m}/5: сигнал быстрее", "mb_next_n": "Ещё {n} игр → +{k} нейронов", "mb_max": "Зона полностью выросла — держи её активной!", "mb_train": "Прокачать зону", "mb_games": "Игры этой зоны", "mb_note": "Это модель твоей практики: нейроны и синапсы растут от тренировок, миелин — от регулярности. Это визуализация нейропластичности, а не снимок твоего настоящего мозга.", "mb_wake": "Сыграй в игру этой зоны, чтобы разбудить её нейроны.", "mb_sleep": "Без тренировок уже {n} дн. — навыки угасают без практики. Используй или потеряешь.", "mb_sci": "Наука", "mb_trend": "прогресс", "mb_open": "Открыть мой мозг", "mb_cap_none": "ещё не тренировалась", "ra_logic": "Латеральная префронтальная кора", "ra_numbers": "Внутритеменная борозда", "ra_spatial": "Верхняя теменная долька", "ra_memory": "Гиппокамп · медиальная височная доля", "ra_attention": "Лобные глазодвигательные поля", "ra_speed": "Зрительная кора", "ra_control": "Передняя поясная кора", "ra_reflex": "Моторная кора · мозжечок", "rf_logic": "Латеральная префронтальная кора работает тем активнее, чем больше правил задача заставляет удерживать одновременно.", "rf_numbers": "Часть нейронов здесь реагирует на конкретное количество предметов — настоящие «нейроны чисел».", "rf_spatial": "Активность здесь растёт тем сильнее, чем на больший угол нужно мысленно повернуть фигуру.", "rf_memory": "У лондонских таксистов, запоминающих тысячи улиц, задний отдел гиппокампа больше обычного.", "rf_attention": "Эти поля управляют вниманием — даже когда глаза неподвижны.", "rf_speed": "Зрительная кора понимает, есть ли на фото животное, примерно за 150 мс.", "rf_control": "Она работает как сигнализация конфликта: вспыхивает, когда слово и его цвет не совпадают.", "rf_reflex": "Несколько недель ежедневной практики движения увеличивают его карту в моторной коре."}, "es": {"nav_brain": "Cerebro", "mb_k": "Tu mundo neuronal vivo", "mb_title": "Mi cerebro", "mb_sum": "{n} neuronas · {s} sinapsis · {a}/8 regiones activas", "mb_tour": "Recorrido", "mb_stop": "Parar", "mb_back": "Cerebro entero", "mb_hint": "Toca una región para volar dentro · arrastra para girar", "mb_tap": "Toca la red para disparar neuronas", "mb_stim": "Disparar", "mb_rate": "imp./s", "act_hi": "Activa", "act_mid": "Enfriándose", "act_lo": "Dormida", "act_none": "Sin despertar", "mb_pct": "mejor que el {p}% de las personas", "mb_delta": "desde que empezaste", "mb_neur": "neuronas", "mb_syn": "sinapsis", "mb_my": "mielina", "mb_plays": "sesiones", "mb_next_my": "{n} días más de entreno → mielina {m}/5: señales más rápidas", "mb_next_n": "{n} juegos más → +{k} neuronas", "mb_max": "Región totalmente desarrollada: ¡mantenla activa!", "mb_train": "Entrenar esta región", "mb_games": "Juegos de esta región", "mb_note": "Es un modelo de tu práctica: neuronas y sinapsis crecen al entrenar y la mielina con la constancia. Visualiza la neuroplasticidad; no es un escáner de tu cerebro real.", "mb_wake": "Juega un juego de esta región para despertar sus neuronas.", "mb_sleep": "{n} días sin entrenar: las habilidades se desvanecen sin práctica. Úsala o piérdela.", "mb_sci": "Ciencia", "mb_trend": "progreso", "mb_open": "Abrir mi cerebro", "mb_cap_none": "aún sin entrenar", "ra_logic": "Corteza prefrontal lateral", "ra_numbers": "Surco intraparietal", "ra_spatial": "Lóbulo parietal superior", "ra_memory": "Hipocampo · lóbulo temporal medial", "ra_attention": "Campos oculares frontales", "ra_speed": "Corteza visual", "ra_control": "Corteza cingulada anterior", "ra_reflex": "Corteza motora · cerebelo", "rf_logic": "La corteza prefrontal lateral trabaja más cuantas más reglas te obliga a manejar a la vez un problema.", "rf_numbers": "Algunas neuronas de aquí se activan ante una cantidad concreta de objetos: auténticas «neuronas numéricas».", "rf_spatial": "La actividad aquí crece cuanto más tienes que girar mentalmente una figura.", "rf_memory": "Los taxistas de Londres, que memorizan miles de calles, tienen un hipocampo posterior más grande.", "rf_attention": "Estos campos dirigen tu atención por la escena, incluso con los ojos quietos.", "rf_speed": "Tu corteza visual sabe si una foto contiene un animal en unos 150 ms.", "rf_control": "Funciona como una alarma de conflicto: se enciende cuando una palabra y su color no coinciden.", "rf_reflex": "Unas semanas de práctica diaria de un movimiento amplían su mapa en la corteza motora."}, "pt": {"nav_brain": "Cérebro", "mb_k": "Seu mundo neural vivo", "mb_title": "Meu cérebro", "mb_sum": "{n} neurônios · {s} sinapses · {a}/8 regiões ativas", "mb_tour": "Passeio", "mb_stop": "Parar", "mb_back": "Cérebro inteiro", "mb_hint": "Toque numa região para voar para dentro · arraste para girar", "mb_tap": "Toque na rede para disparar neurônios", "mb_stim": "Disparar", "mb_rate": "imp./s", "act_hi": "Ativa", "act_mid": "Esfriando", "act_lo": "Dormindo", "act_none": "Não despertada", "mb_pct": "melhor que {p}% das pessoas", "mb_delta": "desde o início", "mb_neur": "neurônios", "mb_syn": "sinapses", "mb_my": "mielina", "mb_plays": "sessões", "mb_next_my": "Mais {n} dias de treino → mielina {m}/5: sinais mais rápidos", "mb_next_n": "Mais {n} jogos → +{k} neurônios", "mb_max": "Região totalmente desenvolvida — mantenha-a ativa!", "mb_train": "Treinar esta região", "mb_games": "Jogos desta região", "mb_note": "Este é um modelo da sua prática: neurônios e sinapses crescem com o treino, a mielina com a constância. Visualiza a neuroplasticidade — não é um exame do seu cérebro real.", "mb_wake": "Jogue um jogo desta região para despertar seus neurônios.", "mb_sleep": "{n} dias sem treinar — habilidades somem sem prática. Use ou perca.", "mb_sci": "Ciência", "mb_trend": "progresso", "mb_open": "Abrir meu cérebro", "mb_cap_none": "ainda não treinada", "ra_logic": "Córtex pré-frontal lateral", "ra_numbers": "Sulco intraparietal", "ra_spatial": "Lóbulo parietal superior", "ra_memory": "Hipocampo · lobo temporal medial", "ra_attention": "Campos oculares frontais", "ra_speed": "Córtex visual", "ra_control": "Córtex cingulado anterior", "ra_reflex": "Córtex motor · cerebelo", "rf_logic": "O córtex pré-frontal lateral trabalha mais quanto mais regras um problema exige manter ao mesmo tempo.", "rf_numbers": "Alguns neurônios daqui disparam para uma quantidade específica de itens — verdadeiros “neurônios numéricos”.", "rf_spatial": "A atividade aqui aumenta quanto mais você precisa girar mentalmente uma forma.", "rf_memory": "Taxistas de Londres, que decoram milhares de ruas, têm o hipocampo posterior maior.", "rf_attention": "Esses campos guiam sua atenção pela cena — mesmo com os olhos parados.", "rf_speed": "Seu córtex visual sabe se uma foto tem um animal em cerca de 150 ms.", "rf_control": "Funciona como um alarme de conflito: acende quando a palavra e a cor não combinam.", "rf_reflex": "Algumas semanas de prática diária de um movimento ampliam seu mapa no córtex motor."}, "fr": {"nav_brain": "Cerveau", "mb_k": "Votre monde neuronal vivant", "mb_title": "Mon cerveau", "mb_sum": "{n} neurones · {s} synapses · {a}/8 régions actives", "mb_tour": "Visite", "mb_stop": "Arrêter", "mb_back": "Cerveau entier", "mb_hint": "Touchez une région pour y entrer · glissez pour tourner", "mb_tap": "Touchez le réseau pour activer des neurones", "mb_stim": "Activer", "mb_rate": "imp./s", "act_hi": "Active", "act_mid": "Se refroidit", "act_lo": "Endormie", "act_none": "Pas encore éveillée", "mb_pct": "mieux que {p} % des gens", "mb_delta": "depuis vos débuts", "mb_neur": "neurones", "mb_syn": "synapses", "mb_my": "myéline", "mb_plays": "séances", "mb_next_my": "Encore {n} jours d’entraînement → myéline {m}/5 : signaux plus rapides", "mb_next_n": "Encore {n} jeux → +{k} neurones", "mb_max": "Région entièrement développée — gardez-la active !", "mb_train": "Entraîner cette région", "mb_games": "Jeux de cette région", "mb_note": "C’est un modèle de votre pratique : neurones et synapses poussent avec l’entraînement, la myéline avec la régularité. Une visualisation de la neuroplasticité, pas une image de votre vrai cerveau.", "mb_wake": "Jouez à un jeu de cette région pour éveiller ses neurones.", "mb_sleep": "{n} jours sans entraînement — les compétences s’effacent sans pratique. Utilisez-la ou perdez-la.", "mb_sci": "Science", "mb_trend": "progression", "mb_open": "Ouvrir mon cerveau", "mb_cap_none": "pas encore entraînée", "ra_logic": "Cortex préfrontal latéral", "ra_numbers": "Sillon intrapariétal", "ra_spatial": "Lobule pariétal supérieur", "ra_memory": "Hippocampe · lobe temporal médian", "ra_attention": "Champs oculomoteurs frontaux", "ra_speed": "Cortex visuel", "ra_control": "Cortex cingulaire antérieur", "ra_reflex": "Cortex moteur · cervelet", "rf_logic": "Le cortex préfrontal latéral travaille d’autant plus qu’un problème impose de jongler avec de règles à la fois.", "rf_numbers": "Certains neurones ici répondent à un nombre précis d’objets — de vrais « neurones des nombres ».", "rf_spatial": "L’activité augmente d’autant plus qu’il faut faire tourner mentalement une forme.", "rf_memory": "Les chauffeurs de taxi londoniens, qui mémorisent des milliers de rues, ont un hippocampe postérieur plus grand.", "rf_attention": "Ces champs orientent votre attention dans une scène — même quand vos yeux ne bougent pas.", "rf_speed": "Votre cortex visuel sait si une photo contient un animal en 150 ms environ.", "rf_control": "Il agit comme une alarme de conflit : il s’allume quand un mot et sa couleur se contredisent.", "rf_reflex": "Quelques semaines de pratique quotidienne d’un geste agrandissent sa carte dans le cortex moteur."}, "de": {"nav_brain": "Gehirn", "mb_k": "Deine lebendige Neuronenwelt", "mb_title": "Mein Gehirn", "mb_sum": "{n} Neuronen · {s} Synapsen · {a}/8 Regionen aktiv", "mb_tour": "Rundgang", "mb_stop": "Stopp", "mb_back": "Ganzes Gehirn", "mb_hint": "Tippe auf eine Region, um hineinzufliegen · ziehen zum Drehen", "mb_tap": "Tippe auf das Netz, um Neuronen feuern zu lassen", "mb_stim": "Feuern", "mb_rate": "Imp./s", "act_hi": "Aktiv", "act_mid": "Kühlt ab", "act_lo": "Schläft", "act_none": "Nicht geweckt", "mb_pct": "besser als {p} % der Menschen", "mb_delta": "seit deinem Start", "mb_neur": "Neuronen", "mb_syn": "Synapsen", "mb_my": "Myelin", "mb_plays": "Einheiten", "mb_next_my": "Noch {n} Trainingstage → Myelin {m}/5: schnellere Signale", "mb_next_n": "Noch {n} Spiele → +{k} Neuronen", "mb_max": "Region voll ausgebaut — halte sie aktiv!", "mb_train": "Diese Region trainieren", "mb_games": "Spiele dieser Region", "mb_note": "Dies ist ein Modell deiner Übung: Neuronen und Synapsen wachsen mit dem Training, Myelin mit der Regelmäßigkeit. Es veranschaulicht Neuroplastizität — es ist kein Scan deines echten Gehirns.", "mb_wake": "Spiele ein Spiel dieser Region, um ihre Neuronen zu wecken.", "mb_sleep": "Seit {n} Tagen nicht trainiert — Fähigkeiten verblassen ohne Übung. Nutze sie oder verliere sie.", "mb_sci": "Wissenschaft", "mb_trend": "Fortschritt", "mb_open": "Mein Gehirn öffnen", "mb_cap_none": "noch nicht trainiert", "ra_logic": "Lateraler präfrontaler Kortex", "ra_numbers": "Intraparietaler Sulcus", "ra_spatial": "Oberer Scheitellappen", "ra_memory": "Hippocampus · medialer Schläfenlappen", "ra_attention": "Frontale Augenfelder", "ra_speed": "Sehrinde", "ra_control": "Vorderer cingulärer Kortex", "ra_reflex": "Motorkortex · Kleinhirn", "rf_logic": "Der laterale präfrontale Kortex arbeitet umso härter, je mehr Regeln ein Rätsel gleichzeitig verlangt.", "rf_numbers": "Manche Neuronen hier feuern bei einer bestimmten Anzahl von Dingen — echte „Zahlenneuronen“.", "rf_spatial": "Die Aktivität steigt, je weiter du eine Form im Kopf drehen musst.", "rf_memory": "Londoner Taxifahrer, die Tausende Straßen lernen, haben einen größeren hinteren Hippocampus.", "rf_attention": "Diese Felder lenken deine Aufmerksamkeit durch eine Szene — selbst wenn die Augen stillhalten.", "rf_speed": "Deine Sehrinde erkennt in etwa 150 ms, ob auf einem Foto ein Tier ist.", "rf_control": "Er wirkt wie ein Konfliktalarm: Er leuchtet auf, wenn Wort und Farbe nicht zusammenpassen.", "rf_reflex": "Wenige Wochen tägliches Üben einer Bewegung vergrößern ihre Karte im Motorkortex."}, "zh": {"nav_brain": "大脑", "mb_k": "你的鲜活神经世界", "mb_title": "我的大脑", "mb_sum": "{n} 个神经元 · {s} 个突触 · {a}/8 个脑区活跃", "mb_tour": "漫游", "mb_stop": "停止", "mb_back": "整个大脑", "mb_hint": "点击脑区飞入其中 · 拖动旋转", "mb_tap": "点击网络让神经元放电", "mb_stim": "放电", "mb_rate": "次/秒", "act_hi": "活跃", "act_mid": "正在冷却", "act_lo": "沉睡", "act_none": "尚未唤醒", "mb_pct": "优于 {p}% 的人", "mb_delta": "自开始以来", "mb_neur": "神经元", "mb_syn": "突触", "mb_my": "髓鞘", "mb_plays": "次训练", "mb_next_my": "再训练 {n} 天 → 髓鞘 {m}/5：信号更快", "mb_next_n": "再玩 {n} 局 → +{k} 个神经元", "mb_max": "该脑区已完全成长——保持活跃！", "mb_train": "训练这个脑区", "mb_games": "该脑区的游戏", "mb_note": "这是你练习的模型：神经元和突触随训练增长，髓鞘随坚持增长。它展示的是神经可塑性，而不是你真实大脑的扫描图。", "mb_wake": "玩一局这个脑区的游戏来唤醒它的神经元。", "mb_sleep": "已 {n} 天没有训练——技能不练就会退化。用进废退。", "mb_sci": "科学", "mb_trend": "进度", "mb_open": "打开我的大脑", "mb_cap_none": "尚未训练", "ra_logic": "外侧前额叶皮层", "ra_numbers": "顶内沟", "ra_spatial": "顶上小叶", "ra_memory": "海马体 · 内侧颞叶", "ra_attention": "额叶眼区", "ra_speed": "视觉皮层", "ra_control": "前扣带皮层", "ra_reflex": "运动皮层 · 小脑", "rf_logic": "题目要求同时处理的规则越多，外侧前额叶皮层就越努力工作。", "rf_numbers": "这里有些神经元只对特定数量的物体放电——真正的“数字神经元”。", "rf_spatial": "你需要在脑中把图形旋转得越多，这里的活动就越强。", "rf_memory": "记住数千条街道的伦敦出租车司机，海马体后部更大。", "rf_attention": "这些区域在场景中引导你的注意力——即使眼睛不动。", "rf_speed": "你的视觉皮层大约 150 毫秒就能判断照片里有没有动物。", "rf_control": "它像冲突警报：当字义和颜色不一致时就会亮起。", "rf_reflex": "每天练习一个动作，几周后它在运动皮层中的“地图”就会扩大。"}, "ja": {"nav_brain": "脳", "mb_k": "あなたの生きた神経の世界", "mb_title": "わたしの脳", "mb_sum": "ニューロン {n} · シナプス {s} · 活動中の領域 {a}/8", "mb_tour": "脳内ツアー", "mb_stop": "停止", "mb_back": "脳全体", "mb_hint": "領域をタップして中へ · ドラッグで回転", "mb_tap": "ネットワークをタップしてニューロンを発火", "mb_stim": "発火", "mb_rate": "回/秒", "act_hi": "活発", "act_mid": "冷めつつある", "act_lo": "休眠中", "act_none": "未覚醒", "mb_pct": "{p}% の人より上", "mb_delta": "開始時から", "mb_neur": "ニューロン", "mb_syn": "シナプス", "mb_my": "ミエリン", "mb_plays": "回のトレーニング", "mb_next_my": "あと {n} 日トレーニング → ミエリン {m}/5：信号が速く", "mb_next_n": "あと {n} ゲーム → ニューロン +{k}", "mb_max": "この領域は完全に成長——活発に保とう！", "mb_train": "この領域を鍛える", "mb_games": "この領域のゲーム", "mb_note": "これはあなたの練習のモデルです。ニューロンとシナプスはトレーニングで、ミエリンは継続で増えます。神経可塑性の視覚化であり、実際の脳のスキャンではありません。", "mb_wake": "この領域のゲームをプレイしてニューロンを目覚めさせよう。", "mb_sleep": "{n} 日トレーニングなし——能力は使わないと衰えます。使わなければ失う。", "mb_sci": "サイエンス", "mb_trend": "推移", "mb_open": "わたしの脳を開く", "mb_cap_none": "まだトレーニングなし", "ra_logic": "外側前頭前野", "ra_numbers": "頭頂間溝", "ra_spatial": "上頭頂小葉", "ra_memory": "海馬 · 内側側頭葉", "ra_attention": "前頭眼野", "ra_speed": "視覚野", "ra_control": "前帯状皮質", "ra_reflex": "運動野 · 小脳", "rf_logic": "同時に扱うルールが多い問題ほど、外側前頭前野は激しく働きます。", "rf_numbers": "ここには特定の個数にだけ反応するニューロン——本物の「数ニューロン」があります。", "rf_spatial": "図形を頭の中で大きく回転させるほど、ここの活動は高まります。", "rf_memory": "何千もの道を覚えるロンドンのタクシー運転手は、海馬の後部が大きいのです。", "rf_attention": "この領域は、目が動かなくても場面の中で注意を動かします。", "rf_speed": "視覚野は写真に動物がいるかを約 150 ミリ秒で判断できます。", "rf_control": "言葉と色が食い違うと光る、葛藤の警報装置のような領域です。", "rf_reflex": "ある動作を毎日数週間練習すると、運動野でのその動作の地図が広がります。"}, "hi": {"nav_brain": "मस्तिष्क", "mb_k": "आपकी जीवित न्यूरॉन दुनिया", "mb_title": "मेरा मस्तिष्क", "mb_sum": "{n} न्यूरॉन · {s} सिनैप्स · {a}/8 क्षेत्र सक्रिय", "mb_tour": "सैर", "mb_stop": "रोकें", "mb_back": "पूरा मस्तिष्क", "mb_hint": "अंदर उड़ने के लिए किसी क्षेत्र पर टैप करें · घुमाने के लिए खींचें", "mb_tap": "न्यूरॉन फ़ायर करने के लिए नेटवर्क पर टैप करें", "mb_stim": "फ़ायर", "mb_rate": "आवेग/से", "act_hi": "सक्रिय", "act_mid": "ठंडा हो रहा", "act_lo": "सो रहा", "act_none": "जगाया नहीं", "mb_pct": "{p}% लोगों से बेहतर", "mb_delta": "शुरुआत से", "mb_neur": "न्यूरॉन", "mb_syn": "सिनैप्स", "mb_my": "माइलिन", "mb_plays": "सत्र", "mb_next_my": "{n} दिन और अभ्यास → माइलिन {m}/5: तेज़ संकेत", "mb_next_n": "{n} गेम और → +{k} न्यूरॉन", "mb_max": "क्षेत्र पूरी तरह विकसित — इसे सक्रिय रखें!", "mb_train": "इस क्षेत्र को प्रशिक्षित करें", "mb_games": "इस क्षेत्र के गेम", "mb_note": "यह आपके अभ्यास का मॉडल है: न्यूरॉन और सिनैप्स प्रशिक्षण से बढ़ते हैं, माइलिन नियमितता से। यह न्यूरोप्लास्टिसिटी का चित्रण है — आपके असली मस्तिष्क का स्कैन नहीं।", "mb_wake": "इस क्षेत्र के न्यूरॉन जगाने के लिए इसका कोई गेम खेलें।", "mb_sleep": "{n} दिन से अभ्यास नहीं — बिना अभ्यास कौशल फीके पड़ते हैं। इस्तेमाल करें, वरना खो देंगे।", "mb_sci": "विज्ञान", "mb_trend": "प्रगति", "mb_open": "मेरा मस्तिष्क खोलें", "mb_cap_none": "अभी प्रशिक्षित नहीं", "ra_logic": "पार्श्व प्रीफ्रंटल कॉर्टेक्स", "ra_numbers": "इंट्रापैरायटल सल्कस", "ra_spatial": "सुपीरियर पैरायटल लोब्यूल", "ra_memory": "हिप्पोकैम्पस · मीडियल टेम्पोरल लोब", "ra_attention": "फ्रंटल आई फ़ील्ड्स", "ra_speed": "दृश्य कॉर्टेक्स", "ra_control": "एंटीरियर सिंगुलेट कॉर्टेक्स", "ra_reflex": "मोटर कॉर्टेक्स · सेरिबेलम", "rf_logic": "पहेली जितने ज़्यादा नियम एक साथ सँभालने को कहती है, पार्श्व प्रीफ्रंटल कॉर्टेक्स उतनी मेहनत करता है।", "rf_numbers": "यहाँ कुछ न्यूरॉन चीज़ों की किसी ख़ास संख्या पर ही फ़ायर करते हैं — असली “संख्या न्यूरॉन”।", "rf_spatial": "किसी आकृति को मन में जितना ज़्यादा घुमाना पड़े, यहाँ गतिविधि उतनी बढ़ती है।", "rf_memory": "हज़ारों सड़कें याद रखने वाले लंदन के टैक्सी ड्राइवरों का पिछला हिप्पोकैम्पस बड़ा होता है।", "rf_attention": "ये क्षेत्र दृश्य में आपका ध्यान घुमाते हैं — आँखें स्थिर रहने पर भी।", "rf_speed": "आपका दृश्य कॉर्टेक्स लगभग 150 ms में बता देता है कि फ़ोटो में कोई जानवर है या नहीं।", "rf_control": "यह टकराव के अलार्म जैसा है: शब्द और उसका रंग मेल न खाएँ तो जल उठता है।", "rf_reflex": "किसी हरकत का कुछ हफ़्ते रोज़ अभ्यास करने से मोटर कॉर्टेक्स में उसका नक्शा बड़ा हो जाता है।"}, "ar": {"nav_brain": "الدماغ", "mb_k": "عالمك العصبي الحي", "mb_title": "دماغي", "mb_sum": "{n} خلية عصبية · {s} مشبك · {a}/8 مناطق نشطة", "mb_tour": "جولة", "mb_stop": "إيقاف", "mb_back": "الدماغ كله", "mb_hint": "اضغط على منطقة لتطير إلى داخلها · اسحب للتدوير", "mb_tap": "اضغط على الشبكة لإطلاق الخلايا", "mb_stim": "إطلاق", "mb_rate": "نبضة/ث", "act_hi": "نشطة", "act_mid": "تبرد", "act_lo": "نائمة", "act_none": "لم تستيقظ", "mb_pct": "أفضل من {p}% من الناس", "mb_delta": "منذ البداية", "mb_neur": "خلية", "mb_syn": "مشبك", "mb_my": "ميالين", "mb_plays": "جلسات", "mb_next_my": "{n} أيام تدريب أخرى ← ميالين {m}/5: إشارات أسرع", "mb_next_n": "{n} ألعاب أخرى ← +{k} خلايا", "mb_max": "اكتمل نمو المنطقة — حافظ على نشاطها!", "mb_train": "درّب هذه المنطقة", "mb_games": "ألعاب هذه المنطقة", "mb_note": "هذا نموذج لتدريبك: تنمو الخلايا والمشابك مع التدريب، والميالين مع الانتظام. إنه تصوير للمرونة العصبية، وليس مسحًا لدماغك الحقيقي.", "mb_wake": "العب لعبة لهذه المنطقة لتوقظ خلاياها.", "mb_sleep": "لم تتدرب منذ {n} أيام — المهارات تخبو دون ممارسة. استخدمها أو تفقدها.", "mb_sci": "العلم", "mb_trend": "التقدم", "mb_open": "افتح دماغي", "mb_cap_none": "لم تُدرَّب بعد", "ra_logic": "القشرة الجبهية الأمامية الجانبية", "ra_numbers": "التلم داخل الجداري", "ra_spatial": "الفصيص الجداري العلوي", "ra_memory": "الحُصين · الفص الصدغي الإنسي", "ra_attention": "الحقول البصرية الجبهية", "ra_speed": "القشرة البصرية", "ra_control": "القشرة الحزامية الأمامية", "ra_reflex": "القشرة الحركية · المخيخ", "rf_logic": "تعمل القشرة الجبهية الأمامية الجانبية بجهد أكبر كلما طلب اللغز التعامل مع قواعد أكثر في وقت واحد.", "rf_numbers": "بعض الخلايا هنا تنطلق لعدد محدد من الأشياء — «خلايا أعداد» حقيقية.", "rf_spatial": "يزداد النشاط هنا كلما احتجت إلى تدوير شكل في ذهنك أكثر.", "rf_memory": "سائقو سيارات الأجرة في لندن، الذين يحفظون آلاف الشوارع، لديهم حُصين خلفي أكبر.", "rf_attention": "توجّه هذه الحقول انتباهك في المشهد — حتى وعيناك ثابتتان.", "rf_speed": "تعرف قشرتك البصرية إن كانت الصورة تحوي حيوانًا في نحو 150 مللي ثانية.", "rf_control": "تعمل كإنذار للتعارض: تضيء حين تختلف الكلمة عن لونها.", "rf_reflex": "بضعة أسابيع من التدريب اليومي على حركة ما توسّع خريطتها في القشرة الحركية."}};
-for(const k in I18N_V5)Object.assign(I18N[k],I18N_V5[k]);
-const I18N_V6={"en": {"v_mri": "MRI", "v_neural": "Neurons", "v_xray": "X-ray", "v_cut": "Slice", "cut_sag": "Sagittal", "cut_cor": "Coronal", "cut_ax": "Axial", "cut_off": "Off", "mri_load": "Loading real MRI…", "mri_note": "Real anatomy: the MNI ICBM152 average brain, built from MRI scans of 152 people. The glow shows the networks you train.", "mri_credit": "MRI: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "ru": {"v_mri": "МРТ", "v_neural": "Нейроны", "v_xray": "Рентген", "v_cut": "Срез", "cut_sag": "Сагиттальный", "cut_cor": "Корональный", "cut_ax": "Аксиальный", "cut_off": "Выкл", "mri_load": "Загружаю настоящую МРТ…", "mri_note": "Настоящая анатомия: усреднённый мозг MNI ICBM152 по МРТ 152 человек. Свечение — сети, которые ты тренируешь.", "mri_credit": "МРТ: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "es": {"v_mri": "RM", "v_neural": "Neuronas", "v_xray": "Rayos X", "v_cut": "Corte", "cut_sag": "Sagital", "cut_cor": "Coronal", "cut_ax": "Axial", "cut_off": "No", "mri_load": "Cargando resonancia real…", "mri_note": "Anatomía real: el cerebro promedio MNI ICBM152, creado a partir de resonancias de 152 personas. El brillo muestra las redes que entrenas.", "mri_credit": "RM: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "pt": {"v_mri": "RM", "v_neural": "Neurônios", "v_xray": "Raio-X", "v_cut": "Corte", "cut_sag": "Sagital", "cut_cor": "Coronal", "cut_ax": "Axial", "cut_off": "Não", "mri_load": "Carregando ressonância real…", "mri_note": "Anatomia real: o cérebro médio MNI ICBM152, feito a partir de ressonâncias de 152 pessoas. O brilho mostra as redes que você treina.", "mri_credit": "RM: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "fr": {"v_mri": "IRM", "v_neural": "Neurones", "v_xray": "Rayons X", "v_cut": "Coupe", "cut_sag": "Sagittale", "cut_cor": "Coronale", "cut_ax": "Axiale", "cut_off": "Non", "mri_load": "Chargement de la vraie IRM…", "mri_note": "Anatomie réelle : le cerveau moyen MNI ICBM152, construit à partir des IRM de 152 personnes. La lueur montre les réseaux que vous entraînez.", "mri_credit": "IRM : MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "de": {"v_mri": "MRT", "v_neural": "Neuronen", "v_xray": "Röntgen", "v_cut": "Schnitt", "cut_sag": "Sagittal", "cut_cor": "Koronal", "cut_ax": "Axial", "cut_off": "Aus", "mri_load": "Echtes MRT wird geladen…", "mri_note": "Echte Anatomie: das MNI-ICBM152-Durchschnittsgehirn aus MRT-Aufnahmen von 152 Menschen. Das Leuchten zeigt die Netzwerke, die du trainierst.", "mri_credit": "MRT: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "zh": {"v_mri": "核磁", "v_neural": "神经元", "v_xray": "透视", "v_cut": "切面", "cut_sag": "矢状面", "cut_cor": "冠状面", "cut_ax": "轴状面", "cut_off": "关", "mri_load": "正在加载真实核磁共振…", "mri_note": "真实解剖：MNI ICBM152 平均大脑，由 152 人的核磁共振扫描构建。发光部分是你正在训练的网络。", "mri_credit": "MRI：MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "ja": {"v_mri": "MRI", "v_neural": "ニューロン", "v_xray": "透視", "v_cut": "断面", "cut_sag": "矢状断", "cut_cor": "冠状断", "cut_ax": "水平断", "cut_off": "オフ", "mri_load": "本物のMRIを読み込み中…", "mri_note": "本物の解剖：152人のMRIから作られた平均脳 MNI ICBM152。光っているのはあなたが鍛えているネットワークです。", "mri_credit": "MRI：MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "hi": {"v_mri": "MRI", "v_neural": "न्यूरॉन", "v_xray": "एक्स-रे", "v_cut": "स्लाइस", "cut_sag": "सैजिटल", "cut_cor": "कोरोनल", "cut_ax": "एक्सियल", "cut_off": "बंद", "mri_load": "असली MRI लोड हो रहा है…", "mri_note": "असली शरीर-रचना: MNI ICBM152 औसत मस्तिष्क, 152 लोगों के MRI स्कैन से बना। चमक वे नेटवर्क दिखाती है जिन्हें आप प्रशिक्षित करते हैं।", "mri_credit": "MRI: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}, "ar": {"v_mri": "رنين", "v_neural": "عصبونات", "v_xray": "أشعة", "v_cut": "مقطع", "cut_sag": "سهمي", "cut_cor": "إكليلي", "cut_ax": "محوري", "cut_off": "إيقاف", "mri_load": "جارٍ تحميل رنين مغناطيسي حقيقي…", "mri_note": "تشريح حقيقي: الدماغ المتوسط MNI ICBM152 المبني من صور رنين لـ 152 شخصًا. التوهج يُظهر الشبكات التي تدرّبها.", "mri_credit": "الرنين: MNI ICBM152 2009 © McConnell Brain Imaging Centre, McGill"}};
-for(const k in I18N_V6)Object.assign(I18N[k],I18N_V6[k]);
-const I18N_V7={"en": {"lv_k": "LIVE · inside your body", "lv_t": "Living Body", "lv_b": "Blood: your brain takes ~15% of every heartbeat — about 750 ml a minute.", "lv_n": "Neurons: every flash is an action potential racing down an axon at up to 120 m/s.", "lv_cb": "Blood", "lv_cn": "Neurons"}, "ru": {"lv_k": "ЖИВОЕ · внутри тебя", "lv_t": "Живое тело", "lv_b": "Кровь: мозг забирает ~15% каждого удара сердца — около 750 мл в минуту.", "lv_n": "Нейроны: каждая вспышка — потенциал действия, бегущий по аксону со скоростью до 120 м/с.", "lv_cb": "Кровь", "lv_cn": "Нейроны"}, "es": {"lv_k": "EN VIVO · dentro de ti", "lv_t": "Cuerpo vivo", "lv_b": "Sangre: tu cerebro recibe ~15% de cada latido, unos 750 ml por minuto.", "lv_n": "Neuronas: cada destello es un potencial de acción que recorre el axón a hasta 120 m/s.", "lv_cb": "Sangre", "lv_cn": "Neuronas"}, "pt": {"lv_k": "AO VIVO · dentro de você", "lv_t": "Corpo vivo", "lv_b": "Sangue: seu cérebro recebe ~15% de cada batimento, cerca de 750 ml por minuto.", "lv_n": "Neurônios: cada clarão é um potencial de ação correndo pelo axônio a até 120 m/s.", "lv_cb": "Sangue", "lv_cn": "Neurônios"}, "fr": {"lv_k": "EN DIRECT · en toi", "lv_t": "Corps vivant", "lv_b": "Sang : ton cerveau reçoit ~15 % de chaque battement, environ 750 ml par minute.", "lv_n": "Neurones : chaque éclair est un potentiel d'action qui file le long de l'axone jusqu'à 120 m/s.", "lv_cb": "Sang", "lv_cn": "Neurones"}, "de": {"lv_k": "LIVE · in dir", "lv_t": "Lebender Körper", "lv_b": "Blut: Dein Gehirn bekommt ~15 % jedes Herzschlags, etwa 750 ml pro Minute.", "lv_n": "Neuronen: Jeder Blitz ist ein Aktionspotenzial, das mit bis zu 120 m/s über das Axon rast.", "lv_cb": "Blut", "lv_cn": "Neuronen"}, "zh": {"lv_k": "实时 · 你的身体里", "lv_t": "活的身体", "lv_b": "血液：大脑分走每次心跳约 15% 的血液——每分钟约 750 毫升。", "lv_n": "神经元：每一次闪光都是沿轴突以最高 120 米/秒传播的动作电位。", "lv_cb": "血液", "lv_cn": "神经元"}, "ja": {"lv_k": "ライブ · あなたの体の中", "lv_t": "生きている体", "lv_b": "血液：脳は心拍ごとの血液の約15%、毎分およそ750mlを受け取ります。", "lv_n": "ニューロン：光の一つひとつが、軸索を最大秒速120mで走る活動電位です。", "lv_cb": "血液", "lv_cn": "ニューロン"}, "hi": {"lv_k": "लाइव · आपके भीतर", "lv_t": "जीवित शरीर", "lv_b": "रक्त: दिमाग हर धड़कन का ~15% लेता है — लगभग 750 मि.ली. प्रति मिनट।", "lv_n": "न्यूरॉन: हर चमक एक ऐक्शन पोटेंशियल है जो एक्सॉन पर 120 मी/से तक दौड़ता है।", "lv_cb": "रक्त", "lv_cn": "न्यूरॉन"}, "ar": {"lv_k": "مباشر · داخلك", "lv_t": "الجسد الحي", "lv_b": "الدم: يأخذ دماغك ~15% من كل نبضة — نحو 750 مل في الدقيقة.", "lv_n": "العصبونات: كل ومضة جهد فعل ينطلق على المحور بسرعة تصل إلى 120 م/ث.", "lv_cb": "الدم", "lv_cn": "العصبونات"}};
-for(const k in I18N_V7)Object.assign(I18N[k],I18N_V7[k]);
 
 
 let L='en';
@@ -1783,10 +1669,6 @@ async function downloadCard(c,sc,top,seed){
   requestAnimationFrame(frame);
 })();
 
-/* body rhythm: breath (≈11/min) and heartbeat (≈72 bpm) as CSS vars --br / --hb, so the whole UI breathes */
-if(!reduceMotion)setInterval(()=>{const T=performance.now()/1000,hp=(T*1.2)%1,bp=(T/5.4)%1,ds=document.documentElement.style;
-  ds.setProperty('--hb',(Math.exp(-Math.pow(hp/.05,2))+.55*Math.exp(-Math.pow((hp-.27)/.06,2))).toFixed(3));ds.setProperty('--br',(bp<.4?(1-Math.cos(bp/.4*Math.PI))/2:(1+Math.cos((bp-.4)/.6*Math.PI))/2).toFixed(3))},50);
-
 /* =====================================================================
    v3 GAMES — nine extra training games, each tied to one brain domain.
    Each: (stage, done, opts) → done({z, raw, lvl})  — lvl persists per game.
@@ -2113,7 +1995,7 @@ function achToasts(list,delay){(list||[]).forEach(([id,ic],i)=>setTimeout(()=>{t
 function recordGame(id,res,daily){
   const dom=GDOM[id],z=clamp(ageAdj(dom,res.z,P.age),-3.3,3.3),pts=ptsOf(z),k=dkey(),h=new Date().getHours();
   const prev=P.skill[dom],prevBpi=prev==null?null:Math.round(100+15*prev),prevLvl=lvlInfo(P.xp).l,prevBest=P.best[id]||0;
-  P.skill[dom]=prev==null?z:prev*.7+z*.3;trackDomain(dom);
+  P.skill[dom]=prev==null?z:prev*.7+z*.3;
   P.plays[id]=(P.plays[id]||0)+1;P.games++;if(pts>prevBest)P.best[id]=pts;
   if(res.lvl!=null&&isFinite(res.lvl))P.glvl[id]=res.lvl;
   if(h>=23||h<4)P.night=1;
@@ -2126,7 +2008,7 @@ function recordGame(id,res,daily){
   return{z,pts,xp,newBest:pts>prevBest&&prevBest>0,prevBpi,bpi:Math.round(100+15*P.skill[dom]),lvlUp:lvlInfo(P.xp).l>prevLvl,finished,ach,pct:clamp(Math.round(Phi(z)*100),1,99)};
 }
 function recordTest(st){
-  ORDER.forEach(id=>{const z=clamp(ageAdj(id,st.res[id].z,st.age),-3.3,3.3);P.skill[id]=P.skill[id]==null?z:P.skill[id]*.5+z*.5;trackDomain(id)});
+  ORDER.forEach(id=>{const z=clamp(ageAdj(id,st.res[id].z,st.age),-3.3,3.3);P.skill[id]=P.skill[id]==null?z:P.skill[id]*.5+z*.5});
   P.fullTest=(P.fullTest||0)+1;if(st.age!=null){P.age=st.age;P.ageAsked=true}P.xp+=200;
   const b=overallBPI();if(b!=null)P.hist[dkey()]=b;const a=checkAch();saveP();return a;
 }
@@ -2145,11 +2027,10 @@ function countUp(el,to,ms){if(!el)return;const t0=performance.now();(function f(
 /* ---------- navigation ---------- */
 const NAV=[['today','M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
   ['games','M6 8h12a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4h-1l-2-2H9l-2 2H6a4 4 0 0 1-4-4v-1a4 4 0 0 1 4-4zM7 11v3M5.5 12.5h3M16 12h.01M18 14h.01'],
-  ['brain','M9.5 4A3 3 0 0 0 6.6 7 3.2 3.2 0 0 0 4 10.2a3.2 3.2 0 0 0 .9 5.5A3.2 3.2 0 0 0 9 20a3 3 0 0 0 3-1.6V5.4A3 3 0 0 0 9.5 4zM14.5 4A3 3 0 0 1 17.4 7a3.2 3.2 0 0 1 2.6 3.2 3.2 3.2 0 0 1-.9 5.5A3.2 3.2 0 0 1 15 20a3 3 0 0 1-3-1.6M9 9.5a2.5 2.5 0 0 0 3 0M15 13a2.5 2.5 0 0 1-3 0'],
   ['progress','M4 20V10M10 20V4M16 20v-7M22 20H2'],['test','M12 3a9 9 0 1 0 .01 0M12 8a4 4 0 1 0 .01 0M12 12h.01']];
 let curTab='today';
 function setNav(id){curTab=id||curTab;const tb=$('#tabs');if(!tb)return;tb.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.tab===curTab);b.querySelector('span').textContent=t('nav_'+b.dataset.tab)})}
-function goTab(id){({today,games:gamesScreen,brain:brainScreen,progress:progressScreen,test:intro})[id]()}
+function goTab(id){({today,games:gamesScreen,progress:progressScreen,test:intro})[id]()}
 function goHome(){hasProfile()?today():intro()}
 /* Android back button: returns true if handled inside the app */
 window.nmBack=()=>{if(document.body.classList.contains('testing')){if(!confirm(t('quit')))return true;taskActive=null;goHome();return true}
@@ -2181,21 +2062,13 @@ function today(){
       <div class="panel brainp">
         <div class="brainwrap"><canvas id="brain" aria-hidden="true"></canvas></div>
         <div class="bpi"><div class="kicker mono">${t('bpi')}</div><b>${bpi??'—'}</b><small>${bpi==null?t('empty_progress'):''}</small></div>
-        ${GL_OK?`<span class="btn ghost sm open-b">🧠 ${t('mb_open')} →</span>`:''}
       </div>
     </div>
-    ${window.BODY&&BODY.supported()?`<div class="panel livec" id="lvc"><canvas class="lv-cv" aria-hidden="true"></canvas><div class="lv-shade"></div>
-      <div class="lv-txt"><div class="kicker mono"><i class="lv-dot"></i>${t('lv_k')}</div><b>${t('lv_t')}</b><span id="lvs">${t('lv_b')}</span></div>
-      <div class="lv-seg"><button data-s="blood" class="on">🩸 ${t('lv_cb')}</button><button data-s="neurons">⚡ ${t('lv_cn')}</button></div></div>`:''}
     <a class="panel promo" href="journey.html" style="--dc:#ff5fd2;text-decoration:none"><div class="cico" style="font-size:24px;display:grid;place-items:center">🧠</div><div><b>${t('jr_t')}${journeyDone()?' ✓':''}</b><span>${t('jr_s')}</span></div><em>→</em></a>
     ${P.fullTest?'':`<button class="panel promo" id="ft" style="--dc:#9b6bff"><div class="cico">${icon('logic')}</div><div><b>${t('test_cta')}</b><span>${t('tagline')}</span></div><em>→</em></button>`}
     <p class="fine">${t('train_note')}</p>
   </div>`);
   const br=Brain.mount(el.querySelector('#brain'),{mode:'result',lv:skillLv()});
-  {const lc=el.querySelector('#lvc');if(lc){const sc=store.get('nm_body')||'blood',B=BODY.mount(lc.querySelector('canvas'),{scene:sc,maxDpr:1.25});
-    if(B){onClean(()=>B.destroy());const set=n=>{B.scene(n);store.set('nm_body',n);lc.querySelectorAll('[data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===n));lc.querySelector('#lvs').textContent=t(n==='blood'?'lv_b':'lv_n')};
-      set(sc);lc.querySelectorAll('[data-s]').forEach(b=>b.onclick=e=>{e.stopPropagation();sfx.tick();set(b.dataset.s)})}else lc.remove()}}
-  if(GL_OK)el.querySelector('.brainp').addEventListener('click',e=>{if(!e.target.closest('canvas')||e.target.closest('.open-b'))brainScreen()});
   later(()=>{const f=el.querySelector('#xpf');if(f)f.style.width=(lv.cur/lv.need*100)+'%'},150);
   el.querySelectorAll('.wg').forEach(b=>{b.addEventListener('pointerenter',()=>br.focus=gdom(b.dataset.id));b.addEventListener('pointerleave',()=>br.focus=null);
     b.onclick=()=>{const id=b.dataset.id;if(done)return playGame(id,{daily:false});if((d.g||{})[id]!=null)return;playGame(id,{daily:true,i:games.indexOf(id)})}});
@@ -2358,229 +2231,6 @@ async function profileCard(){
   cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`neuromap-brain.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},'image/png');
 }
 
-const lerp=(a,b,k)=>a+(b-a)*k;
-
-/* =====================================================================
-   v5 — LIVING BRAIN: WebGL brain everywhere + "My brain" explorer
-   ===================================================================== */
-let GL_OK=!!(window.NGL&&NGL.supported());
-const DIDX=d=>NGL.DOMAINS.indexOf(d);
-const TRACTS=[['logic','memory'],['logic','attention'],['attention','spatial'],['spatial','numbers'],['control','logic'],['reflex','control'],
-  ['speed','spatial'],['memory','numbers'],['speed','attention'],['reflex','spatial'],['memory','control'],['numbers','logic']];
-let _glBrain={},_vol={};
-/* real MRI volume (MNI ICBM152): HD on desktop, SD on phones; cached per session */
-function loadMRI(mob){const k=mob?'sd':'hd';return _vol[k]=_vol[k]||NGL.loadVolume(`brain_${k}.bin`).catch(e=>{delete _vol[k];throw e})}
-function glBrainData(mob){const k=mob?'m':'d';if(!_glBrain[k]){const b=NGL.brain({n:mob?13000:24000,colors:DCOL});_glBrain[k]={b,tr:NGL.tracts(b.cen,TRACTS,DCOL,mob?90:140),dust:NGL.dust(mob?500:1100,5.5)}}return _glBrain[k]}
-/* heavy extras (glass shell + tractography) are built after the first frame, then cached */
-function glExtras(mob,cb){const D=glBrainData(mob);if(D.shell){setTimeout(()=>cb(D),0);return}
-  const go=()=>{try{D.shell=D.shell||NGL.shell(D.b,{res:mob?40:56});D.fib=D.fib||NGL.fibers({n:mob?450:1000,steps:mob?56:70})}catch(e){console.warn(e)}cb(D)};
-  (window.requestIdleCallback||setTimeout)(go,{timeout:600})}
-/* a GPU that fails the self-test is remembered, so the 2D renderer is used next time */
-function noGL(why){if(!/probe|framebuffer|gl error/.test(why||''))return;GL_OK=false;try{localStorage.setItem('nm_nogl','2')}catch(e){}const tb=document.querySelector('#tabs [data-tab="brain"]');if(tb)tb.remove()}
-/* drop-in replacement for the 2D Brain.mount: same API, real glow */
-let mount2D=Brain.mount;
-if(GL_OK)Brain.mount=(cv,opt)=>{if(!GL_OK)return mount2D(cv,opt);try{return glMount(cv,opt)}catch(e){console.warn('GL fallback',e);return mount2D(cv,opt)}};
-function glMount(cv,opt){
-  const mob=innerWidth<700,R=NGL.create(cv,{auto:.22,maxDpr:mob?1.5:1.75,minDist:2.2,maxDist:5});if(!R)throw new Error('no gl');
-  const D=glBrainData(mob),L=R.addLayer(D.b,{sat:1.1}),T=R.addLayer(D.tr),U=R.addLayer(D.dust);U.fade=.7;
-  let SH=null,FB=null,VL=null,VV=null,alive=true;
-  if(/[?&]mri\b/.test(location.search))loadMRI(false).then(v=>{if(!alive)return;VV=v;VL=R.addVolume(v,{fade:0,steps:200});if(VL&&focus)VL.focus=v.labels.indexOf(focus)}).catch(e=>console.warn(e));
-  glExtras(mob,d=>{if(!alive||!d.shell)return;SH=R.addMesh(d.shell,{tint:[.42,.58,1],fade:0,scan:opt.mode==='hero'?1:.6});FB=R.addLines(d.fib,{fade:0})});
-  R.setCam({dist:3.45,yaw:-.95,pitch:.22});
-  let focus=null,next=0,fb2=null;
-  R.onFrame=(t,dt)=>{
-    for(const d of NGL.DOMAINS){const i=DIDX(d);L.gain[i]=opt.mode==='hero'?.42:(opt.lv?opt.lv[d]:.5)}L.gain[8]=.22;
-    T.tr.fill(opt.mode==='hero'?.35:.22);
-    if(VL){VL.fade=Math.min(1,VL.fade+dt*.7);const m=1-VL.fade;L.fade=m;T.fade=Math.max(.25,m);
-      VV.labels.forEach((d,i)=>{VL.gain[i+1]=(opt.mode==='hero'?.5:(opt.lv?opt.lv[d]:.5))*1.15;VL.col.set(NGL.hex(DCOL[d]),(i+1)*3)});
-      for(const w of VL.waves){w.r+=dt*.8;w.a=Math.max(0,w.a-dt*.5)}VL.waves=VL.waves.filter(w=>w.a>0);
-      if(Math.random()<dt*.9&&!reduceMotion){const s=VV.seeds[Math.random()*VV.seeds.length|0];VL.waves.push({x:s[0],y:s[1],z:s[2],r:0,a:.9})}}
-    if(SH)SH.fade=VL?Math.max(0,SH.fade-dt):Math.min(.75,SH.fade+dt*.5);if(FB)FB.fade=VL?Math.max(0,FB.fade-dt):Math.min(focus?.12:.3,FB.fade+dt*.3);
-    for(const w of L.waves){w.r+=dt*.9;w.a=Math.max(0,w.a-dt*.55)}L.waves=L.waves.filter(w=>w.a>0);
-    if(t>next&&!reduceMotion){const i=Math.random()*D.b.n|0;L.waves.push({x:D.b.pos[i*3],y:D.b.pos[i*3+1],z:D.b.pos[i*3+2],r:0,a:1});next=t+.8+Math.random()*.9}
-  };
-  R.onFail=why=>{alive=false;noGL(why);try{R.destroy()}catch(e){}const nc=cv.cloneNode(false);cv.replaceWith(nc);fb2=mount2D(nc,opt);if(focus)fb2.focus=focus};
-  R.start();onClean(()=>{alive=false;R.destroy()});
-  return{get focus(){return focus},set focus(v){focus=v;if(fb2){fb2.focus=v;return}L.focus=v?DIDX(v):-1;if(VL)VL.focus=v?VV.labels.indexOf(v):-1}};
-}
-
-/* ---------- growth model: everything derived from your real training data ---------- */
-const MY_DAYS=[1,3,7,14,30];
-const daysBetween=(a,b)=>{const p=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};return Math.round((p(b)-p(a))/864e5)};
-function trackDomain(dom){P.dh=P.dh||{};const k=dkey(),b=Math.round(100+15*P.skill[dom]);(P.dh[dom]=P.dh[dom]||{})[k]=b}
-function regionStats(d){
-  const plays=domPlays(d),skill=P.skill[d],bpi=skill==null?null:Math.round(100+15*skill),pct=skill==null?null:clamp(Math.round(Phi(skill)*100),1,99);
-  const dh=(P.dh||{})[d]||{},keys=Object.keys(dh).sort(),days=keys.length,last=keys[keys.length-1]||null;
-  const since=last?daysBetween(last,dkey()):(plays?3:null);
-  const act=since==null?0:since<=1?1:since<7?1-.09*(since-1):.3;
-  const state=since==null?'none':since<=1?'hi':since<7?'mid':'lo';
-  const myl=MY_DAYS.filter(x=>days>=x).length,nextMy=MY_DAYS[myl]||null;
-  const neurons=Math.round(Math.min(48,8+plays*1.6)),nextN=neurons<48?Math.ceil((Math.min(48,neurons+6)-8)/1.6)-plays:0;
-  const density=clamp(.35+.5*clamp(plays/30,0,1)+.1*clamp(((bpi||85)-85)/45,0,1),.3,.95);
-  const first=keys.length?dh[keys[0]]:((P.dbase||{})[d]??null),delta=bpi!=null&&first!=null?bpi-first:null;
-  return{d,plays,skill,bpi,pct,days,since,act,state,myl,nextMy,neurons,nextN:Math.max(1,nextN),density,delta,hist:keys.slice(-30).map(k=>dh[k])};
-}
-const SYNC={};
-function synCount(st){const k=`${st.d}|${st.neurons}|${st.density.toFixed(2)}|${st.myl}`;if(SYNC[k]!=null)return SYNC[k];
-  try{SYNC[k]=NGL.column({n:st.neurons,density:st.density,myelin:st.myl,seed:hashStr('region'+st.d)%100000,color:DCOL[st.d]}).syn.length}catch(e){SYNC[k]=0}return SYNC[k]}
-
-/* =====================================================================
-   MY BRAIN SCREEN
-   ===================================================================== */
-function brainScreen(){
-  setTesting(false);current=brainScreen;setNav('brain');amb(null);
-  if(!GL_OK)return progressScreen();
-  if(!P.dh&&Object.keys(P.skill).length){P.dh={};P.dbase={};for(const d of RADAR)if(P.skill[d]!=null)P.dbase[d]=Math.round(100+15*P.skill[d]);saveP()}
-  const ST={};RADAR.forEach(d=>ST[d]=regionStats(d));
-  const actN=RADAR.filter(d=>ST[d].state==='hi'||ST[d].state==='mid').length,totN=RADAR.reduce((s,d)=>s+ST[d].neurons,0);
-  const chip=d=>{const s=ST[d];return`<button class="mbc-chip" data-d="${d}" style="--dc:${DCOL[d]}"><i class="st-${s.state}"></i><span>${t('d_'+d)}</span><b class="mono">${s.bpi??'—'}</b></button>`};
-  const el=show(`<div class="mb">
-    <canvas id="mbc" class="mbcv" aria-hidden="true"></canvas><div class="mbflash" id="mbf"></div>
-    <div class="mb-top"><div><div class="kicker mono">${t('mb_k')}</div><h1 class="hello">${P.ava} ${t('mb_title')}</h1>
-      <p class="mb-sum mono" id="mbs">${t('mb_sum',{n:totN.toLocaleString(),s:'…',a:actN})}</p></div>
-      <div class="mb-btns"><button class="btn ghost" id="tour">▶ ${t('mb_tour')}</button><button class="btn ghost" id="back" hidden>← ${t('mb_back')}</button></div></div>
-    <div class="mb-labs" id="labs">${RADAR.map(d=>`<button class="rl" data-d="${d}" style="--dc:${DCOL[d]}"><i></i><span>${t('d_'+d)}</span><b class="mono">${ST[d].bpi??''}</b></button>`).join('')}</div>
-    <div class="mb-cap panel" id="cap" hidden></div>
-    <p class="mb-hint mono" id="hint">${t('mb_hint')}</p>
-    <div class="mb-chips" id="chips">${RADAR.map(chip).join('')}</div>
-    <aside class="mb-panel panel" id="rp" hidden></aside>
-    <div class="mb-view panel" id="vw">
-      <div class="seg"><button data-v="neural">✦ <span>${t('v_neural')}</span></button><button data-v="mri">🧠 <span>${t('v_mri')}</span></button><button data-v="xray">◎ <span>${t('v_xray')}</span></button></div>
-      <div class="cutr"><span class="mono">✂ ${t('v_cut')}</span><div class="seg sm"><button data-c="" class="on">${t('cut_off')}</button><button data-c="x">${t('cut_sag')}</button><button data-c="z">${t('cut_cor')}</button><button data-c="y">${t('cut_ax')}</button></div>
-        <input type="range" id="cpos" min="-85" max="85" value="0" aria-label="${t('v_cut')}"></div>
-      <p class="mb-credit mono" id="mcr" title="${t('mri_note')}" hidden>ⓘ ${t('mri_credit')}</p>
-    </div>
-  </div>`);
-  document.body.classList.add('mbmode');onClean(()=>document.body.classList.remove('mbmode','mbdeep','mbtour'));
-  const mob=innerWidth<760,cv=el.querySelector('#mbc'),R=NGL.create(cv,{auto:.12,wheel:true,maxDpr:mob?1.5:1.75,minDist:1.6,maxDist:6.5});
-  if(!R)return progressScreen();
-  onClean(()=>{R.destroy();if(tour)tour.stop=1});
-  const ovD=()=>{const[w,h]=R.size,asp=w/Math.max(1,h);return Math.max(3.35,1.28/(Math.tan(.4)*Math.min(1.3,asp)))};
-  const D=glBrainData(mob),BL=R.addLayer(D.b,{sat:1.15}),TL=R.addLayer(D.tr),DU=R.addLayer(D.dust);
-  let SHL=null,FBL=null;glExtras(mob,d=>{if(!d.shell||!document.body.contains(el))return;SHL=R.addMesh(d.shell,{tint:[.4,.55,1],fade:0,scan:.8});FBL=R.addLines(d.fib,{fade:0});if(deep){SHL.visible=FBL.visible=false}});
-  R.dof=.22;R.onFail=why=>{noGL(why);progressScreen()};
-  const cen=D.b.cen,mid=[0,.1,0];
-  const gainOf=d=>{const s=ST[d];return s.bpi==null?.07:clamp((s.bpi-55)/75,.12,1)*(.35+.65*s.act)};
-  RADAR.forEach(d=>BL.gain[DIDX(d)]=gainOf(d));BL.gain[8]=.12;
-  TRACTS.forEach(([a,b],i)=>TL.tr[i]=clamp(Math.min(ST[a].plays,ST[b].plays)/18,.04,1)*(.4+.6*Math.min(ST[a].act,ST[b].act)));
-  R.setCam({dist:5.2,yaw:-1.1,pitch:.35});R.flyTo({dist:ovD(),yaw:-.85,pitch:.24},2.2);R.start();
-  /* --- real MRI brain: raymarched MNI152 volume, your trained networks glow inside real anatomy --- */
-  let VL=null,VV=null,view=store.get('nm_view2')||'neural';
-  window.__mb={R,BL,TL,get VL(){return VL},get SHL(){return SHL},get FBL(){return FBL}};const cut={ax:'',pos:0},vw=el.querySelector('#vw'),hintEl=el.querySelector('#hint');
-  const vIdx=d=>VV?VV.labels.indexOf(d):-1,isMRI=()=>view!=='neural'&&!!VL;
-  function ensureMRI(){if(VL)return Promise.resolve(true);if(VV===false)return Promise.resolve(false);hintEl.textContent=t('mri_load');
-    return loadMRI(mob).then(v=>{if(!document.body.contains(el))return false;if(!VL){VV=v;VL=R.addVolume(v,{fade:0,iso:.3,steps:mob?150:280})}if(!VL){VV=false;return false}
-      RADAR.forEach(d=>{const i=vIdx(d);if(i>=0){VL.gain[i+1]=gainOf(d)*1.2;VL.col.set(NGL.hex(DCOL[d]),(i+1)*3)}});
-      hintEl.textContent=t(deep?'mb_tap':'mb_hint');el.querySelector('#mcr').hidden=false;return true})
-      .catch(e=>{console.warn('MRI',e);VV=false;hintEl.textContent=t('mb_hint');return false})}
-  function markView(){vw.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===view));vw.classList.toggle('mri',view!=='neural')}
-  function setView(v){view=v;store.set('nm_view2',v);markView();if(v!=='neural')ensureMRI().then(ok=>{if(!ok){view='neural';markView();vw.querySelector('.cutr').hidden=true}})}
-  vw.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{sfx.tick();setView(b.dataset.v)});
-  vw.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{sfx.tick();cut.ax=b.dataset.c;vw.querySelectorAll('[data-c]').forEach(x=>x.classList.toggle('on',x===b));vw.classList.toggle('cutting',!!cut.ax);if(cut.ax&&view==='neural')setView('mri')});
-  vw.querySelector('#cpos').oninput=e=>{cut.pos=+e.target.value/100};
-  setView(view);
-  /* label anchor: the real MNI coordinate on the hemisphere facing you (MRI) or the particle centroid (neurons) */
-  const lpos={};
-  function anc(d){if(!isMRI())return cen[d];const ex=R.eye||[0,0,1],li=vIdx(d)+1;let best=null,bv=-1e9;for(const s of VV.seeds)if(s[3]===li){const q=s[0]*ex[0]+s[1]*ex[1]+s[2]*ex[2];if(q>bv){bv=q;best=s}}return best?[best[0],best[1],best[2]]:cen[d]}
-  function pulse(d,a){const c=anc(d);BL.waves.push({x:c[0],y:c[1],z:c[2],r:0,a});if(VL)VL.waves.push({x:c[0],y:c[1],z:c[2],r:0,a})}
-  /* background: synapse totals computed lazily, one region per tick */
-  let si=0,syn=0;const tick=()=>{if(!document.body.contains(el))return;if(si<RADAR.length){syn+=synCount(ST[RADAR[si++]]);el.querySelector('#mbs').textContent=t('mb_sum',{n:totN.toLocaleString(),s:si<RADAR.length?'…':syn.toLocaleString(),a:actN});later(tick,30)}};later(tick,400);
-  /* floating region labels */
-  const labs=[...el.querySelectorAll('.rl')];
-  let deep=null,net=null,COL=null,CL=null,busy=false,tour=null;
-  R.onFrame=(t,dt)=>{
-    for(const w of BL.waves){w.r+=dt*.9;w.a=Math.max(0,w.a-dt*.5)}BL.waves=BL.waves.filter(w=>w.a>0);
-    const m=isMRI(),xr=m&&view==='xray',kf=1-Math.exp(-dt*3.5);
-    if(VL){for(const w of VL.waves){w.r+=dt*.75;w.a=Math.max(0,w.a-dt*.45)}VL.waves=VL.waves.filter(w=>w.a>0);
-      VL.mode=xr?1:0;VL.steps=xr?(mob?110:170):(mob?150:280);VL.focus=BL.focus>=0?vIdx(NGL.DOMAINS[BL.focus]):-1;
-      if(cut.ax&&m){const ax=cut.ax==='x'?[1,0,0]:cut.ax==='y'?[0,1,0]:[0,0,1],e=R.eye||[0,0,1],tg=R.cam.target,sg=((e[0]-tg[0])*ax[0]+(e[1]-tg[1])*ax[1]+(e[2]-tg[2])*ax[2])>=0?1:-1,bx=cut.ax==='x'?VL.B[0]:cut.ax==='y'?VL.B[1]:VL.B[2];
-        VL.clip=[ax[0]*sg,ax[1]*sg,ax[2]*sg,sg*cut.pos*bx]}else VL.clip=[0,0,1,-99]}
-    if(!deep&&!busy){BL.fade=lerp(BL.fade,m?0:1,kf);TL.fade=lerp(TL.fade,m?(xr?.3:0):1,kf);if(VL)VL.fade=lerp(VL.fade,m?1:0,kf)}
-    if(SHL&&!deep&&!busy){SHL.fade=lerp(SHL.fade,m?0:.7,kf);FBL.fade=lerp(FBL.fade,xr?.4:m?0:(BL.focus>=0?.14:.34),kf)}
-    if(!deep){
-      if(Math.random()<dt*1.2){const d=RADAR[Math.random()*8|0];if(ST[d].plays&&Math.random()<ST[d].act)pulse(d,.8)}
-      const ex=R.eye;if(!ex)return;const ed=Math.hypot(ex[0],ex[1],ex[2])||1;
-      labs.forEach(lb=>{const d=lb.dataset.d,a=anc(d),q=lpos[d]=lpos[d]?lpos[d].map((v,i)=>lerp(v,a[i],kf)):[...a],c=q,p=R.project([c[0]*1.18,c[1]*1.18+.06,c[2]*1.12]);if(!p){lb.style.opacity=0;return}
-        const face=(c[0]*ex[0]+c[1]*ex[1]+c[2]*ex[2])/ed/Math.hypot(...c);lb.style.transform=`translate(${p[0].toFixed(1)}px,${p[1].toFixed(1)}px) translate(-50%,-50%)`;
-        lb.style.opacity=busy?0:face>-.05?1:.28;lb.classList.toggle('back',face<=-.05)});
-    }else if(net)net.step();
-  };
-  /* --- overview → region (fly into the cortex) --- */
-  async function enter(d){
-    if(busy||deep===d)return;busy=true;stopTour();sfx.tick();
-    const s=ST[d],c=anc(d),yaw=Math.atan2(c[0],c[2]),pitch=clamp(c[1]*.7,-.4,.6);
-    el.classList.add('deep');document.body.classList.add('mbdeep');BL.focus=DIDX(d);
-    await R.flyTo({target:[c[0]*.6,c[1]*.6+.04,c[2]*.6],dist:1.5,yaw,pitch},1.1);
-    const fl=el.querySelector('#mbf');fl.classList.add('on');
-    const t0=performance.now();await new Promise(r=>{const f=()=>{const k=clamp((performance.now()-t0)/700,0,1);R.cam.dist=R.goal.dist=lerp(1.5,.25,k*k);BL.fade=Math.min(BL.fade,1-k);TL.fade=Math.min(TL.fade,1-k);if(VL)VL.fade=Math.min(VL.fade,1-k);if(k<1)requestAnimationFrame(f);else r()};f()});
-    BL.visible=TL.visible=false;if(VL)VL.visible=false;if(SHL){SHL.visible=FBL.visible=false}R.dof=mob?.3:.38;
-    COL=NGL.column({n:s.neurons,density:s.density,myelin:s.myl,seed:hashStr('region'+d)%100000,color:DCOL[d],detail:mob?.7:1});
-    CL=R.addLayer(COL,{vel:.85,my:s.myl>0?1:0,inn:.1});CL.fade=s.plays?.35+.65*Math.max(.35,s.act):.3;
-    net=NGL.Net(COL,R,{act:s.plays?Math.max(.25,s.act):.12,vel:.85,myVel:1.2+.55*s.myl});
-    for(let i=0;i<Math.min(6,COL.N);i++)setTimeout(()=>net&&net.stim(),200+i*120);
-    const tY=mob?-.75:0;R.setCam({target:[0,tY,0],dist:9,yaw:yaw+.4,pitch:.1});fl.classList.remove('on');
-    R.flyTo({target:[0,tY,0],dist:mob?ovD()*.95:3.3,yaw:yaw+.15,pitch:.12},1.8);R.auto=.08;
-    deep=d;panel(d);el.querySelector('#back').hidden=false;el.querySelector('#tour').hidden=true;el.querySelector('#hint').textContent=t('mb_tap');busy=false;
-    R.onTap=(x,y)=>{if(!net)return;let best=-1,bd=70;COL.cells.forEach((c,i)=>{const p=R.project(c.p);if(p){const dd=Math.hypot(p[0]-x,p[1]-y);if(dd<bd){bd=dd;best=i}}});
-      net.stim(best>=0?best:null);if(best<0)for(let i=0;i<3;i++)net.stim();sfx.tick()};
-  }
-  async function leave(){
-    if(busy||!deep)return;busy=true;const d=deep,c=anc(d),yaw=Math.atan2(c[0],c[2]);
-    el.querySelector('#rp').hidden=true;R.onTap=null;
-    await R.flyTo({dist:9,pitch:.3},.9);
-    if(CL){R.removeLayer(CL);CL=null}net=null;COL=null;
-    BL.visible=TL.visible=true;BL.fade=TL.fade=0;BL.focus=-1;if(VL){VL.visible=true;VL.fade=0}R.auto=.12;R.dof=.22;if(SHL){SHL.visible=FBL.visible=true;SHL.fade=FBL.fade=0}
-    R.setCam({target:[c[0]*.6,c[1]*.6,c[2]*.6],dist:.4,yaw,pitch:.2});
-    const t0=performance.now();(function f(){const k=clamp((performance.now()-t0)/900,0,1);if(isMRI())VL.fade=k;else BL.fade=TL.fade=k;if(k<1)requestAnimationFrame(f)})();
-    await R.flyTo({target:[0,0,0],dist:ovD(),yaw:yaw-.5,pitch:.24},1.6);
-    deep=null;el.classList.remove('deep');document.body.classList.remove('mbdeep');el.querySelector('#back').hidden=true;el.querySelector('#tour').hidden=false;el.querySelector('#hint').textContent=t('mb_hint');busy=false;R.onTap=ovTap;
-  }
-  /* --- region panel --- */
-  function spark(v){if(v.length<2)return`<div class="mono mb-empty">${t('mb_trend')}: —</div>`;const W=300,H=64,mn=Math.min(...v)-2,mx=Math.max(...v)+2,X=i=>4+i*(W-8)/(v.length-1),Y=x=>H-6-(x-mn)/(mx-mn)*(H-14);
-    return`<svg class="mb-spark" viewBox="0 0 ${W} ${H}"><polyline points="${v.map((x,i)=>X(i).toFixed(1)+','+Y(x).toFixed(1)).join(' ')}" fill="none" stroke="var(--dc)" stroke-width="2.4" stroke-linejoin="round"/><circle cx="${X(v.length-1)}" cy="${Y(v[v.length-1])}" r="4" fill="#fff"/></svg>`}
-  function panel(d){
-    const s=ST[d],rp=el.querySelector('#rp'),sc=synCount(s);rp.style.setProperty('--dc',DCOL[d]);
-    const games=domGames(d).sort((a,b)=>(P.plays[a]||0)-(P.plays[b]||0));
-    const nxt=s.nextMy?t('mb_next_my',{n:s.nextMy-s.days,m:s.myl+1}):s.neurons<48?t('mb_next_n',{n:s.nextN,k:Math.min(6,48-s.neurons)}):t('mb_max');
-    rp.innerHTML=`<div class="rp-head"><div class="cico">${icon(d)}</div><div><b>${t('d_'+d)}</b><span class="mono">${t('ra_'+d)}</span></div><em class="act st-${s.state}">${t('act_'+s.state)}</em></div>
-      ${s.bpi==null?`<p class="rp-wake">${t('mb_wake')}</p>`:`<div class="rp-big"><b>${s.bpi}</b><div><span>${t('bpi')}</span><small>${t('mb_pct',{p:s.pct})}</small>${s.delta!=null?`<small class="${s.delta>=0?'up':'dn'}">${s.delta>=0?'▲ +':'▼ '}${s.delta} · ${t('mb_delta')}</small>`:''}</div></div>${spark(s.hist)}`}
-      ${s.state==='lo'?`<p class="rp-warn">💤 ${t('mb_sleep',{n:s.since})}</p>`:''}
-      <div class="rp-stats"><div><b>${COL?COL.N:s.neurons}</b><span>${t('mb_neur')}</span></div><div><b>${COL?COL.syn.length:sc}</b><span>${t('mb_syn')}</span></div><div><b>${s.myl}/5</b><span>${t('mb_my')}</span></div><div><b>${s.plays}</b><span>${t('mb_plays')}</span></div></div>
-      <div class="rp-next mono">⟶ ${nxt}</div>
-      <div class="rp-live mono"><span>⚡ <b id="rate">0</b> ${t('mb_rate')}</span><button class="btn ghost sm" id="stim">⚡ ${t('mb_stim')}</button></div>
-      <button class="btn primary" id="train">${t('mb_train')} →</button>
-      <div class="kicker mono">${t('mb_games')}</div>
-      <div class="rp-games">${games.map(g=>`<button data-g="${g}"><span class="cico">${icon(g)}</span><span>${gname(g)}</span><small class="mono">${P.best[g]?t('best')+' '+P.best[g]:t('new')}</small></button>`).join('')}</div>
-      <div class="rp-sci"><div class="kicker mono">🔬 ${t('mb_sci')}</div><p>${t('rf_'+d)}</p><span class="mono">${RCITE[d]}</span></div>
-      <p class="fine">${t('mb_note')}</p>`;
-    rp.hidden=false;rp.scrollTop=0;
-    rp.querySelector('#train').onclick=()=>playGame(games[0],{daily:false});
-    rp.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>playGame(b.dataset.g,{daily:false}));
-    rp.querySelector('#stim').onclick=()=>{if(net){for(let i=0;i<5;i++)setTimeout(()=>net&&net.stim(),i*90);sfx.tick()}};
-    const re=rp.querySelector('#rate');every(()=>{if(net&&document.body.contains(re))re.textContent=Math.round(net.rate)},500);
-  }
-  /* --- guided tour through your own brain --- */
-  function stopTour(){document.body.classList.remove('mbtour');if(tour){tour.stop=1;tour=null}const c=el.querySelector('#cap');c.hidden=true;BL.focus=-1;el.querySelector('#tour').innerHTML='▶ '+t('mb_tour');R.auto=.12}
-  async function runTour(){
-    if(tour){stopTour();R.flyTo({target:[0,0,0],dist:ovD(),pitch:.24},1.4);return}
-    const me=tour={stop:0};el.querySelector('#tour').innerHTML='■ '+t('mb_stop');R.auto=0;document.body.classList.add('mbtour');
-    const order=[...RADAR].sort((a,b)=>(ST[b].bpi??-1)-(ST[a].bpi??-1)),cap=el.querySelector('#cap');
-    for(const d of order){if(me.stop)return;const c=anc(d),s=ST[d],yaw=Math.atan2(c[0],c[2]);BL.focus=DIDX(d);
-      cap.hidden=false;cap.style.setProperty('--dc',DCOL[d]);
-      cap.innerHTML=`<div class="kicker mono">${t('ra_'+d)}</div><b>${t('d_'+d)} <span class="mono">${s.bpi??''}</span></b><p>${s.bpi==null?t('mb_cap_none'):`${t('act_'+s.state)} · ${t('mb_pct',{p:s.pct})}${s.delta?` · ${s.delta>0?'+':''}${s.delta}`:''}`}</p>`;
-      await R.flyTo({target:[c[0]*.35,c[1]*.35+.05,c[2]*.35],dist:mob?2.9:2.45,yaw,pitch:clamp(c[1]*.8+.15,-.3,.7),arc:.12},1.7);
-      pulse(d,1);
-      await new Promise(r=>later(r,1900))}
-    if(me.stop)return;stopTour();R.flyTo({target:[0,0,0],dist:ovD(),pitch:.24},1.6);
-  }
-  el.querySelector('#tour').onclick=runTour;el.querySelector('#back').onclick=leave;
-  el.querySelectorAll('.rl,.mbc-chip').forEach(b=>b.onclick=()=>enter(b.dataset.d));
-  function ovTap(x,y){if(busy||deep||!isMRI())return;const h=R.pick(VL,x,y);if(!h)return;if(h.label&&RADAR.includes(h.label)){enter(h.label);return}VL.waves.push({x:h.p[0],y:h.p[1],z:h.p[2],r:0,a:1});sfx.tick()}
-  R.onTap=ovTap;
-}
-const RCITE={logic:'Duncan & Owen, 2000 · Christoff et al., 2001',numbers:'Nieder & Miller, 2004 · Dehaene et al., 2003',spatial:'Zacks, 2008',memory:'Maguire et al., 2000',
-  attention:'Moore & Fallah, 2001',speed:'Thorpe, Fize & Marlot, 1996',control:'Botvinick et al., 2001',reflex:'Karni et al., 1995'};
-
 /* =====================================================================
    BOOT
    ===================================================================== */
@@ -2594,7 +2244,7 @@ function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.do
   const snd=$('#snd');const paint=()=>{snd.innerHTML=sfx.on?SND_ON:SND_OFF};paint();snd.onclick=()=>{sfx.toggle();paint();sfx.tick()};
   $('#home').onclick=e=>{e.preventDefault();if(document.body.classList.contains('testing')&&!confirm(t('quit')))return;taskActive=null;history.replaceState(null,'',location.href.split('#')[0]);goHome()};
   const tabs=document.createElement('nav');tabs.id='tabs';
-  tabs.innerHTML=NAV.filter(([id])=>id!=='brain'||GL_OK).map(([id,d])=>`<button data-tab="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg><span></span></button>`).join('');
+  tabs.innerHTML=NAV.map(([id,d])=>`<button data-tab="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg><span></span></button>`).join('');
   document.body.appendChild(tabs);
   tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sfx.tick();goTab(b.dataset.tab)});
   const m=location.hash.match(/^#r=([\d.]+)$/),shared=m?parseScores(m[1]):null;
@@ -2602,10 +2252,7 @@ function setLang(l){L=I18N[l]?l:'en';document.documentElement.lang=L;document.do
   initRival();
   {const na=checkAch();if(na.length){saveP();achToasts(na,1600)}}
   if(shared)results(shared,null,{shared:true});else if(VS||CHALLENGE)intro();else if(P.rival&&P.rival.day===dayNo(dkey())&&!P.rival.done)today();else goHome();
-  /* auto-update: when a new version's service worker takes over, reload once into it */
-  if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){const had=!!navigator.serviceWorker.controller;let rl=false;
-    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!rl){rl=true;location.reload()}});
-    navigator.serviceWorker.register('sw.js').then(r=>r.update()).catch(()=>{})}
+  if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>
 </body>
